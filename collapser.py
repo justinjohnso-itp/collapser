@@ -18,6 +18,13 @@ def readInputFile(inputFile):
 	print "Can't read '%s'." % inputFile
 	sys.exit()
 
+def processText(inputText):
+	return inputText
+
+def writeOutputFile(outputFile, outputText):
+	with open(outputFile, "w") as fileObject:
+		fileObject.write(outputText)
+		print "\nWrote to '%s'.\n" % outputFile
 
 
 print """Collapser 0.1"""
@@ -33,4 +40,10 @@ outputFile = sys.argv[2]
 
 inputText = readInputFile(inputFile)
 
-print "Here is the file we read: '%s'" % inputText
+print "Here is the input:\n%s" % inputText
+
+outputText = processText(inputText)
+
+print "\n\nHere is the output:\n%s" % outputText
+
+writeOutputFile(outputFile, outputText)
