@@ -1,2 +1,5 @@
 testout.txt
 *.pyc
+collapser/origply
+parser.out
+parsetab.py
