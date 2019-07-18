@@ -1,0 +1,133 @@
+Guidelines
+	- Syntax should be easy to type, and minimize control characters.
+	- The smallest amount of variation is a word: don't waste time making versions with alternate punctuation.
+	- No nesting (to prevent wasting time on sub-probabilities of sub-probabilities). Every alternative is either seen or not.
+	- Think extremely hard before using a probability less than 10.
+
+Collapser should:
+	- Track each usage of control characters across multiple runs. When the usage has changed, either internally or the ~50 characters before/after, have the user confirm it by showing all the possible variants in context (including author-pref). (Key is position + contents).
+
+Problems:
+- What if we have a macro where the author-preferred way is to expand it one way some times and another way others?
+
+
+** Basic Formatting:
+
+Wrap text in asterisks for italics, as in markdown.
+
+	"I already *told* you..."
+
+Two dashes for em-dash; might as well allow — since this prints the same. (Note Latex is triple dash). (Actually, maybe should find/replace this, since it's visually hard to distinguish from a normal dash.) 
+
+	Look--Peter--the thing is...
+
+Write extended Unicode characters directly.
+
+	Dvořák
+
+Line break by ending line with \\ (same as Latex).
+
+Smart quotes? Putting " doesn't do them right. Manually use “ ” ? Collapser catches " ?
+' or ’ in didn't works, but must use ’ and (other).
+
+
+** Basic Syntax:
+
+Control characters should never be ones that would appear in the manuscript. So far they are:
+	[ ] Begin and end a control sequence.
+	{ } Macro
+	|	Divide alternatives
+	*	Bold formatting
+	>	Conditional text
+	@	Indicates a variable	
+	^	Author-preferred
+	#	Comment
+
+Start a line with a # for a comment to be stripped/ignored.
+
+	# This is a comment.
+
+The basic format is to specify pipe-separated alternatives wrapped in square brackets. The below will randomly print "alpha", "beta", or "gamma".
+
+	[alpha|beta|gamma]
+
+It's valid to have an empty option: the below will print "alpha" or nothing randomly.
+
+	[alpha|]
+
+The "author's preferred version" is assumed to be the first one listed. When this is not possible, it can also be indicated with a ^ immediately proceeding the content. "Output author-preferred" is a flag that can be set in Collapser; the code also has a slight preference for the author-preferred version (maybe 25%).
+
+	[alpha|^beta|gamma]   (or, better):    [beta|alpha|gamma]
+	[|alpha|beta]		=> author's preferred version is to print nothing
+
+If there is just a single item, it will either randomly print, or not. Use ^ if printing is author-preferred, omit if not.
+
+	[alpha]		Print "alpha" randomly (or never when author-preferred)
+	[^alpha]	Print "alpha" randomly (or always when author-preferred)
+
+Nesting is not allowed, though you can get around that a bit using a macro. A tag can span potentially dozens of paragraphs. 
+
+
+** Probabilities
+
+You can preface an alternative by an integer between 0 and 100 and a > sign to give a percentage chance that version will be chosen. If the values don't add up to 100, show nothing the other percent of the time. The author-preferred asterisk should go on the token, not the number
+
+	[80>alpha|10>beta|10>^gamma]
+	[50>alpha]  => (equivalent to "[alpha]")
+
+
+** Variables
+
+You can define a boolean variable, which always starts with @, by starting your line with the reserved word DEFINE (caps matter). This will be randomly set to true or false, unless you give it a probability. Author-preferred goes before the @ (which is part of the variable name). Use camelCase.
+
+	[DEFINE @wordy]    => randomly true/false, or never true if author-preferred
+	[DEFINE 80>@wordy] => @wordy is true 80% of the time, or never if A-P.
+	[DEFINE 10>^@wordy] => @wordy is true 10% of the time, or always if A-P.
+
+You can also define an enum variable by specifying multiple options numerically: these must always add up to 100.
+
+	[DEFINE 50>@wordy|50>^@taciturn]
+
+Restrict text to showing only when a defined variable is true. Note that it's a mistake to indicate author-preferred here: that's set by the variable.
+
+	[@wordy>he said loquaciously] 
+
+Can specify an else by providing one other alternative, which can be empty.
+
+	[@wordy>he said loquaciously|he summarized] 
+	[@angry>|He was very calm. ]
+
+Can provide values for enums also: if any omitted are true, print nothing.
+
+	[@wordy>loquaciously|@taciturn>reflectively]
+
+Can use conditional logic with + for AND or / for OR.
+
+	[@wordy+@lostKeys>I can't find my keys!]
+
+
+** Macros
+
+Define these by starting with MACRO in caps, a space, the macro label. The required replacement immediately following will be used whenever the macro is expanded. 
+
+	[MACRO it's not][75>it's not|25>it isn't]
+
+Invoke a macro in text by wrapping it in curly braces.
+
+	"But {it's not} relevant"
+
+
+** Control Sequences
+
+The system has a number of predefined control sequences (starting with @) which are reserved words (can't be used for variables). These control formatting options. They can either take parameters or not. Complete list:
+
+	[@eipgraph>Surely tis nobler...|William Shakespeare]
+	[@section_break]
+	[@chapter>2]
+	[@part>ONE|DOWNSTAIRS]
+	[@verse]
+	[@verse_inline]   => no pp breaks
+
+
+
+
