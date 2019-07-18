@@ -9,7 +9,9 @@ Collapser should:
 
 Problems:
 - What if we have a macro where the author-preferred way is to expand it one way some times and another way others?
-
+- Copy/paste from OO:
+	- Fix paragraph breaks
+	- Find italics/other formatting
 
 ** Basic Formatting:
 
@@ -42,6 +44,7 @@ Control characters should never be ones that would appear in the manuscript. So 
 	@	Indicates a variable	
 	^	Author-preferred
 	#	Comment
+	~	Always print this block.
 
 Start a line with a # for a comment to be stripped/ignored.
 
@@ -64,6 +67,10 @@ If there is just a single item, it will either randomly print, or not. Use ^ if 
 
 	[alpha]		Print "alpha" randomly (or never when author-preferred)
 	[^alpha]	Print "alpha" randomly (or always when author-preferred)
+
+If you preface a single block of text with ~, it will always be printed. (This is useful for macros.)
+
+	[~alpha]	Always prints "alpha"
 
 Nesting is not allowed, though you can get around that a bit using a macro. A tag can span potentially dozens of paragraphs. 
 
