@@ -25,10 +25,9 @@ def go(sourceText):
 
     print "*** LEXING ***"
     result = quantlex.lex(sourceText)
-    print result.isValid
     if not result.isValid:
-    	caret = (" " * (result.errorColumn-1)) + "^"
-    	print "Lexer found a problem on line %d column %d: %s\n%s\n%s" % (result.errorLineNumber, result.errorColumn, result.errorMessage, result.errorLineText, caret)
+    	caret = (" " * (result.errorColumn-1+2)) + "^"
+    	print "Lexer found a problem on line %d column %d: %s\n> %s\n%s" % (result.errorLineNumber, result.errorColumn, result.errorMessage, result.errorLineText, caret)
     	return ""
 
     output = quantparse.parse(sourceText)
