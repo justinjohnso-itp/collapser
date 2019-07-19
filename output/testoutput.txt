@@ -1,4 +1,0 @@
-
-    This is a bunch of text with [some values] inside.
-
-    Shazam.
