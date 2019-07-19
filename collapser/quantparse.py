@@ -6,10 +6,20 @@
 from quantlex import tokens
 
 
+# We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
 def renderControlSequence(tokens):
-	return "(control sequence with %d tokens)" % len(tokens)
+	# return "(control sequence with %d tokens)" % len(tokens)
 
-# The lexer should have guaranteed that we have a series of TEXT tokens interspersed with sequences of others nested between CTRLBEGIN and CTRLEND with no issues with nesting or incomplete tags. 
+	if len(tokens) == 0:
+		return ""
+	if len(tokens) == 1 and tokens[0].type == "TEXT":
+		return tokens[0].value
+
+	return "(couldn't render %s:'%s')" % (tokens[0].type, tokens[0].value)
+
+
+
+# The lexer should have guaranteed that we have a series of TEXT tokens interspersed with sequences of others nested between CTRLBEGIN and CTRLEND with no issues with nesting or incomplete tags.
 def process(tokens):
 	output = []
 	index = 0
@@ -26,7 +36,7 @@ def process(tokens):
 			token = tokens[index]
 			while token.type != "CTRLEND":
 				print ", %s: %s" % (token.type, token.value)
-				ctrl_contents.append(token.value)
+				ctrl_contents.append(token)
 				index += 1
 				token = tokens[index]
 			rendered = renderControlSequence(ctrl_contents)
