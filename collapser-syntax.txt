@@ -56,7 +56,7 @@ The basic format is to specify pipe-separated alternatives wrapped in square bra
 
 It's valid to have an empty option: the below will print "alpha" or nothing randomly.
 
-	[alpha|]
+	[alpha|]     => this is the same as [alpha]
 
 The "author's preferred version" is assumed to be the first one listed. When this is not possible, it can also be indicated with a ^ immediately proceeding the content. "Output author-preferred" is a flag that can be set in Collapser; the code also has a slight preference for the author-preferred version (maybe 25%).
 

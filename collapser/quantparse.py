@@ -17,12 +17,22 @@ def renderControlSequence(tokens):
 
 	index = 0
 	alts = []
+	lastText = ""
 	while index < len(tokens):
 		token = tokens[index]
 		if token.type == "TEXT":
-			alts.append(token.value)
+			lastText = token.value
+		if token.type == "DIVIDER":
+			alts.append(lastText)
+			lastText = ""
 		index += 1
-		
+
+	# Handle being finished.
+	if token.type == "TEXT":
+		alts.append(lastText)
+	elif token.type == "DIVIDER":
+		alts.append("")
+
 	result = chooser.oneOf(alts)
 	return result
 

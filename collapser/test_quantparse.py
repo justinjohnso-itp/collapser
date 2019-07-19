@@ -53,6 +53,40 @@ def test_all_alts():
 	assert foundB
 	assert foundC
 	
+def test_empty_alts():
+	text = "[A|B|]"
+	foundEmpty = False
+	ctr = 0
+	while (not foundEmpty) and ctr < 100:
+		result = parse(text)
+		if result == "":
+			foundEmpty = True
+		ctr += 1
+	assert foundEmpty
 
+	text = "[A||B]"
+	foundEmpty = False
+	ctr = 0
+	while (not foundEmpty) and ctr < 100:
+		result = parse(text)
+		if result == "":
+			foundEmpty = True
+		ctr += 1
+	assert foundEmpty
 
+	text = "[|A|B]"
+	foundEmpty = False
+	ctr = 0
+	while (not foundEmpty) and ctr < 100:
+		result = parse(text)
+		if result == "":
+			foundEmpty = True
+		ctr += 1
+	assert foundEmpty
+
+def test_empty_alts_in_situ():
+	text = "She was [rather |]charming."
+	options = ["She was charming.", "She was rather charming."]
+	for i in range(1,10):
+		assert parse(text) in options
 
