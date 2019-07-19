@@ -2,6 +2,8 @@
 
 import ply.lex as lex
 
+inCtrlSequence = False
+
 # List of token names.   This is always required
 tokens = (
    'CTRLBEGIN',
@@ -16,15 +18,12 @@ tokens = (
 )
 
 # Regular expression rules for simple tokens
-t_CTRLBEGIN    = r'\['
-t_CTRLEND   = r'\]'
 t_MACROBEGIN   = r'\{'
 t_MACROEND  = r'\}'
 t_DIVIDER = r'\|'
 t_AUTHOR = r'\^'
 t_ALWAYS = r'\~'
 
-# A regular expression rule 
 def t_TEXT(t):
     r'[^\[\]\{\}\|\>\@\^\#\~]+'
     return t
@@ -32,6 +31,22 @@ def t_TEXT(t):
 def t_COMMENT(t):
     r'\#.*\n?'
     pass # No return value. Token discarded
+
+def t_CTRLBEGIN(t):
+	r'\['
+	global inCtrlSequence
+	if inCtrlSequence:
+		print("Illegal nested control sequence: '%s'" % t.value)
+		# t.lexer.skip(1)
+		return False
+	inCtrlSequence = True
+	return t
+
+def t_CTRLEND(t):
+	r'\]'
+	global inCtrlSequence
+	inCtrlSequence = False
+	return t
 
 # Error handling rule
 def t_error(t):

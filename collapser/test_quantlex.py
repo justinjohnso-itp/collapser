@@ -81,7 +81,10 @@ def test_always_print():
 	assert toks[2].type == "TEXT"
 	assert toks[2].value == "always print this"
 
-
-
+def test_prevent_nesting():
+	text = "[don't allow [nested] sequences]"
+	toks = getTokens(text)
+	dumpTokens(toks)
+	assert False
 
 
