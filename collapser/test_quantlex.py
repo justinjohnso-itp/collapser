@@ -65,7 +65,7 @@ def test_alternatives():
 	assert toks[6].type == "TEXT"
 	assert toks[6].value == " inside it."
 
-def test_author():
+def test_author_preferred():
 	text = "[^author preferred|alt]"
 	toks = getTokens(text)
 	assert toks[0].type == "CTRLBEGIN"
@@ -73,6 +73,13 @@ def test_author():
 	assert toks[2].type == "TEXT"
 	assert toks[2].value == "author preferred"
 
+def test_always_print():
+	text = "[~always print this]"
+	toks = getTokens(text)
+	assert toks[0].type == "CTRLBEGIN"
+	assert toks[1].type == "ALWAYS"
+	assert toks[2].type == "TEXT"
+	assert toks[2].value == "always print this"
 
 
 

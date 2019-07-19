@@ -10,6 +10,7 @@ tokens = (
    'MACROEND',
    'DIVIDER',
    'AUTHOR',
+   'ALWAYS',
    'TEXT',
    'COMMENT'
 )
@@ -21,7 +22,7 @@ t_MACROBEGIN   = r'\{'
 t_MACROEND  = r'\}'
 t_DIVIDER = r'\|'
 t_AUTHOR = r'\^'
-
+t_ALWAYS = r'\~'
 
 # A regular expression rule 
 def t_TEXT(t):
