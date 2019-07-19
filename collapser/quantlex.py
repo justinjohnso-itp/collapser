@@ -105,6 +105,13 @@ def lex(text):
 			result.errorMessage = __lexState["errorMessage"]
 			break
 		if not tok: 
+			if __lexState["inCtrlSequence"]:
+				posOfCtrlStart = find_previous(text, '[', len(text)-1) - 1
+				result.isValid = False
+				result.errorLineNumber = find_line_number(text, posOfCtrlStart)
+				result.errorColumn = find_column(text, posOfCtrlStart)
+				result.errorLineText = find_line_text(text, posOfCtrlStart)
+				result.errorMessage = "No ending control sequence character"
 			break      # No more input
 		result.tokens.append(tok)
 	return result

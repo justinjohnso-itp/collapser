@@ -91,6 +91,16 @@ last character."""
 	assert len(result.tokens) == 5
 	assert result.tokens[2].value == "start of a big\nsequence that spans a number\nof lines and goes on for a\nwhile before ending"
 
+def test_no_end_ctrl():
+	text = """
+This [is] the [start of a control
+sequence that never ends, whoops,
+we should do something about
+that really."""
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	assert result.errorLineNumber == 2
+	assert result.errorColumn == 15
 
 
 
