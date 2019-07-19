@@ -21,7 +21,11 @@ def go(sourceText):
 
     sourceText = sampleData
 
-    quantlex.lex(sourceText)
+    result = quantlex.lex(sourceText)
+    if not result.isValid:
+    	print "Lexer found invalid file: %s, %s" % (result.errorLineNumber, result.errorLineText)
+    	return ""
+
     output = quantparse.parse(sourceText)
 
     print output

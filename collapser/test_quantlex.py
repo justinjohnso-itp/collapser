@@ -2,16 +2,6 @@
 import quantlex
 
 
-def getTokens(text):
-	quantlex.lexer.input(text)
-	toksList = []
-	while True:
-	    tok = quantlex.lexer.token()
-	    if not tok: 
-	        break      # No more input
-	    toksList.append(tok)
-	return toksList
-
 def dumpTokens(toks):
 	print "DUMP"
 	for pos, tok in enumerate(toks):
@@ -19,12 +9,13 @@ def dumpTokens(toks):
 
 def test_basic_count():
 	text = "This is text with [some values] inside."
-	toks = getTokens(text)
-	assert len(toks) == 5  # text, ctrlbegin, text, ctrlend, text
+	toks = quantlex.lex(text)
+	assert toks.isValid
+	assert len(toks.tokens) == 5  # text, ctrlbegin, text, ctrlend, text
 
 def test_identify_text():
 	text = "This is text."
-	toks = getTokens(text)
+	toks = quantlex.lex(text).tokens
 	assert len(toks) == 1
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "This is text."
@@ -35,7 +26,7 @@ But this is text.
 #And another # comment####.   # 
 More normal text.
 Even more normal text"""
-	toks = getTokens(text)
+	toks = quantlex.lex(text).tokens
 	assert len(toks) == 2
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "But this is text.\n"
@@ -44,14 +35,14 @@ Even more normal text"""
 
 def test_end_line_comments_ignored():
 	text = "This is text. #and this is a comment."
-	toks = getTokens(text)
+	toks = quantlex.lex(text).tokens
 	assert len(toks) == 1
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "This is text. "
 
 def test_alternatives():
 	text = "This is text with [some|alternatives] inside it."
-	toks = getTokens(text)
+	toks = quantlex.lex(text).tokens
 	assert len(toks) == 7
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "This is text with "
@@ -67,7 +58,7 @@ def test_alternatives():
 
 def test_author_preferred():
 	text = "[^author preferred|alt]"
-	toks = getTokens(text)
+	toks = quantlex.lex(text).tokens
 	assert toks[0].type == "CTRLBEGIN"
 	assert toks[1].type == "AUTHOR"
 	assert toks[2].type == "TEXT"
@@ -75,16 +66,16 @@ def test_author_preferred():
 
 def test_always_print():
 	text = "[~always print this]"
-	toks = getTokens(text)
+	toks = quantlex.lex(text).tokens
 	assert toks[0].type == "CTRLBEGIN"
 	assert toks[1].type == "ALWAYS"
 	assert toks[2].type == "TEXT"
 	assert toks[2].value == "always print this"
 
-def test_prevent_nesting():
-	text = "[don't allow [nested] sequences]"
-	toks = getTokens(text)
-	dumpTokens(toks)
-	assert False
+# def test_prevent_nesting():
+# 	text = "[don't allow [nested] sequences]"
+# 	toks = quantlex.lex(text).tokens
+# 	dumpTokens(toks)
+# 	assert False
 
 
