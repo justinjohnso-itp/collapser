@@ -111,10 +111,14 @@ really shouldn't be there."""
 	result = quantlex.lex(text)
 	assert result.isValid == False
 	assert result.errorLineNumber == 4
-	assert result.errorColumn == 30
+	assert result.errorColumn == 24
 
-
-
+def test_bad_divider_pos():
+	text = "A divider | can't be outside a [sequence]."
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	assert result.errorLineNumber == 1
+	assert result.errorColumn == 11
 
 
 

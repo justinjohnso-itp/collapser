@@ -25,7 +25,6 @@ tokens = (
 # Regular expression rules for simple tokens
 t_MACROBEGIN   = r'\{'
 t_MACROEND  = r'\}'
-t_DIVIDER = r'\|'
 t_AUTHOR = r'\^'
 t_ALWAYS = r'\~'
 
@@ -56,6 +55,16 @@ def t_CTRLEND(t):
 		pass
 	__lexState["inCtrlSequence"] = False
 	return t
+
+def t_DIVIDER(t):
+	r'\|'
+	global __lexState
+	if not __lexState["inCtrlSequence"]:
+		__lexState["flaggedBad"] = True
+		__lexState["errorMessage"] = "Divider symbol found outside [ ]"
+		pass
+	return t
+
 
 # Error handling rule
 def t_error(t):
