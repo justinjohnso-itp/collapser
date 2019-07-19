@@ -79,4 +79,23 @@ def test_prevent_nesting():
 	assert result.errorLineNumber == 1
 	assert result.errorColumn == 14
 
+def test_multiline_sequences():
+	text = """
+This is the [start of a big
+sequence that spans a number
+of lines and goes on for a
+while before ending] with the
+last character."""
+	result = quantlex.lex(text)
+	assert result.isValid
+	assert len(result.tokens) == 5
+	assert result.tokens[2].value == "start of a big\nsequence that spans a number\nof lines and goes on for a\nwhile before ending"
+
+
+
+
+
+
+
+
 
