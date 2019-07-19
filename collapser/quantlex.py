@@ -9,6 +9,7 @@ tokens = (
    'MACROBEGIN',
    'MACROEND',
    'DIVIDER',
+   'AUTHOR',
    'TEXT',
    'COMMENT'
 )
@@ -19,6 +20,7 @@ t_CTRLEND   = r'\]'
 t_MACROBEGIN   = r'\{'
 t_MACROEND  = r'\}'
 t_DIVIDER = r'\|'
+t_AUTHOR = r'\^'
 
 
 # A regular expression rule 

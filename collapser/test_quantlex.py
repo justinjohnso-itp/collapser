@@ -65,6 +65,14 @@ def test_alternatives():
 	assert toks[6].type == "TEXT"
 	assert toks[6].value == " inside it."
 
+def test_author():
+	text = "[^author preferred|alt]"
+	toks = getTokens(text)
+	assert toks[0].type == "CTRLBEGIN"
+	assert toks[1].type == "AUTHOR"
+	assert toks[2].type == "TEXT"
+	assert toks[2].value == "author preferred"
+
 
 
 
