@@ -102,7 +102,16 @@ that really."""
 	assert result.errorLineNumber == 2
 	assert result.errorColumn == 15
 
-
+def test_extra_end_ctrl():
+	text = """
+This is [a series of perfectly
+legitimate] control [seqs] but
+we've got an extra here] which
+really shouldn't be there."""
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	assert result.errorLineNumber == 4
+	assert result.errorColumn == 30
 
 
 

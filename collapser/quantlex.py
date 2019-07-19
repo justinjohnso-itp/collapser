@@ -50,6 +50,10 @@ def t_CTRLBEGIN(t):
 def t_CTRLEND(t):
 	r'\]'
 	global __lexState
+	if not __lexState["inCtrlSequence"]:
+		__lexState["flaggedBad"] = True
+		__lexState["errorMessage"] = "Unmatched closing control sequence character"
+		pass
 	__lexState["inCtrlSequence"] = False
 	return t
 
