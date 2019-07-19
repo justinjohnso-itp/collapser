@@ -23,7 +23,7 @@ t_DIVIDER = r'\|'
 
 # A regular expression rule 
 def t_TEXT(t):
-    r'[A-Za-z0-9\n\s\',\.\!]+'
+    r'[^\[\]\{\}\|\>\@\^\#\~]+'
     return t
 
 def t_COMMENT(t):
