@@ -2,10 +2,12 @@
 
 import ply.lex as lex
 
-inCtrlSequence = False
+__lexState = { "inCtrlSequence": False, "flaggedBad": False, "errorMessage": "" }
 
-__flaggedBad = False
-__errorMessage = ""
+def resetLexState():
+	__lexState["inCtrlSequence"] = False
+	__lexState["flaggedBad"] = False
+	__lexState["errorMessage"] = ""
 
 # List of token names.   This is always required
 tokens = (
@@ -37,20 +39,18 @@ def t_COMMENT(t):
 
 def t_CTRLBEGIN(t):
 	r'\['
-	global inCtrlSequence
-	global __flaggedBad
-	global __errorMessage
-	if inCtrlSequence:
-		__flaggedBad = True
-		__errorMessage = "Illegal nested control sequence"
+	global __lexState
+	if __lexState["inCtrlSequence"]:
+		__lexState["flaggedBad"] = True
+		__lexState["errorMessage"] = "Illegal nested control sequence"
 		pass
-	inCtrlSequence = True
+	__lexState["inCtrlSequence"] = True
 	return t
 
 def t_CTRLEND(t):
 	r'\]'
-	global inCtrlSequence
-	inCtrlSequence = False
+	global __lexState
+	__lexState["inCtrlSequence"] = False
 	return t
 
 # Error handling rule
@@ -88,20 +88,18 @@ class LexerResult:
 
 
 def lex(text):
+	resetLexState()
 	lexer.input(text)
 	result = LexerResult()
-	global __flaggedBad
-	global inCtrlSequence
-	inCtrlSequence = False
 	while True:
-		__flaggedBad = False
+		__lexState["flaggedBad"] = False
 		tok = lexer.token()
-		if __flaggedBad:
+		if __lexState["flaggedBad"]:
 			result.isValid = False
 			result.errorLineNumber = find_line(text, tok)
 			result.errorColumn = find_column(text, tok)
 			result.errorLineText = find_line_text(text, tok)
-			result.errorMessage = __errorMessage
+			result.errorMessage = __lexState["errorMessage"]
 			break
 		if not tok: 
 			break      # No more input
