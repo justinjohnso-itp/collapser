@@ -4,7 +4,7 @@
 
 
 from quantlex import tokens
-
+import chooser
 
 # We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
 def renderControlSequence(tokens):
@@ -15,7 +15,18 @@ def renderControlSequence(tokens):
 	if len(tokens) == 1 and tokens[0].type == "TEXT":
 		return tokens[0].value
 
-	return "(couldn't render %s:'%s')" % (tokens[0].type, tokens[0].value)
+	index = 0
+	alts = []
+	while index < len(tokens):
+		token = tokens[index]
+		if token.type == "TEXT":
+			alts.append(token.value)
+		index += 1
+		
+	result = chooser.oneOf(alts)
+	return result
+
+	# return "(couldn't render %s:'%s')" % (tokens[0].type, tokens[0].value)
 
 
 
@@ -27,15 +38,15 @@ def process(tokens):
 		token = tokens[index]
 		rendered = ""
 		if token.type == "TEXT":
-			print "Found TEXT: '%s'" % token.value
+			# print "Found TEXT: '%s'" % token.value
 			rendered = token.value
 		elif token.type == "CTRLBEGIN":
-			print "Found CTRLBEGIN: '%s'" % token.value
+			# print "Found CTRLBEGIN: '%s'" % token.value
 			ctrl_contents = []
 			index += 1
 			token = tokens[index]
 			while token.type != "CTRLEND":
-				print ", %s: %s" % (token.type, token.value)
+				# print ", %s: %s" % (token.type, token.value)
 				ctrl_contents.append(token)
 				index += 1
 				token = tokens[index]
@@ -49,7 +60,7 @@ def process(tokens):
 
 
 def parse(tokens):
-    print "** PARSING **"
+    # print "** PARSING **"
     renderedChunks = process(tokens)
     finalString = ''.join(renderedChunks)
     return finalString
