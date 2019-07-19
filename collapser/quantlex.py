@@ -84,12 +84,15 @@ class LexerResult:
 		self.errorLineNumber = -1
 		self.errorColumn = -1
 		self.errorLineText = ""
+		self.errorMessage = ""
 
 
 def lex(text):
 	lexer.input(text)
 	result = LexerResult()
 	global __flaggedBad
+	global inCtrlSequence
+	inCtrlSequence = False
 	while True:
 		__flaggedBad = False
 		tok = lexer.token()
