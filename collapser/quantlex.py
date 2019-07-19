@@ -5,8 +5,7 @@ import ply.lex as lex
 inCtrlSequence = False
 
 __flaggedBad = False
-__errorLineNumber = -1
-__errorLineText = ""
+__errorMessage = ""
 
 # List of token names.   This is always required
 tokens = (
@@ -40,13 +39,10 @@ def t_CTRLBEGIN(t):
 	r'\['
 	global inCtrlSequence
 	global __flaggedBad
-	global __errorLineNumber
-	global __errorLineText
+	global __errorMessage
 	if inCtrlSequence:
-		print("Illegal nested control sequence: '%s'" % t.value)
 		__flaggedBad = True
-		__errorLineNumber = 10
-		__errorLineText = t.value
+		__errorMessage = "Illegal nested control sequence"
 		pass
 	inCtrlSequence = True
 	return t
@@ -63,10 +59,18 @@ def t_error(t):
 	t.lexer.skip(1)
 
 
+# Compute stuff about the current lex position.
+def find_column(input, token):
+    line_start = input.rfind('\n', 0, token.lexpos) + 1
+    return (token.lexpos - line_start) + 1
 
+def find_line(input, token):
+	return input[:token.lexpos].count('\n') + 1
 
-
-
+def find_line_text(input, token):
+	line_start = input.rfind('\n', 0, token.lexpos) + 1
+	line_end = input.find('\n', line_start)
+	return input[line_start:line_end]
 
 # Build the lexer
 lexer = lex.lex()
@@ -78,19 +82,23 @@ class LexerResult:
 		self.tokens = []
 		self.isValid = True
 		self.errorLineNumber = -1
+		self.errorColumn = -1
 		self.errorLineText = ""
 
 
 def lex(text):
 	lexer.input(text)
 	result = LexerResult()
+	global __flaggedBad
 	while True:
 		__flaggedBad = False
 		tok = lexer.token()
 		if __flaggedBad:
 			result.isValid = False
-			result.errorLineNumber = __errorLineNumber
-			result.errorLineText = __errorLineText
+			result.errorLineNumber = find_line(text, tok)
+			result.errorColumn = find_column(text, tok)
+			result.errorLineText = find_line_text(text, tok)
+			result.errorMessage = __errorMessage
 			break
 		if not tok: 
 			break      # No more input

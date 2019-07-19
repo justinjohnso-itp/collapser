@@ -15,15 +15,20 @@ import quantparse
 def go(sourceText):
 
     sampleData = '''
-    This is a bunch of text with [some values] inside.
+    asdfasdf
+
+    This is a bunch of text with [some [invalidly nested] values] inside.
 
     Shazam.'''
 
     sourceText = sampleData
 
+    print "*** LEXING ***"
     result = quantlex.lex(sourceText)
+    print result.isValid
     if not result.isValid:
-    	print "Lexer found invalid file: %s, %s" % (result.errorLineNumber, result.errorLineText)
+    	caret = (" " * (result.errorColumn-1)) + "^"
+    	print "Lexer found a problem on line %d column %d: %s\n%s\n%s" % (result.errorLineNumber, result.errorColumn, result.errorMessage, result.errorLineText, caret)
     	return ""
 
     output = quantparse.parse(sourceText)
