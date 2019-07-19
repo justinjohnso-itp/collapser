@@ -9,9 +9,9 @@ def dumpTokens(toks):
 
 def test_basic_count():
 	text = "This is text with [some values] inside."
-	toks = quantlex.lex(text)
-	assert toks.isValid
-	assert len(toks.tokens) == 5  # text, ctrlbegin, text, ctrlend, text
+	result = quantlex.lex(text)
+	assert result.isValid
+	assert len(result.tokens) == 5  # text, ctrlbegin, text, ctrlend, text
 
 def test_identify_text():
 	text = "This is text."
@@ -72,10 +72,11 @@ def test_always_print():
 	assert toks[2].type == "TEXT"
 	assert toks[2].value == "always print this"
 
-# def test_prevent_nesting():
-# 	text = "[don't allow [nested] sequences]"
-# 	toks = quantlex.lex(text).tokens
-# 	dumpTokens(toks)
-# 	assert False
+def test_prevent_nesting():
+	text = "[don't allow [nested] sequences]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	assert result.errorLineNumber == 1
+	assert result.errorColumn == 14
 
 
