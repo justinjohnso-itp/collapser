@@ -49,4 +49,24 @@ def test_end_line_comments_ignored():
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "This is text. "
 
+def test_alternatives():
+	text = "This is text with [some|alternatives] inside it."
+	toks = getTokens(text)
+	assert len(toks) == 7
+	assert toks[0].type == "TEXT"
+	assert toks[0].value == "This is text with "
+	assert toks[1].type == "CTRLBEGIN"
+	assert toks[2].type == "TEXT"
+	assert toks[2].value == "some"
+	assert toks[3].type == "DIVIDER"
+	assert toks[4].type == "TEXT"
+	assert toks[4].value == "alternatives"
+	assert toks[5].type == "CTRLEND"
+	assert toks[6].type == "TEXT"
+	assert toks[6].value == " inside it."
+
+
+
+
+
 
