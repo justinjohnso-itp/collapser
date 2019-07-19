@@ -60,15 +60,18 @@ def t_error(t):
 
 
 # Compute stuff about the current lex position.
-def find_column(input, token):
-    line_start = input.rfind('\n', 0, token.lexpos) + 1
-    return (token.lexpos - line_start) + 1
+def find_column(input, pos):
+    line_start = input.rfind('\n', 0, pos) + 1
+    return (pos - line_start) + 1
 
-def find_line(input, token):
-	return input[:token.lexpos].count('\n') + 1
+def find_line_number(input, pos):
+	return input[:pos].count('\n') + 1
 
-def find_line_text(input, token):
-	line_start = input.rfind('\n', 0, token.lexpos) + 1
+def find_previous(input, txt, pos):
+	return input.rfind(txt, 0, pos) + 1
+
+def find_line_text(input, pos):
+	line_start = find_previous(input, '\n', pos)
 	line_end = input.find('\n', line_start)
 	return input[line_start:line_end]
 
@@ -96,9 +99,9 @@ def lex(text):
 		tok = lexer.token()
 		if __lexState["flaggedBad"]:
 			result.isValid = False
-			result.errorLineNumber = find_line(text, tok)
-			result.errorColumn = find_column(text, tok)
-			result.errorLineText = find_line_text(text, tok)
+			result.errorLineNumber = find_line_number(text, tok.lexpos)
+			result.errorColumn = find_column(text, tok.lexpos)
+			result.errorLineText = find_line_text(text, tok.lexpos)
 			result.errorMessage = __lexState["errorMessage"]
 			break
 		if not tok: 
