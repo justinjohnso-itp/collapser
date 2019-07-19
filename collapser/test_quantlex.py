@@ -2,22 +2,26 @@
 import quantlex
 
 
-
-
-def test_basic_count():
-	text = "This is text with [some values] inside."
+def getTokens(text):
 	quantlex.lexer.input(text)
-	tokCount = 0
+	toksList = []
 	while True:
 	    tok = quantlex.lexer.token()
 	    if not tok: 
 	        break      # No more input
-	    tokCount += 1
-	assert tokCount == 5  # text, ctrlbegin, text, ctrlend, text
+	    toksList.append(tok)
+	return toksList
+
+
+def test_basic_count():
+	text = "This is text with [some values] inside."
+	toks = getTokens(text)
+	assert len(toks) == 5  # text, ctrlbegin, text, ctrlend, text
 
 def test_identify_text():
 	text = "This is text."
-	quantlex.lexer.input(text)
-	tok = quantlex.lexer.token()
-	assert tok.type == "TEXT"
-	assert tok.value == "This is text."
+	toks = getTokens(text)
+	assert len(toks) == 1
+	assert toks[0].type == "TEXT"
+	assert toks[0].value == "This is text."
+
