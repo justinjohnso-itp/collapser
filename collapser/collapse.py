@@ -14,12 +14,7 @@ import quantparse
 # Main entry point.
 def go(sourceText):
 
-    sampleData = '''
-    asdfasdf
-
-    This is a bunch of text with [some [invalidly nested] values] inside.
-
-    Shazam.'''
+    sampleData = '''This is text with [some values] inside.'''
 
     sourceText = sampleData
 
@@ -30,7 +25,7 @@ def go(sourceText):
     	print "Lexer found a problem on line %d column %d: %s\n> %s\n%s" % (result.errorLineNumber, result.errorColumn, result.errorMessage, result.errorLineText, caret)
     	return ""
 
-    output = quantparse.parse(sourceText)
+    output = quantparse.parse(result.tokens)
 
     print output
 

@@ -1,53 +1,45 @@
 
+# Array of chunks. Each chunk is either text or a control sequence. A control sequence might have metadata and also a payload, which is an array of textons that each can have their own metadata. 
 
-import ply.yacc as yacc
+
 
 from quantlex import tokens
 
-# Assemble the final text here.
-output = ""
 
-# def p_expression_plus(p):
-#     'expression : expression PLUS term'
-    #   ^            ^        ^    ^
-    #  p[0]         p[1]     p[2] p[3]
+def renderControlSequence(tokens):
+	return "(control sequence with %d tokens)" % len(tokens)
 
+# The lexer should have guaranteed that we have a series of TEXT tokens interspersed with sequences of others nested between CTRLBEGIN and CTRLEND with no issues with nesting or incomplete tags. 
+def process(tokens):
+	output = []
+	index = 0
+	while index < len(tokens):
+		token = tokens[index]
+		rendered = ""
+		if token.type == "TEXT":
+			print "Found TEXT: '%s'" % token.value
+			rendered = token.value
+		elif token.type == "CTRLBEGIN":
+			print "Found CTRLBEGIN: '%s'" % token.value
+			ctrl_contents = []
+			index += 1
+			token = tokens[index]
+			while token.type != "CTRLEND":
+				print ", %s: %s" % (token.type, token.value)
+				ctrl_contents.append(token.value)
+				index += 1
+				token = tokens[index]
+			rendered = renderControlSequence(ctrl_contents)
 
-def p_story(p):
-	'''story :
-		| story unit'''
-	pass
+		output.append(rendered)
+		
+		index += 1
 
-def p_unit(p):
-	'''unit : normal_text
-		| control_sequence'''
-	pass
-
-def p_control_sequence(p):
-	'control_sequence : CTRLBEGIN TEXT CTRLEND'
-	print "Found control sequence"
-	global output
-	output += "(%s)" % p[2]
-
-def p_normal_text(p):
-	'normal_text : TEXT'
-	print "Found normal text"
-	global output
-	output += p[1]
-
-# Error rule for syntax errors
-def p_error(p):
-	if p:
-	    print "Syntax error in input! %s" % p
-	else:
-		print "End of File!"
+	return output
 
 
-
-
-def parse(text):
+def parse(tokens):
     print "** PARSING **"
-    parser = yacc.yacc()
-    result = parser.parse(text)
-    print result
-    return output;
+    renderedChunks = process(tokens)
+    finalString = ''.join(renderedChunks)
+    return finalString

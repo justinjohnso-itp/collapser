@@ -120,5 +120,5 @@ def test_bad_divider_pos():
 	assert result.errorLineNumber == 1
 	assert result.errorColumn == 11
 
-
+# TODO test empty control sequence []
 
