@@ -27,9 +27,8 @@ def t_TEXT(t):
     return t
 
 def t_COMMENT(t):
-    r'\#.*'
-    pass
-    # No return value. Token discarded
+    r'\#.*\n?'
+    pass # No return value. Token discarded
 
 # Error handling rule
 def t_error(t):
