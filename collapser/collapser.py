@@ -28,13 +28,13 @@ def main():
 
 	inputText = fileio.readInputFile(inputFile)
 
-	print "Here is the input:\n%s" % inputText
+	# print "Here is the input:\n%s" % inputText
 
 	collapsedText = collapse.go(inputText)
 
 	outputText = latexifier.go(collapsedText)
 
-	print "\n\nHere is the output:\n%s" % outputText
+	# print "\n\nHere is the output:\n%s" % outputText
 
 	fileio.writeOutputFile(outputFile, outputText)
 

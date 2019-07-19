@@ -4,7 +4,14 @@ import ply.yacc as yacc
 
 from quantlex import tokens
 
+# Assemble the final text here.
 output = ""
+
+# def p_expression_plus(p):
+#     'expression : expression PLUS term'
+    #   ^            ^        ^    ^
+    #  p[0]         p[1]     p[2] p[3]
+
 
 def p_story(p):
 	'''story :
