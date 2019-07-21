@@ -21,10 +21,17 @@ def renderControlSequence(tokens, params):
 	# Assume the first slot is author-preferred, unless we encounter an override token.
 	posOfAuthorPreferred = 0
 
-	# [text] means a random chance of "text" or ""
+	# [text] means a random chance of "text" or "", but if authorPreferred is true, never show it.
 	if len(tokens) == 1 and tokens[0].type == "TEXT":
-		alts.append(tokens[0].value)
 		alts.append("")
+		if not params.useAuthorPreferred:
+			alts.append(tokens[0].value)
+
+	# [^text] means always show the text if authorPreferred is true.
+	elif len(tokens) == 2 and tokens[0].type == "AUTHOR" and tokens[1].type == "TEXT":
+		alts.append(tokens[1].value)
+		if not params.useAuthorPreferred:
+			alts.append("")
 
 	else:
 		# Iterate through each token. 

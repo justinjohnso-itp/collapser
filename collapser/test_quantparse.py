@@ -6,7 +6,7 @@ import quantparse
 def parse(text, params = None):
 	lexed = quantlex.lex(text)
 	if params == None:
-		params = quantparse.ParseParams()
+		params = quantparse.ParseParams(useAuthorPreferred=False)
 	return quantparse.parse(lexed.tokens, params)
 
 def test_alts():
@@ -86,6 +86,21 @@ def test_empty_alts_in_situ():
 	for i in range(1,10):
 		assert parse(text) in options
 
+def test_single_texts():
+	text = "alpha [beta ]gamma"
+	foundY = False
+	foundN = False
+	ctr = 0
+	while ((not foundY) or (not foundN)) and ctr < 100:
+		result = parse(text)
+		if result == "alpha beta gamma":
+			foundY = True
+		if result == "alpha gamma":
+			foundN = True
+		ctr += 1
+	assert foundY
+	assert foundN
+
 def test_author_preferred():
 	text = "[A|B|C]"
 	params = quantparse.ParseParams(useAuthorPreferred=True)
@@ -112,5 +127,13 @@ def test_author_preferred():
 	for i in range(1,10):
 		assert parse(text, params) == "The author prefers no adjectives."
 
+def test_author_preferred_single():
+	text = "A[^B]C"
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	for i in range(1,10):
+		assert parse(text, params) == "ABC"
+	text = "A[B]C"
+	for i in range(1,10):
+		assert parse(text, params) == "AC"
 
 
