@@ -12,6 +12,7 @@ Problems:
 - Copy/paste from OO:
 	- Fix paragraph breaks
 	- Find italics/other formatting
+- What if we want a section break within a control sequence? That's an example of nesting.
 
 ** Basic Formatting:
 
@@ -31,7 +32,7 @@ Line break by ending line with \\ (same as Latex).
 
 Smart quotes? Putting " doesn't do them right. Manually use “ ” ? Collapser catches " ?
 ' or ’ in didn't works, but must use ’ and (other).
-
+Elipses. Replace … with Latex version.
 
 ** Basic Syntax:
 
@@ -124,16 +125,16 @@ Invoke a macro in text by wrapping it in curly braces.
 	"But {it's not} relevant"
 
 
-** Control Sequences
+** Formatting Codes
 
-The system has a number of predefined control sequences (starting with @) which are reserved words (can't be used for variables). These control formatting options. They can either take parameters or not. Complete list:
+The system has a number of predefined formatting codes to print things in certain ways. They can either take parameters or not. These can appear within control sequences and are output verbatim. Complete list:
 
-	[@eipgraph>Surely tis nobler...|William Shakespeare]
-	[@section_break]
-	[@chapter>2]
-	[@part>ONE|DOWNSTAIRS]
-	[@verse]
-	[@verse_inline]   => no pp breaks
+	<eipgraph:Surely tis nobler...|William Shakespeare>
+	<section_break>
+	<chapter:2>
+	<part:ONE|DOWNSTAIRS>
+	<verse:text>
+	<verse_inline:text>   => no pp breaks
 
 
 
