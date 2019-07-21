@@ -72,8 +72,12 @@ def process(tokens):
 
 	return output
 
+class ParseParams:
+	def __init__(self, useAuthorPreferred=False):
+		self.useAuthorPreferred = useAuthorPreferred
 
-def parse(tokens):
+# Call with an object of type ParseParams.
+def parse(tokens, parseParams):
     # print "** PARSING **"
     renderedChunks = process(tokens)
     finalString = ''.join(renderedChunks)

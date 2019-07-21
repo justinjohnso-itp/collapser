@@ -5,7 +5,8 @@ import quantparse
 
 def parse(text):
 	lexed = quantlex.lex(text)
-	return quantparse.parse(lexed.tokens)
+	params = quantparse.ParseParams()
+	return quantparse.parse(lexed.tokens, params)
 
 def test_alts():
 	text = "We could be [heroes|villains]."
