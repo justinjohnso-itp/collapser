@@ -92,7 +92,25 @@ def test_author_preferred():
 	for i in range(1,10):
 		assert parse(text, params) == "A"
 
+	text = "[^A|B|C]"
+	for i in range(1,10):
+		assert parse(text, params) == "A"
 
+	text = "[A|B|^C|D]"
+	for i in range(1,10):
+		assert parse(text, params) == "C"
+
+	text = "[A|^Z]"
+	for i in range(1,10):
+		assert parse(text, params) == "Z"
+
+	text = "[A|^|C|D|E|F|G|H|I|J|K]"
+	for i in range(1,10):
+		assert parse(text, params) == ""
+
+	text = "The author prefers no [|flowery |disgusting ]adjectives."
+	for i in range(1,10):
+		assert parse(text, params) == "The author prefers no adjectives."
 
 
 
