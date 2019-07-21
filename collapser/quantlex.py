@@ -128,14 +128,15 @@ def lex(text):
 				result.errorMessage = "No ending control sequence character"
 			break      # No more input
 		if prevTok is not -1:
-			apAfterText = tok.type == "AUTHOR" and prevTok.type == "TEXT"
-			apBeforeInvalid = tok.type != "TEXT" and tok.type != "DIVIDER" and prevTok.type == "AUTHOR"
+			onlyAllowedAtStart = ["AUTHOR", "ALWAYS"]
+			apAfterText = tok.type in onlyAllowedAtStart and prevTok.type == "TEXT"
+			apBeforeInvalid = tok.type != "TEXT" and tok.type != "DIVIDER" and prevTok.type in onlyAllowedAtStart
 			if apAfterText or apBeforeInvalid:
 				result.isValid = False
 				result.errorLineNumber = find_line_number(text, tok.lexpos)
 				result.errorColumn = find_column(text, tok.lexpos)
 				result.errorLineText = find_line_text(text, tok.lexpos)
-				result.errorMessage = "Author control char can only come at the start of a text"
+				result.errorMessage = "%s can only come at the start of a text" % tok.type
 				break
 
 		result.tokens.append(tok)
