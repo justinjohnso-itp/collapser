@@ -37,7 +37,7 @@ def renderControlSequence(tokens, params):
 				alts.append(lastText)
 				lastText = ""
 			elif token.type == "AUTHOR":
-				posOfAuthorPreferred = index
+				posOfAuthorPreferred = len(alts)
 			index += 1
 
 		# Handle being finished.
