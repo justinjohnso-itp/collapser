@@ -6,6 +6,7 @@
 from quantlex import tokens
 import chooser
 
+chanceToUseAuthorsVersion = 25
 
 # We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
 
@@ -46,7 +47,7 @@ def renderControlSequence(tokens, params):
 		elif token.type == "DIVIDER":
 			alts.append("")
 
-	if params.useAuthorPreferred:
+	if params.useAuthorPreferred or chooser.percent(chanceToUseAuthorsVersion):
 		result = alts[posOfAuthorPreferred]
 	else:
 		result = chooser.oneOf(alts)
