@@ -3,9 +3,10 @@
 import quantlex
 import quantparse
 
-def parse(text):
+def parse(text, params = None):
 	lexed = quantlex.lex(text)
-	params = quantparse.ParseParams()
+	if params == None:
+		params = quantparse.ParseParams()
 	return quantparse.parse(lexed.tokens, params)
 
 def test_alts():
@@ -84,4 +85,14 @@ def test_empty_alts_in_situ():
 	options = ["She was charming.", "She was rather charming."]
 	for i in range(1,10):
 		assert parse(text) in options
+
+def test_author_preferred():
+	text = "[A|B|C]"
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	for i in range(1,10):
+		assert parse(text, params) == "A"
+
+
+
+
 
