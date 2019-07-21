@@ -107,6 +107,7 @@ def lex(text):
 	resetLexState()
 	lexer.input(text)
 	result = LexerResult()
+	prevTok = -1
 	while True:
 		__lexState["flaggedBad"] = False
 		tok = lexer.token()
@@ -126,7 +127,19 @@ def lex(text):
 				result.errorLineText = find_line_text(text, posOfCtrlStart)
 				result.errorMessage = "No ending control sequence character"
 			break      # No more input
+		if prevTok is not -1:
+			apAfterText = tok.type == "AUTHOR" and prevTok.type == "TEXT"
+			apBeforeInvalid = tok.type != "TEXT" and tok.type != "DIVIDER" and prevTok.type == "AUTHOR"
+			if apAfterText or apBeforeInvalid:
+				result.isValid = False
+				result.errorLineNumber = find_line_number(text, tok.lexpos)
+				result.errorColumn = find_column(text, tok.lexpos)
+				result.errorLineText = find_line_text(text, tok.lexpos)
+				result.errorMessage = "Author control char can only come at the start of a text"
+				break
+
 		result.tokens.append(tok)
+		prevTok = tok
 	return result
 
 

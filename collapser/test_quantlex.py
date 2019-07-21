@@ -64,6 +64,15 @@ def test_author_preferred():
 	assert toks[2].type == "TEXT"
 	assert toks[2].value == "author preferred"
 
+# Must be followed by a text block; can't be preceeded by a text block.
+def test_bad_author_preferred():
+	text = "[cant_be_at_end^|of block]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "[cant_be_in_^middle|of block]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+
 def test_always_print():
 	text = "[~always print this]"
 	toks = quantlex.lex(text).tokens
