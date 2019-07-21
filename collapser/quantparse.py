@@ -46,6 +46,8 @@ def renderControlSequence(tokens, params):
 				lastText = ""
 			elif token.type == "AUTHOR":
 				posOfAuthorPreferred = len(alts)
+			else:
+				raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))
 			index += 1
 
 		# Handle being finished.
