@@ -2,6 +2,7 @@
 
 import quantlex
 import quantparse
+import pytest
 
 def parse(text, params = None):
 	lexed = quantlex.lex(text)
@@ -136,4 +137,13 @@ def test_author_preferred_single():
 	for i in range(1,10):
 		assert parse(text, params) == "AC"
 
+def test_always():
+	text = "[~alpha]"
+	for i in range(1,10):
+		assert parse(text) == "alpha"
+
+def test_always_is_exclusive():
+	text = "[~alpha|beta]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 
