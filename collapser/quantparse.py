@@ -61,7 +61,25 @@ class Item:
 		return self.txt
 		
 
+# A chunk will be one alternative and metadata: "alpha", "80>alpha", "45>^", "". This is always in a context where we have multiple possibilities.
+def handleAlt(altBits, alts):
+	index = 0
+	text = ""
+	ap = ""
+	prob = None
+	while index < len(altBits):
+		token = altBits[index]
+		if token.type == "TEXT":
+			text = token.value
+		elif token.type == "AUTHOR":
+			alts.setAuthorPreferred()
+		elif token.type == "NUMBER":
+			prob = token.value
+		else:
+			raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))		
+		index += 1
 
+	alts.add(text, prob)
 
 
 # We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
@@ -91,42 +109,26 @@ def renderControlSequence(tokens, params):
 		alts.add(tokens[1].value)
 
 	else:
-		# Iterate through each token. 
+		# We have a series of alternates which we want to handle individually.
 		index = 0
 		numDividers = 0
 		while index < len(tokens):
-			token = tokens[index]
-			if token.type == "TEXT":
-				alts.add(token.value)
-			elif token.type == "DIVIDER":
-				numDividers += 1
-				# Account for a case like [|alpha] where we need to add the blank space first to set the author-preferred flag.
-				if numDividers == 1 and len(alts) == 0:
-					alts.add("")
-			elif token.type == "AUTHOR":
-				alts.setAuthorPreferred()
-				# Account for an empty author-preferred spot like in [A|^|B]
-				if index + 1 < len(tokens) and tokens[index+1].type == "DIVIDER":
-					alts.add("")
-			elif token.type == "ALWAYS":
-				raise ValueError("The ALWAYS token can only be used with a single text, as in [~text]. In '%s'" % tokens)
-			elif token.type == "NUMBER":
-				prob = token.value
-				index += 1
+
+			thisAltBits = []
+
+			endBit = False
+			while not endBit and index < len(tokens):
 				token = tokens[index]
-				if token.type != "TEXT":
-					raise ValueError("A NUMBER token must be followed by a TEXT token. In '%s'" % tokens)
-				alts.add(token.value, prob)
-			else:
-				raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))
+				endBit = token.type == "DIVIDER"
+				if not endBit:
+					thisAltBits.append(token)
+					index += 1
+
+			handleAlt(thisAltBits, alts)
+
 			index += 1
 
-		# Handle extra dividers, indicating blank spaces, i.e. in
-		# [A|B|] (need one extra blank)
-		# [A|||B] (need two extra blanks)
-		expectedAlts = numDividers + 1
-		overage = expectedAlts - len(alts)
-		for _ in range(overage):
+		if token.type == "DIVIDER":
 			alts.add("")
 
 	print alts
