@@ -9,6 +9,7 @@ import chooser
 chanceToUseAuthorsVersion = 25
 
 
+
 # Create a class to store possible text alternatives we might print, and handle choosing an appropriate one.
 
 class Alts:
@@ -17,17 +18,27 @@ class Alts:
 		self.alts = []
 		self.authorPreferredPos = 0
 
-	def add(self, txt):
-		self.alts.append(txt)
+	def add(self, txt, prob=None):
+		self.alts.append(Item(txt, prob))
 
 	def setAuthorPreferred(self):
 		self.authorPreferredPos = len(self.alts)
 
 	def getAuthorPreferred(self):
-		return self.alts[self.authorPreferredPos]
+		return self.alts[self.authorPreferredPos].txt
 
 	def getRandom(self):
-		return chooser.oneOf(self.alts)
+		return chooser.oneOf(self.alts).txt
+
+
+# Create a class for a single text item with probability.
+
+class Item:
+	def __init__(self, txt, prob):
+		self.txt = txt
+		self.prob = prob
+
+
 
 
 # We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
