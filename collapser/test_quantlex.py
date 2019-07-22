@@ -152,6 +152,21 @@ def test_lex_probabilities():
 	assert toks[8].type == "TEXT"
 	assert toks[8].value == " text"
 
+def test_numbers_one_or_two_digits():
+	text = "[10>test]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	text = "[100>test]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "[999>test]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "[837183735>test]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+
+
 def test_numbers_only_parsed_in_right_place():
 	text = "I'm 40 years old! [50>alpha]"
 	toks = quantlex.lex(text).tokens
@@ -167,6 +182,9 @@ def test_numbers_only_parsed_in_right_place():
 	result = quantlex.lex(text)
 	assert result.isValid == False
 
+	text = "[alpha 50>|beta 60>]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
 
 
 
