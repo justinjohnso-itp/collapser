@@ -131,3 +131,28 @@ def test_bad_divider_pos():
 
 # TODO test empty control sequence []
 
+
+def test_lex_probabilities():
+	text = "Text [40>alpha|60>gamma] text"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert toks[0].type == "TEXT"
+	assert toks[1].type == "CTRLBEGIN"
+	assert toks[2].type == "NUMBER"
+	assert toks[2].value == 40
+	assert toks[3].type == "NUMSEP"
+	assert toks[4].type == "TEXT"
+	assert toks[4].value == "alpha"
+	assert toks[5].type == "DIVIDER"
+	assert toks[6].type == "NUMBER"
+	assert toks[6].value == 60
+	assert toks[7].type == "NUMSEP"
+	assert toks[8].type == "TEXT"
+	assert toks[8].value == "gamma"
+	assert toks[9].type == "CTRLEND"
+	assert toks[10].type == "TEXT"
+	assert toks[10].value == " text"
+
+
+

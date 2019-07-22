@@ -19,6 +19,8 @@ tokens = (
    'AUTHOR',
    'ALWAYS',
    'TEXT',
+   'NUMBER',
+   'NUMSEP',
    'COMMENT'
 )
 
@@ -27,6 +29,12 @@ t_MACROBEGIN   = r'\{'
 t_MACROEND  = r'\}'
 t_AUTHOR = r'\^'
 t_ALWAYS = r'\~'
+t_NUMSEP = r'\>'
+
+def t_ctrl_NUMBER(t):
+	r'[0-9]{1,2}'
+	t.value = int(t.value)
+	return t
 
 def t_TEXT(t):
 	r'[^\[\]\{\}\|\>\@\^\#\~]+'

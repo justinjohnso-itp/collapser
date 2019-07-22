@@ -52,6 +52,8 @@ def renderControlSequence(tokens, params):
 				posOfAuthorPreferred = len(alts)
 			elif token.type == "ALWAYS":
 				raise ValueError("The ALWAYS token can only be used with a single text, as in [~text]. In '%s'" % tokens)
+			elif token.type == "NUMBER":
+				alts.append(token.value)
 			else:
 				raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))
 			index += 1
