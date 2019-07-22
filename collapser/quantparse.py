@@ -30,6 +30,17 @@ class Alts:
 	def getRandom(self):
 		return chooser.oneOf(self.alts).txt
 
+	def __len__(self):
+		return len(self.alts)
+
+	def __str__(self):
+		output = []
+		for pos, item in enumerate(self.alts):
+			ap = "^" if pos == self.authorPreferredPos else ""
+			output.append("%s%s" % (ap, item))
+		return str(output)
+
+		# return str(list(map(lambda x: "%s%s" % ("^", x), self.alts)))
 
 # Create a class for a single text item with probability.
 
@@ -37,6 +48,12 @@ class Item:
 	def __init__(self, txt, prob):
 		self.txt = txt
 		self.prob = prob
+
+	def __str__(self):
+		if self.prob is not None:
+			return "%s>%s" % (self.prob, self.txt)
+		return self.txt
+		
 
 
 
