@@ -157,4 +157,10 @@ def test_number_values_cant_exceed_100():
 	with pytest.raises(Exception) as e_info:
 		parse(text)
 
+def test_can_use_author_preferred_with_prob():
+	text = "[80>alpha|10>beta|10>^gamma]"
+	assert parse(text) in ["alpha", "omega", "gamma"]
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	for i in range(1,10):
+		assert parse(text, params) == "gamma"
 
