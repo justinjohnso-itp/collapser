@@ -141,18 +141,18 @@ def test_lex_probabilities():
 	assert toks[1].type == "CTRLBEGIN"
 	assert toks[2].type == "NUMBER"
 	assert toks[2].value == 40
-	assert toks[3].type == "NUMSEP"
-	assert toks[4].type == "TEXT"
-	assert toks[4].value == "alpha"
-	assert toks[5].type == "DIVIDER"
-	assert toks[6].type == "NUMBER"
-	assert toks[6].value == 60
-	assert toks[7].type == "NUMSEP"
+	assert toks[3].type == "TEXT"
+	assert toks[3].value == "alpha"
+	assert toks[4].type == "DIVIDER"
+	assert toks[5].type == "NUMBER"
+	assert toks[5].value == 60
+	assert toks[6].type == "TEXT"
+	assert toks[6].value == "gamma"
+	assert toks[7].type == "CTRLEND"
 	assert toks[8].type == "TEXT"
-	assert toks[8].value == "gamma"
-	assert toks[9].type == "CTRLEND"
-	assert toks[10].type == "TEXT"
-	assert toks[10].value == " text"
+	assert toks[8].value == " text"
+
+
 
 
 
