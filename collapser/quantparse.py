@@ -6,7 +6,6 @@
 from quantlex import tokens
 import chooser
 
-chanceToUseAuthorsVersion = 25
 
 
 
@@ -35,7 +34,7 @@ class Alts:
 
 	def getRandom(self):
 		if self.probabilityTotal == 0:
-		return chooser.oneOf(self.alts).txt
+			return chooser.oneOf(self.alts).txt
 		else:
 			return chooser.distributedPick(self.alts)
 
@@ -134,7 +133,7 @@ def renderControlSequence(tokens, params):
 		if token.type == "DIVIDER":
 			alts.add("")
 
-	if params.useAuthorPreferred or chooser.percent(chanceToUseAuthorsVersion):
+	if params.useAuthorPreferred or chooser.percent(params.preferenceForAuthorsVersion):
 		result = alts.getAuthorPreferred()
 	else:
 		result = alts.getRandom()
@@ -171,8 +170,10 @@ def process(tokens, parseParams):
 	return output
 
 class ParseParams:
-	def __init__(self, useAuthorPreferred=False):
+	def __init__(self, useAuthorPreferred=False, preferenceForAuthorsVersion=25):
 		self.useAuthorPreferred = useAuthorPreferred
+		self.preferenceForAuthorsVersion = preferenceForAuthorsVersion
+
 
 # Call with an object of type ParseParams.
 def parse(tokens, parseParams):
