@@ -93,30 +93,43 @@ def renderControlSequence(tokens, params):
 	else:
 		# Iterate through each token. 
 		index = 0
-		lastText = ""
+		numDividers = 0
 		while index < len(tokens):
 			token = tokens[index]
 			if token.type == "TEXT":
-				lastText = token.value
+				alts.add(token.value)
 			elif token.type == "DIVIDER":
-				alts.add(lastText)
-				lastText = ""
+				numDividers += 1
+				# Account for a case like [|alpha] where we need to add the blank space first to set the author-preferred flag.
+				if numDividers == 1 and len(alts) == 0:
+					alts.add("")
 			elif token.type == "AUTHOR":
 				alts.setAuthorPreferred()
+				# Account for an empty author-preferred spot like in [A|^|B]
+				if index + 1 < len(tokens) and tokens[index+1].type == "DIVIDER":
+					alts.add("")
 			elif token.type == "ALWAYS":
 				raise ValueError("The ALWAYS token can only be used with a single text, as in [~text]. In '%s'" % tokens)
 			elif token.type == "NUMBER":
-				alts.add("%d" % token.value)
+				prob = token.value
+				index += 1
+				token = tokens[index]
+				if token.type != "TEXT":
+					raise ValueError("A NUMBER token must be followed by a TEXT token. In '%s'" % tokens)
+				alts.add(token.value, prob)
 			else:
 				raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))
 			index += 1
 
-		# Handle being finished.
-		if token.type == "TEXT":
-			alts.add(lastText)
-		elif token.type == "DIVIDER":
+		# Handle extra dividers, indicating blank spaces, i.e. in
+		# [A|B|] (need one extra blank)
+		# [A|||B] (need two extra blanks)
+		expectedAlts = numDividers + 1
+		overage = expectedAlts - len(alts)
+		for _ in range(overage):
 			alts.add("")
 
+	print alts
 	if params.useAuthorPreferred or chooser.percent(chanceToUseAuthorsVersion):
 		result = alts.getAuthorPreferred()
 	else:
