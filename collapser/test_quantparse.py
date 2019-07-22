@@ -147,3 +147,14 @@ def test_always_is_exclusive():
 	with pytest.raises(Exception) as e_info:
 		parse(text)
 
+def test_number_values_cant_exceed_100():
+	text = "[50>alpha|50>omega]"
+	assert parse(text) in ["alpha", "omega"]
+	text = "[50>alpha|51>omega]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+	text = "[50>alpha|50>omega|50>omega|50>omega|50>omega]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
+
