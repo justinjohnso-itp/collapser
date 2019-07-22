@@ -34,7 +34,10 @@ class Alts:
 		return self.alts[self.authorPreferredPos].txt
 
 	def getRandom(self):
+		if self.probabilityTotal == 0:
 		return chooser.oneOf(self.alts).txt
+		else:
+			return chooser.distributedPick(self.alts)
 
 	def __len__(self):
 		return len(self.alts)
