@@ -46,6 +46,7 @@ Control characters should never be ones that would appear in the manuscript. So 
 	^	Author-preferred
 	#	Comment
 	~	Always print this block.
+	+/	AND or OR
 
 Start a line with a # for a comment to be stripped/ignored.
 
