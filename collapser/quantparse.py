@@ -8,6 +8,28 @@ import chooser
 
 chanceToUseAuthorsVersion = 25
 
+
+# Create a class to store possible text alternatives we might print, and handle choosing an appropriate one.
+
+class Alts:
+
+	def __init__(self):
+		self.alts = []
+		self.authorPreferredPos = 0
+
+	def add(self, txt):
+		self.alts.append(txt)
+
+	def setAuthorPreferred(self):
+		self.authorPreferredPos = len(self.alts)
+
+	def getAuthorPreferred(self):
+		return self.alts[self.authorPreferredPos]
+
+	def getRandom(self):
+		return chooser.oneOf(self.alts)
+
+
 # We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
 
 def renderControlSequence(tokens, params):
@@ -16,26 +38,23 @@ def renderControlSequence(tokens, params):
 	if len(tokens) == 0:
 		return ""
 
-	alts = []
-
-	# Assume the first slot is author-preferred, unless we encounter an override token.
-	posOfAuthorPreferred = 0
+	alts = Alts()
 
 	# [text] means a random chance of "text" or "", but if authorPreferred is true, never show it.
 	if len(tokens) == 1 and tokens[0].type == "TEXT":
-		alts.append("")
+		alts.add("")
 		if not params.useAuthorPreferred:
-			alts.append(tokens[0].value)
+			alts.add(tokens[0].value)
 
 	# [^text] means always show the text if authorPreferred is true.
 	elif len(tokens) == 2 and tokens[0].type == "AUTHOR" and tokens[1].type == "TEXT":
-		alts.append(tokens[1].value)
+		alts.add(tokens[1].value)
 		if not params.useAuthorPreferred:
-			alts.append("")
+			alts.add("")
 
 	# [~always print this]
 	elif len(tokens) == 2 and tokens[0].type == "ALWAYS" and tokens[1].type == "TEXT":
-		alts.append(tokens[1].value)
+		alts.add(tokens[1].value)
 
 	else:
 		# Iterate through each token. 
@@ -46,31 +65,29 @@ def renderControlSequence(tokens, params):
 			if token.type == "TEXT":
 				lastText = token.value
 			elif token.type == "DIVIDER":
-				alts.append(lastText)
+				alts.add(lastText)
 				lastText = ""
 			elif token.type == "AUTHOR":
-				posOfAuthorPreferred = len(alts)
+				alts.setAuthorPreferred()
 			elif token.type == "ALWAYS":
 				raise ValueError("The ALWAYS token can only be used with a single text, as in [~text]. In '%s'" % tokens)
 			elif token.type == "NUMBER":
-				alts.append("%d" % token.value)
+				alts.add("%d" % token.value)
 			else:
 				raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))
 			index += 1
 
 		# Handle being finished.
 		if token.type == "TEXT":
-			alts.append(lastText)
+			alts.add(lastText)
 		elif token.type == "DIVIDER":
-			alts.append("")
+			alts.add("")
 
 	if params.useAuthorPreferred or chooser.percent(chanceToUseAuthorsVersion):
-		result = alts[posOfAuthorPreferred]
+		result = alts.getAuthorPreferred()
 	else:
-		result = chooser.oneOf(alts)
+		result = alts.getRandom()
 	return result
-
-	# return "(couldn't render %s:'%s')" % (tokens[0].type, tokens[0].value)
 
 
 
