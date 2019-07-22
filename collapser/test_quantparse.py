@@ -161,6 +161,78 @@ def test_can_use_author_preferred_with_prob():
 	text = "[80>alpha|10>beta|10>^gamma]"
 	assert parse(text) in ["alpha", "omega", "gamma"]
 	params = quantparse.ParseParams(useAuthorPreferred=True)
-	for i in range(1,10):
+	for i in range(10):
 		assert parse(text, params) == "gamma"
 
+def test_can_use_blanks_with_prob():
+	text = "[60>|40>pizza]"
+	foundBlank = False
+	foundPizza = False;
+	ctr = 0
+	while ((not foundBlank) or (not foundPizza)) and ctr < 100:
+		result = parse(text)
+		if result == "":
+			foundBlank = True
+		elif result == "pizza":
+			foundPizza = True
+		else:
+			assert False
+	assert foundBlank
+	assert foundPizza
+
+	text = "[65>pizza|35>]"
+	foundBlank = False
+	foundPizza = False;
+	ctr = 0
+	while ((not foundBlank) or (not foundPizza)) and ctr < 100:
+		result = parse(text)
+		if result == "":
+			foundBlank = True
+		if result == "pizza":
+			foundPizza = True
+	assert foundBlank
+	assert foundPizza
+
+def test_probability_works():
+	text = "[90>alpha|10>beta]"
+	timesA = 0
+	timesB = 0
+	for _ in range(100):
+		result = parse(text)
+		if result == "alpha":
+			timesA += 1
+		if result == "beta":
+			timesB += 1
+	assert timesA > timesB
+
+	text = "[10>alpha|90>beta]"
+	timesA = 0
+	timesB = 0
+	for _ in range(100):
+		result = parse(text)
+		if result == "alpha":
+			timesA += 1
+		if result == "beta":
+			timesB += 1
+	assert timesB > timesA
+
+def test_less_than_100_is_chance_of_blank():
+	text = "[25>alpha|35>beta]"
+	foundA = False
+	foundB = False;
+	foundBlank = False;
+	ctr = 0
+	while ((not foundA) or (not foundB) or (not foundBlank)) and ctr < 100:
+		result = parse(text)
+		if result == "":
+			foundBlank = True
+		elif result == "alpha":
+			foundA = True
+		elif result == "beta":
+			foundB = True
+	assert foundA
+	assert foundB
+	assert foundBlank
+
+
+	
