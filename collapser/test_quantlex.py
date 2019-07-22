@@ -152,6 +152,18 @@ def test_lex_probabilities():
 	assert toks[8].type == "TEXT"
 	assert toks[8].value == " text"
 
+def test_numbers_only_parsed_in_right_place():
+	text = "I'm 40 years old! [50>alpha]"
+	toks = quantlex.lex(text).tokens
+	assert toks[0].type == "TEXT"
+	assert toks[0].value == "I'm 40 years old! "
+	
+	text = "[10>I'm 50 years old.|90>I'm 90 years old.]"
+	toks = quantlex.lex(text).tokens
+	assert toks[2].value == "I'm 50 years old."
+	assert toks[5].value == "I'm 90 years old."
+
+
 
 
 
