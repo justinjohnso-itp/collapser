@@ -20,7 +20,8 @@ tokens = (
    'ALWAYS',
    'TEXT',
    'NUMBER',
-   'COMMENT'
+   'COMMENT',
+   'ERROR_LONE_GT'
 )
 
 # Regular expression rules for simple tokens
@@ -33,6 +34,12 @@ def t_NUMBER(t):
 	r'[0-9]{1,2}\>'
 	t.value = int(t.value[:-1])
 	return t
+
+def t_ERROR_LONE_GT(t):
+	r'\>'
+	__lexState["flaggedBad"] = True
+	__lexState["errorMessage"] = "Number op > appeared in unexpected spot"
+	pass
 
 def t_TEXT(t):
 	r'[^\[\]\{\}\|\>\@\^\#\~]+'

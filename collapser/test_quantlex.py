@@ -163,6 +163,10 @@ def test_numbers_only_parsed_in_right_place():
 	assert toks[2].value == "I'm 50 years old."
 	assert toks[5].value == "I'm 90 years old."
 
+	text = "[This > isn't right]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+
 
 
 
