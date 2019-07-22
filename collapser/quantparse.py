@@ -17,9 +17,15 @@ class Alts:
 	def __init__(self):
 		self.alts = []
 		self.authorPreferredPos = 0
+		self.probabilityTotal = 0
 
 	def add(self, txt, prob=None):
 		self.alts.append(Item(txt, prob))
+		if prob is not None:
+			self.probabilityTotal += prob
+			if self.probabilityTotal > 100:
+				raise ValueError("Probabilities in ctrl sequence add up to %d which is > 100: '%s'" % (self.probabilityTotal, self))
+		# print "Adding alt: list is now %s" % self
 
 	def setAuthorPreferred(self):
 		self.authorPreferredPos = len(self.alts)
