@@ -134,7 +134,6 @@ def renderControlSequence(tokens, params):
 		if token.type == "DIVIDER":
 			alts.add("")
 
-	print alts
 	if params.useAuthorPreferred or chooser.percent(chanceToUseAuthorsVersion):
 		result = alts.getAuthorPreferred()
 	else:
