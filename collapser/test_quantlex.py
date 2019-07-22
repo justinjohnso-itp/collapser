@@ -153,6 +153,12 @@ def test_lex_probabilities():
 	assert toks[8].value == " text"
 
 def test_numbers_one_or_two_digits():
+	text = "[>test]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "[1>test]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
 	text = "[10>test]"
 	result = quantlex.lex(text)
 	assert result.isValid == True
