@@ -79,7 +79,7 @@ Nesting is not allowed, though you can get around that a bit using a macro. A ta
 
 ** Probabilities
 
-You can preface an alternative by an integer between 0 and 99 and a > sign to give a percentage chance that version will be chosen. If the values don't add up to 100, show nothing the other percent of the time. If one alternative uses a number, they all must. The author-preferred indicator should go on the token, not the number
+You can preface an alternative by an integer between 0 and 99 and a > sign to give a percentage chance that version will be chosen. If the values add up to < 100, show nothing the other percent of the time. It's invalid for values to sum to > 100. If one alternative uses a number, they all must. The author-preferred indicator should go on the token, not the number
 
 	[80>alpha|10>beta|10>^gamma]
 	[50>alpha]  => (equivalent to "[alpha]")
