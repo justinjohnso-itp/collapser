@@ -1,5 +1,5 @@
 # This handles taking converting a quant document into a single possibility.
-
+# coding=utf-8
 
 
 
