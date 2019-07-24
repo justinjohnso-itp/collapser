@@ -56,7 +56,7 @@ def t_ERROR_LONE_GT(t):
 	pass
 
 def t_DEFINE(t):
-	r'DEFINE\s+'
+	r'DEFINE\s*'
 	return t
 
 def t_TEXT(t):
