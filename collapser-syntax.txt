@@ -87,11 +87,13 @@ You can preface an alternative by an integer between 0 and 99 and a > sign to gi
 
 ** Variables
 
-You can define a boolean variable, which always starts with @, by starting your line with the reserved word DEFINE (caps matter). This will be randomly set to true or false, unless you give it a probability. Author-preferred goes before the @ (which is part of the variable name). Use camelCase.
+You can define a boolean variable, which always starts with @, by starting your line with the reserved word DEFINE (caps matter). This will be randomly set to true or false, unless you give it a probability. Author-preferred goes before the @ (which is part of the variable name). 
 
 	[DEFINE @wordy]    => randomly true/false, or never true if author-preferred
 	[DEFINE 80>@wordy] => @wordy is true 80% of the time, or never if A-P.
 	[DEFINE 10>^@wordy] => @wordy is true 10% of the time, or always if A-P.
+
+Variables can contain letters, numbers, -, or _ and can't start with a number. Prefer camelCase.
 
 You can also define an enum variable by specifying multiple options numerically: these must always add up to 100.
 

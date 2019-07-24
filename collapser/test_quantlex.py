@@ -192,7 +192,16 @@ def test_numbers_only_parsed_in_right_place():
 	result = quantlex.lex(text)
 	assert result.isValid == False
 
-
+def test_variable_lexing():
+	text = "Should see [DEFINE @temp]."
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert toks[2].type == "DEFINE"
+	assert toks[3].type == "VARIABLE"
+	assert toks[3].value == "temp"
+	assert toks[5].type == "TEXT"
+	assert toks[5].value == "."
 
 
 

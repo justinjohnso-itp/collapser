@@ -21,7 +21,10 @@ tokens = (
    'TEXT',
    'NUMBER',
    'COMMENT',
-   'ERROR_LONE_GT'
+   'DEFINE',
+   'VARIABLE',
+   'ERROR_LONE_GT',
+   'ERROR_LONE_VAR'
 )
 
 # Regular expression rules for simple tokens
@@ -29,6 +32,17 @@ t_MACROBEGIN   = r'\{'
 t_MACROEND  = r'\}'
 t_AUTHOR = r'\^'
 t_ALWAYS = r'\~'
+
+def t_VARIABLE(t):
+	r'@[A-Za-z_\-][A-Za-z_\-0-9]*'
+	t.value = t.value[1:]
+	return t
+
+def t_ERROR_LONE_VAR(t):
+	r'@'
+	__lexState["flaggedBad"] = True
+	__lexState["errorMessage"] = "Variable op @ appeared but what came after was not recognized as a variable"
+	pass
 
 def t_NUMBER(t):
 	r'[0-9]{1,2}\>'
@@ -40,6 +54,10 @@ def t_ERROR_LONE_GT(t):
 	__lexState["flaggedBad"] = True
 	__lexState["errorMessage"] = "Number op > appeared in unexpected spot"
 	pass
+
+def t_DEFINE(t):
+	r'DEFINE\s+'
+	return t
 
 def t_TEXT(t):
 	r'[^\[\]\{\}\|\>\@\^\#\~]+'
