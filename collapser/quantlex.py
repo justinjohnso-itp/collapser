@@ -169,6 +169,31 @@ def lex(text):
 				result.errorLineText = find_line_text(text, tok.lexpos)
 				result.errorMessage = "%s can only come at the start of a text" % tok.type
 				break
+		if tok.type == "DEFINE" and ( prevTok is -1 or prevTok.type != "CTRLBEGIN" ):
+			result.isValid = False
+			result.errorLineNumber = find_line_number(text, tok.lexpos)
+			result.errorColumn = find_column(text, tok.lexpos)
+			result.errorLineText = find_line_text(text, tok.lexpos)
+			result.errorMessage = "DEFINE can only appear at the start of a control sequence."
+			break;
+		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type != "DEFINE" ):
+			result.isValid = False
+			result.errorLineNumber = find_line_number(text, tok.lexpos)
+			result.errorColumn = find_column(text, tok.lexpos)
+			result.errorLineText = find_line_text(text, tok.lexpos)
+			result.errorMessage = "Found a @variable but these can only come immediately after a DEFINE."
+			break;
+		if prevTok is not -1:
+			print "pt: %s, pt.type: %s, t.type: %s" % (prevTok, prevTok.type, tok.type)
+			if prevTok.type == "DEFINE" and tok.type != "VARIABLE":
+				result.isValid = False
+				result.errorLineNumber = find_line_number(text, prevTok.lexpos)
+				result.errorColumn = find_column(text, prevTok.lexpos)
+				result.errorLineText = find_line_text(text, prevTok.lexpos)
+				result.errorMessage = "DEFINE must be followed by a variable name, as in [DEFINE @var]."
+				break;
+
+
 
 		result.tokens.append(tok)
 		prevTok = tok

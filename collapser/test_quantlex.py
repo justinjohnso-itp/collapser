@@ -192,7 +192,7 @@ def test_numbers_only_parsed_in_right_place():
 	result = quantlex.lex(text)
 	assert result.isValid == False
 
-def test_variable_lexing():
+def test_define_and_variable_lexing():
 	text = "Should see [DEFINE @temp]."
 	result = quantlex.lex(text)
 	assert result.isValid == True
@@ -203,5 +203,21 @@ def test_variable_lexing():
 	assert toks[5].type == "TEXT"
 	assert toks[5].value == "."
 
+def test_bad_define_lexing():
+	text = "Can't have [80>DEFINE @test] in unexpected places."
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "Can't have [DEFINE] without a variable."
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "Can't have [DEFINE @] without a variable name."
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "Can't have [DEFINE @}] with an invalid variable name."
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "Can't have [@DEFINE @pizza}] invalid define."
+	result = quantlex.lex(text)
+	assert result.isValid == False
 
 
