@@ -169,6 +169,41 @@ def process(tokens, parseParams):
 
 	return output
 
+# Store all DEFINE definitions in "variables" and strip them from the token stream.
+
+variables = {}
+
+def handleDefines(tokens):
+	output = []
+	index = 0
+	while index < len(tokens):
+		token = tokens[index]
+		if token.type != "CTRLBEGIN":
+			output.append(token)
+			index += 1
+		else:
+			index += 1
+			token = tokens[index]
+			if token.type != "DEFINE":
+				output.append(tokens[index-1])
+				output.append(token)
+				index += 1
+			else:
+				index += 1
+				token = tokens[index]
+				assert token.type == "VARIABLE"
+				if token.value in variables:
+					raise ValueError("Variable '@%s' is defined twice." % token.value)
+				if chooser.percent(50):
+					variables[token.value] = True
+				else:
+					variables[token.value] = False
+				index += 2 # skip over final CTRLEND
+	return output
+
+
+
+
 class ParseParams:
 	def __init__(self, useAuthorPreferred=False, preferenceForAuthorsVersion=25):
 		self.useAuthorPreferred = useAuthorPreferred
@@ -178,6 +213,9 @@ class ParseParams:
 # Call with an object of type ParseParams.
 def parse(tokens, parseParams):
     # print "** PARSING **"
+    global variables
+    variables = {}
+    tokens = handleDefines(tokens)
     renderedChunks = process(tokens, parseParams)
     finalString = ''.join(renderedChunks)
     return finalString

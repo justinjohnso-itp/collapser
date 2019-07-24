@@ -220,4 +220,10 @@ def test_bad_define_lexing():
 	result = quantlex.lex(text)
 	assert result.isValid == False
 
+def test_complex_defines():
+	text = "[DEFINE @test1][DEFINE @test2]This is a test of [DEFINE @test3]stripping.[DEFINE   @test4]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert len(toks) == 18
 

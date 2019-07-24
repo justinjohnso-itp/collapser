@@ -234,5 +234,37 @@ def test_less_than_100_is_chance_of_blank():
 	assert foundB
 	assert foundBlank
 
+def test_defines_are_stripped():
+	text = "[DEFINE @test1][DEFINE @test2]This is a test of [DEFINE @test3]stripping.[DEFINE   @test4]"
+	assert parse(text) == "This is a test of stripping."
+
+def test_simple_defines_set_randomly():
+	text = "[DEFINE @test]"
+	foundY = False
+	foundN = False
+	ctr = 0
+	while ((not foundY) or (not foundN)) and ctr < 100:
+		result = parse(text)
+		if quantparse.variables["test"] == True:
+			foundY = True
+		elif quantparse.variables["test"] == False:
+			foundN = True
+		ctr += 1
+	assert foundY
+	assert foundN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	
