@@ -173,9 +173,10 @@ def process(tokens, parseParams):
 
 variables = {}
 
-def handleDefines(tokens):
+def handleDefines(tokens, params):
 	output = []
 	index = 0
+	global variables
 	while index < len(tokens):
 		token = tokens[index]
 		if token.type != "CTRLBEGIN":
@@ -191,13 +192,20 @@ def handleDefines(tokens):
 			else:
 				index += 1
 				token = tokens[index]
+				authFlag = False
+				if token.type == "AUTHOR":
+					authFlag = True
+					index += 1
+					token = tokens[index]
 				assert token.type == "VARIABLE"
 				if token.value in variables:
 					raise ValueError("Variable '@%s' is defined twice." % token.value)
-				if chooser.percent(50):
+				if params.useAuthorPreferred and authFlag:
 					variables[token.value] = True
-				else:
+				elif params.useAuthorPreferred and not authFlag:
 					variables[token.value] = False
+				else:
+					variables[token.value] = chooser.percent(50)
 				index += 2 # skip over final CTRLEND
 	return output
 
@@ -209,13 +217,16 @@ class ParseParams:
 		self.useAuthorPreferred = useAuthorPreferred
 		self.preferenceForAuthorsVersion = preferenceForAuthorsVersion
 
+	def __str__(self):
+		return "useAuthorPreferred: %s, preferenceForAuthorsVersion: %s" % (self.useAuthorPreferred, self.preferenceForAuthorsVersion)
+
 
 # Call with an object of type ParseParams.
 def parse(tokens, parseParams):
     # print "** PARSING **"
     global variables
     variables = {}
-    tokens = handleDefines(tokens)
+    tokens = handleDefines(tokens, parseParams)
     renderedChunks = process(tokens, parseParams)
     finalString = ''.join(renderedChunks)
     return finalString

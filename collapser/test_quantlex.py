@@ -227,3 +227,14 @@ def test_complex_defines():
 	toks = result.tokens
 	assert len(toks) == 18
 
+def test_define_with_author_preferred():
+	text = "Text [DEFINE ^@var] text."
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert toks[2].type == "DEFINE"
+	assert toks[3].type == "AUTHOR"
+	assert toks[4].type == "VARIABLE"
+	assert toks[4].value == "var"
+	assert toks[5].type == "CTRLEND"
+

@@ -253,6 +253,16 @@ def test_simple_defines_set_randomly():
 	assert foundY
 	assert foundN
 
+def test_simple_define_with_author_preferred():
+	text = "[DEFINE ^@test]"
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	for _ in range(100):
+		parse(text, params)
+		assert quantparse.variables["test"] == True
+	text = "[DEFINE @test]"
+	for _ in range(100):
+		parse(text, params)
+		assert quantparse.variables["test"] == False
 
 
 

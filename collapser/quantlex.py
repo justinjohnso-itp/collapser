@@ -161,7 +161,7 @@ def lex(text):
 		if prevTok is not -1:
 			onlyAllowedAtStart = ["AUTHOR", "ALWAYS"]
 			apAfterText = tok.type in onlyAllowedAtStart and prevTok.type == "TEXT"
-			apBeforeInvalid = tok.type != "TEXT" and tok.type != "DIVIDER" and prevTok.type in onlyAllowedAtStart
+			apBeforeInvalid = tok.type != "TEXT" and tok.type != "DIVIDER" and tok.type != "VARIABLE" and prevTok.type in onlyAllowedAtStart
 			if apAfterText or apBeforeInvalid:
 				result.isValid = False
 				result.errorLineNumber = find_line_number(text, tok.lexpos)
@@ -176,7 +176,7 @@ def lex(text):
 			result.errorLineText = find_line_text(text, tok.lexpos)
 			result.errorMessage = "DEFINE can only appear at the start of a control sequence."
 			break;
-		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type != "DEFINE" ):
+		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR"] ):
 			result.isValid = False
 			result.errorLineNumber = find_line_number(text, tok.lexpos)
 			result.errorColumn = find_column(text, tok.lexpos)
@@ -184,8 +184,7 @@ def lex(text):
 			result.errorMessage = "Found a @variable but these can only come immediately after a DEFINE."
 			break;
 		if prevTok is not -1:
-			print "pt: %s, pt.type: %s, t.type: %s" % (prevTok, prevTok.type, tok.type)
-			if prevTok.type == "DEFINE" and tok.type != "VARIABLE":
+			if prevTok.type == "DEFINE" and tok.type != "VARIABLE" and tok.type != "AUTHOR":
 				result.isValid = False
 				result.errorLineNumber = find_line_number(text, prevTok.lexpos)
 				result.errorColumn = find_column(text, prevTok.lexpos)
