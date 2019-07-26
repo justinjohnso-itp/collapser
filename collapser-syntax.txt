@@ -1,6 +1,6 @@
 Guidelines
 	- Syntax should be easy to type, and minimize control characters.
-	- The smallest amount of variation is a word: don't waste time making versions with alternate punctuation.
+	- The smallest amount of variation is a word: don't waste time making versions with alternate punctuation. Also don't do minor variants like dialog tags.
 	- No nesting (to prevent wasting time on sub-probabilities of sub-probabilities). Every alternative is either seen or not.
 	- Think extremely hard before using a probability less than 10.
 
@@ -112,9 +112,9 @@ Can provide values for enums also: if any omitted are true, print nothing.
 
 	[@wordy>loquaciously|@taciturn>reflectively]
 
-Can use conditional logic with + for AND or / for OR.
+Can use conditional logic with + for AND or / for OR. Or negate with ! before.
 
-	[@wordy+@lostKeys>I can't find my keys!]
+	[@wordy+!@lostKeys>I can't find my keys!]
 
 
 ** Macros
@@ -122,6 +122,10 @@ Can use conditional logic with + for AND or / for OR.
 Define these by starting with MACRO in caps, a space, the macro label. The required replacement immediately following will be used whenever the macro is expanded. 
 
 	[MACRO it's not][75>it's not|25>it isn't]
+
+If you use STICKY_MACRO, the choice will be made once and then consistently for the rest of this collapse.
+
+	[STICKY_MACRO Soda][Pepsi|Sprite|Coke]
 
 Invoke a macro in text by wrapping it in curly braces.
 
@@ -132,12 +136,12 @@ Invoke a macro in text by wrapping it in curly braces.
 
 The system has a number of predefined formatting codes to print things in certain ways. They can either take parameters or not. These can appear within control sequences and are output verbatim. Complete list:
 
-	<eipgraph:Surely tis nobler...|William Shakespeare>
-	<section_break>
-	<chapter:2>
-	<part:ONE|DOWNSTAIRS>
-	<verse:text>
-	<verse_inline:text>   => no pp breaks
+	{eipgraph:Surely tis nobler...|William Shakespeare}
+	{section_break}
+	{chapter:2}
+	{part:ONE|DOWNSTAIRS}
+	{verse:text}
+	{verse_inline:text}   => no pp breaks
 
 
 
