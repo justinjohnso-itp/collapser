@@ -154,15 +154,12 @@ def process(tokens, parseParams):
 		token = tokens[index]
 		rendered = ""
 		if token.type == "TEXT":
-			# print "Found TEXT: '%s'" % token.value
 			rendered = token.value
 		elif token.type == "CTRLBEGIN":
-			# print "Found CTRLBEGIN: '%s'" % token.value
 			ctrl_contents = []
 			index += 1
 			token = tokens[index]
 			while token.type != "CTRLEND":
-				# print ", %s: %s" % (token.type, token.value)
 				ctrl_contents.append(token)
 				index += 1
 				token = tokens[index]
