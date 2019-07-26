@@ -183,6 +183,7 @@ def checkVar(key):
 def handleDefines(tokens, params):
 	output = []
 	index = 0
+	foundAuthorPreferred = False
 	global variables
 	while index < len(tokens):
 		token = tokens[index]
@@ -199,21 +200,41 @@ def handleDefines(tokens, params):
 			continue
 		index += 1
 		token = tokens[index]
-		authFlag = False
-		if token.type == "AUTHOR":
-			authFlag = True
-			index += 1
-			token = tokens[index]
-		assert token.type == "VARIABLE"
-		if token.value in variables:
-			raise ValueError("Variable '@%s' is defined twice." % token.value)
-		if params.useAuthorPreferred and authFlag:
-			variables[token.value] = True
-		elif params.useAuthorPreferred and not authFlag:
-			variables[token.value] = False
+		alts = Alts()
+		while token.type != "CTRLEND":
+			ctrl_contents = []
+			while token.type not in ["DIVIDER", "CTRLEND"]:
+				ctrl_contents.append(token)
+				index += 1
+				token = tokens[index]
+			item = parseItem(ctrl_contents)
+			assert tokens[index-1].type == "VARIABLE"
+			if item.txt in variables:
+				raise ValueError("Variable '@%s' is defined twice." % item.txt)
+			if item.authorPreferred:
+				foundAuthorPreferred = True
+				alts.setAuthorPreferred()
+			alts.add(item.txt, item.prob)
+			variables[item.txt] = False
+
+			if token.type == "DIVIDER":
+				index += 1 
+				token = tokens[index]
+
+		if params.useAuthorPreferred and len(alts) == 1 and not foundAuthorPreferred:
+			varPicked = alts.getAuthorPreferred()
+			variables[varPicked] = False
+		elif params.useAuthorPreferred or chooser.percent(params.preferenceForAuthorsVersion):
+			varPicked = alts.getAuthorPreferred()
+			variables[varPicked] = True
+		elif len(alts) == 1:
+			varPicked = alts.getRandom()
+			variables[varPicked] = chooser.percent(50)
 		else:
-			variables[token.value] = chooser.percent(50)
-		index += 2 # skip over final CTRLEND
+			varPicked = alts.getRandom()
+			variables[varPicked] = True
+
+		index += 1 # skip over final CTRLEND
 	return output
 
 
