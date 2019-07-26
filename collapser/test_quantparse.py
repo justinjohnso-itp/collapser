@@ -266,12 +266,16 @@ def test_simple_define_with_author_preferred():
 
 def test_defines_with_probabilities():
 	text = "A [DEFINE 80>@beta|20>^@barcelona] C"
-	print text
 	params = quantparse.ParseParams(useAuthorPreferred=True)
-	parse(text, params)
-	assert quantparse.variables["barcelona"] == True
+	for _ in range(100):
+		output = parse(text, params)
+		assert quantparse.variables["barcelona"] == True
 
-
+# def test_variable_refs():
+# 	text = "[DEFINE ^@test][@test>This is a test message. ]Huzzah!"
+# 	params = quantparse.ParseParams(useAuthorPreferred=True)
+# 	result = parse(text, params)
+# 	assert result == "This is a test message. Huzzah!"
 
 
 
