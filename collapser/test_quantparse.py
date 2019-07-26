@@ -295,8 +295,30 @@ def test_defines_with_probabilities_must_sum_to_100():
 	with pytest.raises(Exception) as e_info:
 		parse(text)
 
+def test_multiple_defines_is_bad():
+	text = "[DEFINE @alpha] Some text. [@alpha>Yes.] Some more. [DEFINE 80>@beta|20>@alpha]. Some final text."
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+	text = "[DEFINE 25>@alpha|75>^@alpha]."
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 
+def test_okay_to_define_after_using():
+	text = "[@test>Test test.] Then stuff. [DEFINE ^@test]"
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	assert parse(text, params) == "Test test. Then stuff. "
 
+def test_vars_collected_and_stripped():
+	text = "[DEFINE @alpha][DEFINE 50>@beta|50>@gamma]Hello, friends![DEFINE @omega]"
+	result = parse(text)
+	keys = quantparse.showVars()
+	assert len(keys) == 4
+	assert "alpha" in keys
+	assert "beta" in keys
+	assert "gamma" in keys
+	assert "omega" in keys
+	assert result == "Hello, friends!"
+	assert quantparse.checkVar("random") == False
 
 
 # TODO test defining twice in various sneaky ways

@@ -268,6 +268,8 @@ def checkVar(key):
 		return variables[key]
 	return False
 
+def showVars():
+	return variables.keys()
 
 
 
