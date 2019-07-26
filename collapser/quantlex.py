@@ -49,6 +49,12 @@ def t_NUMBER(t):
 	t.value = int(t.value[:-1])
 	return t
 
+def t_BAD_NUMBER(t):
+	r'100'
+	__lexState["flaggedBad"] = True
+	__lexState["errorMessage"] = "Don't use NUMBER 100, just do the thing."
+	pass
+
 def t_ERROR_LONE_GT(t):
 	r'\>'
 	__lexState["flaggedBad"] = True
