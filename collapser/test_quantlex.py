@@ -311,4 +311,14 @@ def test_bad_using_defines():
 	result = quantlex.lex(text)
 	assert result.isValid == False
 
+def test_bad_variable_refs():
+	text = "[DEFINE ^@test][@test>@alpha]Huzzah!"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+
+	text = "[DEFINE ^@test][@test>]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+
+
 

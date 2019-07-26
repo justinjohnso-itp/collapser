@@ -200,7 +200,7 @@ def lex(text):
 			result.errorLineNumber = find_line_number(text, tok.lexpos)
 			result.errorColumn = find_column(text, tok.lexpos)
 			result.errorLineText = find_line_text(text, tok.lexpos)
-			result.errorMessage = "Found a @variable but these can only come immediately after a DEFINE."
+			result.errorMessage = "Found a @variable but in an unexpected spot."
 			break;
 		if prevTok is not -1:
 			if prevTok.type == "DEFINE" and tok.type not in ["VARIABLE", "AUTHOR", "NUMBER"]:
