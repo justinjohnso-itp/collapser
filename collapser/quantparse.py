@@ -175,6 +175,11 @@ def process(tokens, parseParams):
 
 variables = {}
 
+def checkVar(key):
+	if key in variables:
+		return variables[key]
+	return False
+
 def handleDefines(tokens, params):
 	output = []
 	index = 0

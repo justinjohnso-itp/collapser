@@ -245,9 +245,9 @@ def test_simple_defines_set_randomly():
 	ctr = 0
 	while ((not foundY) or (not foundN)) and ctr < 100:
 		result = parse(text)
-		if quantparse.variables["test"] == True:
+		if quantparse.checkVar("test") == True:
 			foundY = True
-		elif quantparse.variables["test"] == False:
+		elif quantparse.checkVar("test") == False:
 			foundN = True
 		ctr += 1
 	assert foundY
@@ -258,12 +258,11 @@ def test_simple_define_with_author_preferred():
 	params = quantparse.ParseParams(useAuthorPreferred=True)
 	for _ in range(100):
 		parse(text, params)
-		assert quantparse.variables["test"] == True
+		assert quantparse.checkVar("test") == True
 	text = "[DEFINE @test]"
 	for _ in range(100):
 		parse(text, params)
-		assert quantparse.variables["test"] == False
-
+		assert quantparse.checkVar("test") == False
 
 
 
