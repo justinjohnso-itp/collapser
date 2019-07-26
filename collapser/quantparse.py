@@ -19,7 +19,7 @@ class Alts:
 		self.probabilityTotal = 0
 
 	def add(self, txt, prob=None):
-		self.alts.append(Item(txt, prob))
+		self.alts.append(Item(txt, prob, False))
 		if prob is not None:
 			self.probabilityTotal += prob
 			if self.probabilityTotal > 100:
@@ -53,35 +53,37 @@ class Alts:
 # Create a class for a single text item with probability.
 
 class Item:
-	def __init__(self, txt, prob):
+	def __init__(self, txt, prob, authorPreferred):
 		self.txt = txt
 		self.prob = prob
+		self.authorPreferred = authorPreferred
 
 	def __str__(self):
+		base = "%s%s" % ("^" if self.authorPreferred else "", self.txt)
 		if self.prob is not None:
-			return "%s>%s" % (self.prob, self.txt)
-		return self.txt
+			return "%s>%s" % (self.prob, base)
+		return base
 		
 
 # A chunk will be one alternative and metadata: "alpha", "80>alpha", "45>^", "". This is always in a context where we have multiple possibilities.
-def handleAlt(altBits, alts):
+def parseItem(altBits):
 	index = 0
 	text = ""
-	ap = ""
+	ap = False
 	prob = None
 	while index < len(altBits):
 		token = altBits[index]
-		if token.type == "TEXT":
+		if token.type in ("TEXT", "VARIABLE"):
 			text = token.value
 		elif token.type == "AUTHOR":
-			alts.setAuthorPreferred()
+			ap = True
 		elif token.type == "NUMBER":
 			prob = token.value
 		else:
 			raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))		
 		index += 1
 
-	alts.add(text, prob)
+	return Item(text, prob, ap)
 
 
 # We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
@@ -126,7 +128,10 @@ def renderControlSequence(tokens, params):
 					thisAltBits.append(token)
 					index += 1
 
-			handleAlt(thisAltBits, alts)
+			item = parseItem(thisAltBits)
+			if item.authorPreferred:
+				alts.setAuthorPreferred()
+			alts.add(item.txt, item.prob)
 
 			index += 1
 
