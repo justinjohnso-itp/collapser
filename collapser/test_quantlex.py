@@ -275,6 +275,15 @@ def test_bad_define_with_probabilities():
 	text = "[DEFINE 80>|20>@test]"
 	result = quantlex.lex(text)
 	assert result.isValid == False
+	text = "[DEFINE ^80>@blurb|20>@test]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "[DEFINE 80>20>@test]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "[DEFINE 80>@test]20>@oops]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
 
 # def test_using_defines():
 # 	text = "test of [@using>defines]"

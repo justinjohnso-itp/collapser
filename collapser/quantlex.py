@@ -208,7 +208,7 @@ def lex(text):
 				result.errorLineText = find_line_text(text, prevTok.lexpos)
 				result.errorMessage = "DEFINE must be followed by a variable name, as in [DEFINE @var]."
 				break;
-		if prevTok is not -1:
+
 			if tok.type == "DIVIDER" and prevTok.type == "NUMBER" and __lexState["inDefine"]:
 				result.isValid = False
 				result.errorLineNumber = find_line_number(text, tok.lexpos)
@@ -216,6 +216,14 @@ def lex(text):
 				result.errorLineText = find_line_text(text, tok.lexpos)
 				result.errorMessage = "A divider can't immediately follow a number within a define."
 				break;
+			if __lexState["inCtrlSequence"]:
+				if tok.type == "NUMBER" and prevTok.type == "NUMBER":
+					result.isValid = False
+					result.errorLineNumber = find_line_number(text, tok.lexpos)
+					result.errorColumn = find_column(text, tok.lexpos)
+					result.errorLineText = find_line_text(text, tok.lexpos)
+					result.errorMessage = "Two numbers immediately following each other is invalid."
+
 
 
 
