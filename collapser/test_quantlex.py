@@ -256,6 +256,11 @@ def test_define_with_probabilities():
 	assert toks[8].value == "taciturn"
 	assert toks[9].type == "CTRLEND"
 
+def test_bad_define_with_probabilities():
+	text = "[DEFINE 80>|20>@test]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+
 # def test_using_defines():
 # 	text = "test of [@using>defines]"
 # 	result = quantlex.lex(text)

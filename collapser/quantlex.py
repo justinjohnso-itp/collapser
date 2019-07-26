@@ -63,6 +63,8 @@ def t_ERROR_LONE_GT(t):
 
 def t_DEFINE(t):
 	r'DEFINE\s*'
+	global __lexState
+	__lexState["inDefine"] = True
 	return t
 
 def t_TEXT(t):
@@ -91,6 +93,7 @@ def t_CTRLEND(t):
 		__lexState["errorMessage"] = "Unmatched closing control sequence character"
 		pass
 	__lexState["inCtrlSequence"] = False
+	__lexState["inDefine"] = False
 	return t
 
 def t_DIVIDER(t):
@@ -204,6 +207,14 @@ def lex(text):
 				result.errorColumn = find_column(text, prevTok.lexpos)
 				result.errorLineText = find_line_text(text, prevTok.lexpos)
 				result.errorMessage = "DEFINE must be followed by a variable name, as in [DEFINE @var]."
+				break;
+		if prevTok is not -1:
+			if tok.type == "DIVIDER" and prevTok.type == "NUMBER" and __lexState["inDefine"]:
+				result.isValid = False
+				result.errorLineNumber = find_line_number(text, tok.lexpos)
+				result.errorColumn = find_column(text, tok.lexpos)
+				result.errorLineText = find_line_text(text, tok.lexpos)
+				result.errorMessage = "A divider can't immediately follow a number within a define."
 				break;
 
 
