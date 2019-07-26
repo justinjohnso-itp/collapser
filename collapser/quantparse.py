@@ -8,6 +8,91 @@ import chooser
 
 
 
+class ParseParams:
+	def __init__(self, useAuthorPreferred=False, preferenceForAuthorsVersion=25):
+		self.useAuthorPreferred = useAuthorPreferred
+		self.preferenceForAuthorsVersion = preferenceForAuthorsVersion
+
+	def __str__(self):
+		return "useAuthorPreferred: %s, preferenceForAuthorsVersion: %s" % (self.useAuthorPreferred, self.preferenceForAuthorsVersion)
+
+
+# Call with an object of type ParseParams.
+def parse(tokens, parseParams):
+    # print "** PARSING **"
+    global variables
+    variables = {}
+    tokens = handleDefines(tokens, parseParams)
+    renderedChunks = process(tokens, parseParams)
+    finalString = ''.join(renderedChunks)
+    return finalString
+
+
+def handleDefines(tokens, params):
+	output = []
+	index = 0
+	foundAuthorPreferred = False
+	global variables
+	while index < len(tokens):
+		token = tokens[index]
+		if token.type != "CTRLBEGIN":
+			output.append(token)
+			index += 1
+			continue
+		index += 1
+		token = tokens[index]
+		if token.type != "DEFINE":
+			output.append(tokens[index-1])
+			output.append(token)
+			index += 1
+			continue
+		index += 1
+		token = tokens[index]
+		alts = Alts()
+		probTotal = 0
+		while token.type != "CTRLEND":
+			ctrl_contents = []
+			while token.type not in ["DIVIDER", "CTRLEND"]:
+				ctrl_contents.append(token)
+				index += 1
+				token = tokens[index]
+			item = parseItem(ctrl_contents)
+			assert tokens[index-1].type == "VARIABLE"
+			if item.txt in variables:
+				raise ValueError("Variable '@%s' is defined twice." % item.txt)
+			if item.authorPreferred:
+				foundAuthorPreferred = True
+				alts.setAuthorPreferred()
+			if item.prob:
+				probTotal += item.prob
+			alts.add(item.txt, item.prob)
+			variables[item.txt] = False
+
+			if token.type == "DIVIDER":
+				index += 1 
+				token = tokens[index]
+
+		if probTotal != 0 and probTotal != 100:
+			raise ValueError("Probabilities in a DEFINE must sum to 100: found %d instead. '%s'" % (probTotal, alts))
+
+		if params.useAuthorPreferred and len(alts) == 1 and not foundAuthorPreferred:
+			varPicked = alts.getAuthorPreferred()
+			variables[varPicked] = False
+		elif params.useAuthorPreferred or chooser.percent(params.preferenceForAuthorsVersion):
+			varPicked = alts.getAuthorPreferred()
+			variables[varPicked] = True
+		elif len(alts) == 1:
+			varPicked = alts.getRandom()
+			variables[varPicked] = chooser.percent(50)
+		else:
+			varPicked = alts.getRandom()
+			variables[varPicked] = True
+
+		index += 1 # skip over final CTRLEND
+	return output
+
+
+
 
 # Create a class to store possible text alternatives we might print, and handle choosing an appropriate one.
 
@@ -86,6 +171,34 @@ def parseItem(altBits):
 	return Item(text, prob, ap)
 
 
+
+
+# The lexer should have guaranteed that we have a series of TEXT tokens interspersed with sequences of others nested between CTRLBEGIN and CTRLEND with no issues with nesting or incomplete tags.
+def process(tokens, parseParams):
+	output = []
+	index = 0
+	while index < len(tokens):
+		token = tokens[index]
+		rendered = ""
+		if token.type == "TEXT":
+			rendered = token.value
+		elif token.type == "CTRLBEGIN":
+			ctrl_contents = []
+			index += 1
+			token = tokens[index]
+			while token.type != "CTRLEND":
+				ctrl_contents.append(token)
+				index += 1
+				token = tokens[index]
+			rendered = renderControlSequence(ctrl_contents, parseParams)
+
+		output.append(rendered)
+		
+		index += 1
+
+	return output
+
+
 # We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
 
 def renderControlSequence(tokens, params):
@@ -146,31 +259,6 @@ def renderControlSequence(tokens, params):
 
 
 
-# The lexer should have guaranteed that we have a series of TEXT tokens interspersed with sequences of others nested between CTRLBEGIN and CTRLEND with no issues with nesting or incomplete tags.
-def process(tokens, parseParams):
-	output = []
-	index = 0
-	while index < len(tokens):
-		token = tokens[index]
-		rendered = ""
-		if token.type == "TEXT":
-			rendered = token.value
-		elif token.type == "CTRLBEGIN":
-			ctrl_contents = []
-			index += 1
-			token = tokens[index]
-			while token.type != "CTRLEND":
-				ctrl_contents.append(token)
-				index += 1
-				token = tokens[index]
-			rendered = renderControlSequence(ctrl_contents, parseParams)
-
-		output.append(rendered)
-		
-		index += 1
-
-	return output
-
 # Store all DEFINE definitions in "variables" and strip them from the token stream.
 
 variables = {}
@@ -180,87 +268,7 @@ def checkVar(key):
 		return variables[key]
 	return False
 
-def handleDefines(tokens, params):
-	output = []
-	index = 0
-	foundAuthorPreferred = False
-	global variables
-	while index < len(tokens):
-		token = tokens[index]
-		if token.type != "CTRLBEGIN":
-			output.append(token)
-			index += 1
-			continue
-		index += 1
-		token = tokens[index]
-		if token.type != "DEFINE":
-			output.append(tokens[index-1])
-			output.append(token)
-			index += 1
-			continue
-		index += 1
-		token = tokens[index]
-		alts = Alts()
-		probTotal = 0
-		while token.type != "CTRLEND":
-			ctrl_contents = []
-			while token.type not in ["DIVIDER", "CTRLEND"]:
-				ctrl_contents.append(token)
-				index += 1
-				token = tokens[index]
-			item = parseItem(ctrl_contents)
-			assert tokens[index-1].type == "VARIABLE"
-			if item.txt in variables:
-				raise ValueError("Variable '@%s' is defined twice." % item.txt)
-			if item.authorPreferred:
-				foundAuthorPreferred = True
-				alts.setAuthorPreferred()
-			if item.prob:
-				probTotal += item.prob
-			alts.add(item.txt, item.prob)
-			variables[item.txt] = False
-
-			if token.type == "DIVIDER":
-				index += 1 
-				token = tokens[index]
-
-		if probTotal != 0 and probTotal != 100:
-			raise ValueError("Probabilities in a DEFINE must sum to 100: found %d instead. '%s'" % (probTotal, alts))
-
-		if params.useAuthorPreferred and len(alts) == 1 and not foundAuthorPreferred:
-			varPicked = alts.getAuthorPreferred()
-			variables[varPicked] = False
-		elif params.useAuthorPreferred or chooser.percent(params.preferenceForAuthorsVersion):
-			varPicked = alts.getAuthorPreferred()
-			variables[varPicked] = True
-		elif len(alts) == 1:
-			varPicked = alts.getRandom()
-			variables[varPicked] = chooser.percent(50)
-		else:
-			varPicked = alts.getRandom()
-			variables[varPicked] = True
-
-		index += 1 # skip over final CTRLEND
-	return output
 
 
 
 
-class ParseParams:
-	def __init__(self, useAuthorPreferred=False, preferenceForAuthorsVersion=25):
-		self.useAuthorPreferred = useAuthorPreferred
-		self.preferenceForAuthorsVersion = preferenceForAuthorsVersion
-
-	def __str__(self):
-		return "useAuthorPreferred: %s, preferenceForAuthorsVersion: %s" % (self.useAuthorPreferred, self.preferenceForAuthorsVersion)
-
-
-# Call with an object of type ParseParams.
-def parse(tokens, parseParams):
-    # print "** PARSING **"
-    global variables
-    variables = {}
-    tokens = handleDefines(tokens, parseParams)
-    renderedChunks = process(tokens, parseParams)
-    finalString = ''.join(renderedChunks)
-    return finalString
