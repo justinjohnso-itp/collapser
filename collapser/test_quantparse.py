@@ -6,6 +6,9 @@ import pytest
 
 def parse(text, params = None):
 	lexed = quantlex.lex(text)
+	if not lexed.isValid:
+		print lexed
+		assert False
 	if params == None:
 		params = quantparse.ParseParams(useAuthorPreferred=False)
 	return quantparse.parse(lexed.tokens, params)
