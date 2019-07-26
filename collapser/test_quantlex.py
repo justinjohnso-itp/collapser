@@ -285,7 +285,26 @@ def test_bad_define_with_probabilities():
 	result = quantlex.lex(text)
 	assert result.isValid == False
 
-# def test_using_defines():
-# 	text = "test of [@using>defines]"
-# 	result = quantlex.lex(text)
-# 	assert result.isValid == True
+def test_using_defines():
+	text = "[DEFINE @using]test of [@using>defines]."
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert toks[0].type == "CTRLBEGIN"
+	assert toks[1].type == "DEFINE"
+	assert toks[2].type == "VARIABLE"
+	assert toks[2].value == "using"
+	assert toks[3].type == "CTRLEND"
+	assert toks[4].type == "TEXT"
+	assert toks[4].value == "test of "
+	assert toks[5].type == "CTRLBEGIN"
+	assert toks[6].type == "VARIABLE"
+	assert toks[6].value == "using"
+	assert toks[7].type == "TEXT"
+	assert toks[7].value == "defines"
+	assert toks[8].type == "CTRLEND"
+	assert toks[9].type == "TEXT"
+	assert toks[9].value == "."
+
+
+
