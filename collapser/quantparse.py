@@ -187,31 +187,31 @@ def handleDefines(tokens, params):
 		if token.type != "CTRLBEGIN":
 			output.append(token)
 			index += 1
-		else:
+			continue
+		index += 1
+		token = tokens[index]
+		if token.type != "DEFINE":
+			output.append(tokens[index-1])
+			output.append(token)
+			index += 1
+			continue
+		index += 1
+		token = tokens[index]
+		authFlag = False
+		if token.type == "AUTHOR":
+			authFlag = True
 			index += 1
 			token = tokens[index]
-			if token.type != "DEFINE":
-				output.append(tokens[index-1])
-				output.append(token)
-				index += 1
-			else:
-				index += 1
-				token = tokens[index]
-				authFlag = False
-				if token.type == "AUTHOR":
-					authFlag = True
-					index += 1
-					token = tokens[index]
-				assert token.type == "VARIABLE"
-				if token.value in variables:
-					raise ValueError("Variable '@%s' is defined twice." % token.value)
-				if params.useAuthorPreferred and authFlag:
-					variables[token.value] = True
-				elif params.useAuthorPreferred and not authFlag:
-					variables[token.value] = False
-				else:
-					variables[token.value] = chooser.percent(50)
-				index += 2 # skip over final CTRLEND
+		assert token.type == "VARIABLE"
+		if token.value in variables:
+			raise ValueError("Variable '@%s' is defined twice." % token.value)
+		if params.useAuthorPreferred and authFlag:
+			variables[token.value] = True
+		elif params.useAuthorPreferred and not authFlag:
+			variables[token.value] = False
+		else:
+			variables[token.value] = chooser.percent(50)
+		index += 2 # skip over final CTRLEND
 	return output
 
 
