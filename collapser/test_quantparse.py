@@ -274,6 +274,33 @@ def test_defines_with_probabilities():
 		output = parse(text, params)
 		assert quantparse.variables["barcelona"] == True
 
+def test_defines_with_probabilities_must_sum_to_100():
+	text = "[DEFINE 80>@A|19>@B]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+	text = "[DEFINE 80>@A|21>@B]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
+	text = "[DEFINE 99>@A]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+	text = "[DEFINE 1>@A]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
+	text = "[DEFINE 10>@A|15>@B|4>@C|31>@D|38>@E|2>@F]"
+	assert parse(text) == ""
+	text = "[DEFINE 10>@A|15>@B|31>@D|38>@E|2>@F]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
+
+
+
+
+# TODO test defining twice in various sneaky ways
+
 # def test_variable_refs():
 # 	text = "[DEFINE ^@test][@test>This is a test message. ]Huzzah!"
 # 	params = quantparse.ParseParams(useAuthorPreferred=True)

@@ -201,6 +201,7 @@ def handleDefines(tokens, params):
 		index += 1
 		token = tokens[index]
 		alts = Alts()
+		probTotal = 0
 		while token.type != "CTRLEND":
 			ctrl_contents = []
 			while token.type not in ["DIVIDER", "CTRLEND"]:
@@ -214,12 +215,17 @@ def handleDefines(tokens, params):
 			if item.authorPreferred:
 				foundAuthorPreferred = True
 				alts.setAuthorPreferred()
+			if item.prob:
+				probTotal += item.prob
 			alts.add(item.txt, item.prob)
 			variables[item.txt] = False
 
 			if token.type == "DIVIDER":
 				index += 1 
 				token = tokens[index]
+
+		if probTotal != 0 and probTotal != 100:
+			raise ValueError("Probabilities in a DEFINE must sum to 100: found %d instead. '%s'" % (probTotal, alts))
 
 		if params.useAuthorPreferred and len(alts) == 1 and not foundAuthorPreferred:
 			varPicked = alts.getAuthorPreferred()
