@@ -306,5 +306,9 @@ def test_using_defines():
 	assert toks[9].type == "TEXT"
 	assert toks[9].value == "."
 
+def test_bad_using_defines():
+	text = "[DEFINE @using]test of [@using]."
+	result = quantlex.lex(text)
+	assert result.isValid == False
 
 

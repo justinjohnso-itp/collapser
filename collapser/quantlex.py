@@ -157,6 +157,7 @@ def lex(text):
 	lexer.input(text)
 	result = LexerResult()
 	prevTok = -1
+	penultTok = -1
 	while True:
 		__lexState["flaggedBad"] = False
 		tok = lexer.token()
@@ -224,11 +225,20 @@ def lex(text):
 					result.errorColumn = find_column(text, tok.lexpos)
 					result.errorLineText = find_line_text(text, tok.lexpos)
 					result.errorMessage = "Two numbers immediately following each other is invalid."
+					break;
+			if penultTok is not -1 and penultTok.type == "CTRLBEGIN" and prevTok.type == "VARIABLE" and tok.type == "CTRLEND":
+				result.isValid = False
+				result.errorLineNumber = find_line_number(text, tok.lexpos)
+				result.errorColumn = find_column(text, tok.lexpos)
+				result.errorLineText = find_line_text(text, tok.lexpos)
+				result.errorMessage = "Can't have a standalone [@variable]: must show text to print if true, i.e. [@var>hello]."
+				break;
 
 
 
 
 		result.tokens.append(tok)
+		penultTok = prevTok
 		prevTok = tok
 	return result
 
