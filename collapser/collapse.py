@@ -25,7 +25,7 @@ def go(sourceText):
     	print "Lexer found a problem on line %d column %d: %s\n> %s\n%s" % (result.errorLineNumber, result.errorColumn, result.errorMessage, result.errorLineText, caret)
     	return ""
 
-    params = quantparse.ParseParams()
+    params = quantparse.ParseParams(preferenceForAuthorsVersion = 0)
     output = quantparse.parse(result.tokens, params)
 
     print output
