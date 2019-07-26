@@ -238,3 +238,21 @@ def test_define_with_author_preferred():
 	assert toks[4].value == "var"
 	assert toks[5].type == "CTRLEND"
 
+def test_define_with_probabilities():
+	text = "Text [DEFINE 80>@wordy|20>^@taciturn] end."
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert toks[2].type == "DEFINE"
+	assert toks[3].type == "NUMBER"
+	assert toks[3].value == 80
+	assert toks[4].type == "VARIABLE"
+	assert toks[4].value == "wordy"
+	assert toks[5].type == "DIVIDER"
+	assert toks[6].type == "NUMBER"
+	assert toks[6].value == 20
+	assert toks[7].type == "AUTHOR"
+	assert toks[8].type == "VARIABLE"
+	assert toks[8].value == "taciturn"
+	assert toks[9].type == "CTRLEND"
+

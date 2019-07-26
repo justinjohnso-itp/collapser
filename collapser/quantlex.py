@@ -176,7 +176,7 @@ def lex(text):
 			result.errorLineText = find_line_text(text, tok.lexpos)
 			result.errorMessage = "DEFINE can only appear at the start of a control sequence."
 			break;
-		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR"] ):
+		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER"] ):
 			result.isValid = False
 			result.errorLineNumber = find_line_number(text, tok.lexpos)
 			result.errorColumn = find_column(text, tok.lexpos)
@@ -184,7 +184,7 @@ def lex(text):
 			result.errorMessage = "Found a @variable but these can only come immediately after a DEFINE."
 			break;
 		if prevTok is not -1:
-			if prevTok.type == "DEFINE" and tok.type != "VARIABLE" and tok.type != "AUTHOR":
+			if prevTok.type == "DEFINE" and tok.type not in ["VARIABLE", "AUTHOR", "NUMBER"]:
 				result.isValid = False
 				result.errorLineNumber = find_line_number(text, prevTok.lexpos)
 				result.errorColumn = find_column(text, prevTok.lexpos)
