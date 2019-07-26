@@ -28,6 +28,7 @@ def parse(tokens, parseParams):
     return finalString
 
 
+# Store all DEFINE definitions in "variables" and strip them from the token stream.
 def handleDefines(tokens, params):
 	output = []
 	index = 0
@@ -207,6 +208,9 @@ def renderControlSequence(tokens, params):
 	if len(tokens) == 0:
 		return ""
 
+	if tokens[0].type == "VARIABLE":
+		return renderVariable(tokens, params)
+
 	alts = Alts()
 
 	# [text] means a random chance of "text" or "", but if authorPreferred is true, never show it.
@@ -258,11 +262,20 @@ def renderControlSequence(tokens, params):
 	return result
 
 
+def renderVariable(tokens, params):
+	assert len(tokens) == 2
+	assert tokens[0].type == "VARIABLE"
+	assert tokens[1].type == "TEXT"
+	varName = tokens[0].value
+	text = tokens[1].value
+	if checkVar(varName):
+		return text
+	return ""
 
-# Store all DEFINE definitions in "variables" and strip them from the token stream.
 
 variables = {}
 
+# Note that this can be false EITHER if the variable has never been defined OR if it was set to false.
 def checkVar(key):
 	if key in variables:
 		return variables[key]

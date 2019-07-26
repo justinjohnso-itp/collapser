@@ -320,14 +320,14 @@ def test_vars_collected_and_stripped():
 	assert result == "Hello, friends!"
 	assert quantparse.checkVar("random") == False
 
-
-# TODO test defining twice in various sneaky ways
-
-# def test_variable_refs():
-# 	text = "[DEFINE ^@test][@test>This is a test message. ]Huzzah!"
-# 	params = quantparse.ParseParams(useAuthorPreferred=True)
-# 	result = parse(text, params)
-# 	assert result == "This is a test message. Huzzah!"
+def test_variable_refs():
+	text = "[DEFINE ^@test][@test>This is a test message. ]Huzzah!"
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	result = parse(text, params)
+	assert result == "This is a test message. Huzzah!"
+	params = quantparse.ParseParams(useAuthorPreferred=False)
+	result = parse(text, params)
+	assert result == "Huzzah!"
 
 
 
