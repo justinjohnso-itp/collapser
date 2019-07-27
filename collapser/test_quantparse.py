@@ -299,9 +299,8 @@ def test_macro_defs_are_recognized_and_stripped():
 	text = "[MACRO test macro][~always show this]"
 	result = parse(text)
 	assert result == ""
-	params = quantparse.ParseParams()
-	result = quantparse.macros.renderMacro("test macro", params)
-	assert result == "always show this"
+	assert quantparse.macros.isMacro("test macro") == True
+	assert quantparse.macros.isMacro("nonsense") == False
 
 def test_invalid_macro_def():
 	text = "[MACRO test] A macro always must be followed by a CtrlSeq"
