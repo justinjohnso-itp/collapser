@@ -20,3 +20,4 @@ def test_seed():
 		assert chooser.oneOf(options) == fixedResult1
 		assert chooser.oneOf(options) == fixedResult2
 		assert chooser.oneOf(options) == fixedResult3
+	chooser.unSeed()

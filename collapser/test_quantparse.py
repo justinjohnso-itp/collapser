@@ -162,7 +162,7 @@ def test_number_values_cant_exceed_100():
 
 def test_can_use_author_preferred_with_prob():
 	text = "[80>alpha|10>beta|10>^gamma]"
-	assert parse(text) in ["alpha", "omega", "gamma"]
+	assert parse(text) in ["alpha", "beta", "gamma"]
 	params = quantparse.ParseParams(useAuthorPreferred=True)
 	for i in range(10):
 		assert parse(text, params) == "gamma"

@@ -12,6 +12,9 @@ def percent(odds):
 def setSeed(num):
 	random.seed(num)
 
+def unSeed():
+	random.seed()
+
 # Alts is an array of quantparse.Item, each of which has a "txt" and "prob". Prob is the percent chance that option will be chosen.
 def distributedPick(alts):
 	pick = random.randint(1,100)
