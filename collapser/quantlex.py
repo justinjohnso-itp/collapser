@@ -60,7 +60,8 @@ def t_ERROR_LONE_GT(t):
 	pass
 
 def t_MACRO(t):
-	r'MACRO\s*'
+	r'(MACRO|STICKY_MACRO)\s*'
+	t.value = t.value.rstrip()
 	return t
 
 def t_DEFINE(t):

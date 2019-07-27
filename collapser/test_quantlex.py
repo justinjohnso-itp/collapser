@@ -373,6 +373,20 @@ def test_macro_triggers_lex_as_text():
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == '''Some {macro trigger} fun'''
 
-
+def test_lex_sticky_macro():
+	text = "[STICKY_MACRO fun times]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert len(toks) == 4
+	assert toks[0].type == "CTRLBEGIN"
+	assert toks[1].type == "MACRO"
+	assert toks[1].value == "STICKY_MACRO"
+	assert toks[2].type == "TEXT"
+	assert toks[2].value == "fun times"
+	assert toks[3].type == "CTRLEND"
+	text = "[MACRO fun times]"
+	toks = quantlex.lex(text).tokens
+	assert toks[1].value == "MACRO"
 
 
