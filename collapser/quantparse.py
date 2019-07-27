@@ -345,6 +345,7 @@ def replaceMacros(text, params):
 			raise ValueError("Unrecognized macro {%s}" % key)
 		rendered = renderControlSequence(exp, params)
 		text = text[:startPos] + rendered + text[endPos+1:]
+		# print "s: %d, e: %d, exp: %s, ren: %s, text: '%s'" % (startPos, endPos, exp, rendered, text)
 		oldStartPos = startPos
 		startPos = text.find(mStart, startPos)
 		if oldStartPos == startPos:

@@ -332,8 +332,11 @@ def test_macro_bad():
 		parse(text)
 
 def test_macro_expansions():
-	text = '''[MACRO options][alpha|beta]{options}'''
-	verifyEachIsFound(["alpha", "beta"], text)
+	text = '''[MACRO options][alpha|beta|gamma|]{options}'''
+	verifyEachIsFound(["alpha", "beta", "gamma", ""], text)
+	text = '''[MACRO a1][A|B][MACRO a2][C|D]{a1}{a2}'''
+	verifyEachIsFound(["AC", "AD", "BC", "BD"], text)
+
 
 def test_nested_macros():
 	text = '''[DEFINE ^@alpha][@alpha>{mactest}][MACRO mactest][~beta]'''
@@ -344,8 +347,18 @@ def test_nested_macros():
 	result = parse(text, params)
 	assert result == "Aaron Alda, Aaron Alda"
 
+def test_more_nested_macros():
+	text = '''[MACRO alpha][~apple {beta}][MACRO beta][~bear {cappa}][MACRO cappa][@delta>dog][DEFINE ^@delta]{alpha}'''
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	result = parse(text, params)
+	assert result == "apple bear dog"
+	text = '''{alpha}[MACRO alpha][~apple {beta}][MACRO beta][~bear {cappa}][MACRO cappa][@delta>dog][DEFINE ^@delta]'''
+	result = parse(text, params)
+	assert result == "apple bear dog"
+	text = '''[MACRO alpha][~apple {beta}]{alpha}[MACRO beta][~bear {cappa}][MACRO cappa][@delta>dog][DEFINE ^@delta]'''
+	result = parse(text, params)
+	assert result == "apple bear dog"
 
-# TODO test nested macros.
 
 
 
