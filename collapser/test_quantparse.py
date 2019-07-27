@@ -13,6 +13,23 @@ def parse(text, params = None):
 		params = quantparse.ParseParams(useAuthorPreferred=False)
 	return quantparse.parse(lexed.tokens, params)
 
+def verifyOneOrOther(optA, optB, text):
+	foundA = False
+	foundB = False
+	ctr = 0
+	while ((not foundA) or (not foundB)) and ctr < 100:
+		result = parse(text)
+		if result == optA:
+			foundA = True
+		elif result == optB:
+			foundB = True
+		else:
+			assert result == "Expected '%s' or '%s'" % (optA, optB)
+		ctr += 1
+	assert foundA
+	assert foundB
+
+
 def test_alts():
 	text = "We could be [heroes|villains]."
 	options = ["We could be heroes.", "We could be villains."]
@@ -92,18 +109,7 @@ def test_empty_alts_in_situ():
 
 def test_single_texts():
 	text = "alpha [beta ]gamma"
-	foundY = False
-	foundN = False
-	ctr = 0
-	while ((not foundY) or (not foundN)) and ctr < 100:
-		result = parse(text)
-		if result == "alpha beta gamma":
-			foundY = True
-		if result == "alpha gamma":
-			foundN = True
-		ctr += 1
-	assert foundY
-	assert foundN
+	verifyOneOrOther("alpha beta gamma", "alpha gamma", text)
 
 def test_author_preferred():
 	text = "[A|B|C]"
@@ -169,32 +175,9 @@ def test_can_use_author_preferred_with_prob():
 
 def test_can_use_blanks_with_prob():
 	text = "[60>|40>pizza]"
-	foundBlank = False
-	foundPizza = False;
-	ctr = 0
-	while ((not foundBlank) or (not foundPizza)) and ctr < 100:
-		result = parse(text)
-		if result == "":
-			foundBlank = True
-		elif result == "pizza":
-			foundPizza = True
-		else:
-			assert False
-	assert foundBlank
-	assert foundPizza
-
+	verifyOneOrOther("", "pizza", text)
 	text = "[65>pizza|35>]"
-	foundBlank = False
-	foundPizza = False;
-	ctr = 0
-	while ((not foundBlank) or (not foundPizza)) and ctr < 100:
-		result = parse(text)
-		if result == "":
-			foundBlank = True
-		if result == "pizza":
-			foundPizza = True
-	assert foundBlank
-	assert foundPizza
+	verifyOneOrOther("", "pizza", text)
 
 def test_probability_works():
 	text = "[90>alpha|10>beta]"
@@ -389,6 +372,9 @@ def test_macro_bad():
 	with pytest.raises(Exception) as e_info:
 		parse(text)
 
+def test_macro_expansions():
+	text = '''[MACRO options][alpha|beta]{options}'''
+	verifyOneOrOther("alpha", "beta", text)
 
 def test_nested_macros():
 	text = '''[DEFINE ^@alpha][@alpha>{mactest}][MACRO mactest][~beta]'''
