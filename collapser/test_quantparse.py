@@ -342,6 +342,8 @@ def test_macro_expansions():
 	verifyEachIsFound(["alpha", "beta", "gamma", ""], text)
 	text = '''[MACRO a1][A|B][MACRO a2][C|D]{a1}{a2}'''
 	verifyEachIsFound(["AC", "AD", "BC", "BD"], text)
+	text = '''[MACRO a1][50>alpha|25>cappa]{a1}'''
+	verifyEachIsFound(["alpha", "cappa", ""], text)
 
 
 def test_nested_macros():
@@ -365,7 +367,13 @@ def test_more_nested_macros():
 	result = parse(text, params)
 	assert result == "apple bear dog"
 
+def test_layered_macros():
+	text = '''[MACRO alpha][@zetta>Use {beta} macro.][MACRO beta][@yotta>this is yotta|not yotta][DEFINE ^@zetta][DEFINE @yotta]{alpha}'''
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	result = parse(text, params)
+	assert result == "Use not yotta macro."
 
+# def guard against recursive macros?
 
 
 
