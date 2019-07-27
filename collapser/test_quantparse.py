@@ -347,6 +347,15 @@ def test_parse_variable_with_backward_else():
 	result = parse(text, params)
 	assert result == "A else text only C"
 
+def test_macro_defs_are_recognized_and_stripped():
+	text = "[MACRO test macro][~always show this]"
+	result = parse(text)
+	assert result == ""
+	macro = quantparse.getMacro("test macro")
+	assert len(macro) == 2
+	assert macro[0].type == "ALWAYS"
+	assert macro[1].type == "TEXT"
+	assert macro[1].value == "always show this"
 
 
 

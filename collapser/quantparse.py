@@ -22,10 +22,52 @@ def parse(tokens, parseParams):
     # print "** PARSING **"
     global variables
     variables = {}
+    global macros
+    macros = {}
     tokens = handleDefines(tokens, parseParams)
+    tokens = handleMacroDefs(tokens, parseParams)
     renderedChunks = process(tokens, parseParams)
     finalString = ''.join(renderedChunks)
     return finalString
+
+def handleMacroDefs(tokens, params):
+	output = []
+	index = 0
+	global macros
+	while index < len(tokens):
+		token = tokens[index]
+		if token.type != "CTRLBEGIN":
+			output.append(token)
+			index += 1
+			continue
+		index += 1
+		token = tokens[index]
+		if token.type != "MACRO":
+			output.append(tokens[index-1])
+			output.append(token)
+			index += 1
+			continue
+		index += 1
+		token = tokens[index]
+		assert token.type == "TEXT"
+		if token.value in macros:
+			raise ValueError("Macro '@%s' is defined twice." % token.value)
+		macroKey = token.value
+		assert tokens[index+1].type == "CTRLEND"
+		assert tokens[index+2].type == "CTRLBEGIN"
+		index += 3
+		token = tokens[index]
+		macroBody = []
+		while token.type != "CTRLEND":
+			macroBody.append(token)
+			index += 1
+			token = tokens[index]
+
+		addMacro(macroKey, macroBody)
+		print "In macro key '%s', storing CtrlSeq: %s" % (macroKey, macroBody)
+		index += 1 # skip over final CTRLEND
+
+	return output
 
 
 # Store all DEFINE definitions in "variables" and strip them from the token stream.
@@ -299,5 +341,13 @@ def showVars():
 	return variables.keys()
 
 
+macros = {}
 
+def addMacro(key, body):
+	macros[key] = body
+
+def getMacro(key):
+	if key in macros:
+		return macros[key]
+	return []
 
