@@ -1,4 +1,4 @@
-
+# coding=utf-8
 
 import quantlex
 import quantparse
@@ -380,6 +380,53 @@ def test_sticky_macro():
 	text = '''[STICKY_MACRO Soda][25>Sprite|25>Pepsi|25>Coke|25>Fresca]{Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda}'''
 	result = parse(text, params).split()
 	assert result[0] == result[1] and result[1] == result[2] and result[2] == result[3] and result[3] == result[4] and result[4] == result[5] and result[5] == result[6] and result[6] == result[7] and result[7] == result[8] and result[8] == result[9]
+
+def test_long_passages():
+	text = '''
+
+# Pick one of two significant moments: either a spiral hallway that one of them doesn't see, or Niko almost falling and Ryan having to talk him to safety.
+
+[DEFINE 50>@spiralhall|50>@nikofalls]
+
+# Optionally include an extra sequence exploring a weird example of architecture.
+
+[DEFINE 34>@noch8extra|33>@hamsterwheel|33>@stageladder]
+
+“So it's progress, right?” Niko was saying. We were in the [funny|oddly]-shaped room behind the closet [@spiralhall>with the spiral hall ][@hamsterwheel>and a hamster wheel ]and {stuff was cool}.
+
+[MACRO stuff was cool][stuff was real cool|it was okay|I guess stuff was nice]
+'''
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	result = parse(text, params)
+	expected = '''
+
+
+
+
+
+
+
+“So it's progress, right?” Niko was saying. We were in the funny-shaped room behind the closet with the spiral hall and stuff was real cool.
+
+
+'''
+	assert result == expected
+
+	text = '''grappling hooks [we found at|from] the sporting goods store. The box called them “{Grapples},” which seemed incongruously cheerful.
+
+[STICKY_MACRO Grapples][Grapple Buddies|Grip Monkeys]
+
+[DEFINE ^@canyons]
+[@canyons>Niko took me up into the canyons to teach me some climbing and test the {Grapples}. It felt strange to leave the house, breathe hot air and smell external things, outside things, moss and leaves and rain. Climbing didn't come naturally to me but Niko was patient and a good teacher, and knew his knots and technique. By the time we were loading our packs for the next expedition, I felt reasonably confident I wouldn't immediately kill us both.]'''
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	result = parse(text, params)
+	expected = '''grappling hooks we found at the sporting goods store. The box called them “Grapple Buddies,” which seemed incongruously cheerful.
+
+
+
+
+Niko took me up into the canyons to teach me some climbing and test the Grapple Buddies. It felt strange to leave the house, breathe hot air and smell external things, outside things, moss and leaves and rain. Climbing didn't come naturally to me but Niko was patient and a good teacher, and knew his knots and technique. By the time we were loading our packs for the next expedition, I felt reasonably confident I wouldn't immediately kill us both.'''
+	assert result == expected
 
 
 
