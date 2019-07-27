@@ -14,9 +14,8 @@ import quantparse
 # Main entry point.
 def go(sourceText):
 
-    sampleData = '''This is text with [some values] inside.'''
-
-    sourceText = sampleData
+    # sampleData = '''[MACRO alpha][@zetta>Use {beta} macro.][MACRO beta][@yotta>this is yotta|not yotta][DEFINE ^@zetta][DEFINE @yotta]{alpha}'''
+    # sourceText = sampleData
 
     print "*** LEXING ***"
     result = quantlex.lex(sourceText)
@@ -25,10 +24,9 @@ def go(sourceText):
     	print "Lexer found a problem on line %d column %d: %s\n> %s\n%s" % (result.errorLineNumber, result.errorColumn, result.errorMessage, result.errorLineText, caret)
     	return ""
 
-    params = quantparse.ParseParams(preferenceForAuthorsVersion = 0)
+    params = quantparse.ParseParams(preferenceForAuthorsVersion = 20, useAuthorPreferred = False)
     output = quantparse.parse(result.tokens, params)
 
-    print output
+    # print output
 
-    outputText = sourceText
-    return outputText
+    return output
