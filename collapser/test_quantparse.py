@@ -13,9 +13,11 @@ def parse(text, params = None):
 		params = quantparse.ParseParams(useAuthorPreferred=False)
 	return quantparse.parse(lexed.tokens, params)
 
+# When sent an array like ["A", "B", "C"] and a test to parse, will fail if after a large number of attempts to parse it hasn't seen each option appear as a parse result.
 def verifyEachIsFound(opts, text):
 	found = {}
 	ctr = 0
+	timesToTry = 100
 	for key in opts:
 		found[key] = False
 
@@ -25,7 +27,7 @@ def verifyEachIsFound(opts, text):
 				return True
 		return False
 
-	while anyNotFound() and ctr < 100:
+	while anyNotFound() and ctr < timesToTry:
 		result = parse(text)
 		for pos, key in enumerate(opts):
 			if result == opts[pos]:
@@ -35,7 +37,8 @@ def verifyEachIsFound(opts, text):
 		ctr += 1
 
 	for key in found:
-		assert found[key] == True
+		if found[key] == False:
+			assert "not found" == key
 
 
 def test_alts():
