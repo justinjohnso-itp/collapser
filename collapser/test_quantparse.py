@@ -365,12 +365,18 @@ def test_invalid_macro_def():
 	with pytest.raises(Exception) as e_info:
 		parse(text)
 
-	
+def test_macro_expansion():
+	text = '''[MACRO test][~always show this]Hello, and {test}.'''
+	result = parse(text)
+	assert result == "Hello, and always show this."	
+	text = '''Thank you, and {bye}.[MACRO bye][~goodnight]'''
+	result = parse(text)
+	assert result == "Thank you, and goodnight."	
 
 
 # TODO macros never defined, defined after usage
 
-
+# TODO test nested macros.
 
 
 

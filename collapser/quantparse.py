@@ -27,7 +27,10 @@ def parse(tokens, parseParams):
     tokens = handleDefines(tokens, parseParams)
     tokens = handleMacroDefs(tokens, parseParams)
     renderedChunks = process(tokens, parseParams)
-    finalString = ''.join(renderedChunks)
+
+    renderedString = ''.join(renderedChunks)
+
+    finalString = renderedString
     return finalString
 
 def handleMacroDefs(tokens, params):
@@ -225,6 +228,14 @@ def process(tokens, parseParams):
 		rendered = ""
 		if token.type == "TEXT":
 			rendered = token.value
+		elif token.type == "FMTBEGIN":
+			index += 1
+			token = tokens[index]
+			exp = getMacro(token.value)
+			if len(exp) == 0:
+				raise ValueError("Unrecognized macro {%s}" % token.value)
+			rendered = renderControlSequence(exp, parseParams)
+			index += 1 # FMTEND
 		elif token.type == "CTRLBEGIN":
 			ctrl_contents = []
 			index += 1
