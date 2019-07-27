@@ -13,21 +13,29 @@ def parse(text, params = None):
 		params = quantparse.ParseParams(useAuthorPreferred=False)
 	return quantparse.parse(lexed.tokens, params)
 
-def verifyOneOrOther(optA, optB, text):
-	foundA = False
-	foundB = False
+def verifyEachIsFound(opts, text):
+	found = {}
 	ctr = 0
-	while ((not foundA) or (not foundB)) and ctr < 100:
+	for key in opts:
+		found[key] = False
+
+	def anyNotFound():
+		for key in found:
+			if found[key] == False:
+				return True
+		return False
+
+	while anyNotFound() and ctr < 100:
 		result = parse(text)
-		if result == optA:
-			foundA = True
-		elif result == optB:
-			foundB = True
-		else:
-			assert result == "Expected '%s' or '%s'" % (optA, optB)
+		for pos, key in enumerate(opts):
+			if result == opts[pos]:
+				found[key] = True
+		if result not in opts:
+			assert result == "Expected one of '%s'" % opts
 		ctr += 1
-	assert foundA
-	assert foundB
+
+	for key in found:
+		assert found[key] == True
 
 
 def test_alts():
@@ -109,7 +117,7 @@ def test_empty_alts_in_situ():
 
 def test_single_texts():
 	text = "alpha [beta ]gamma"
-	verifyOneOrOther("alpha beta gamma", "alpha gamma", text)
+	verifyEachIsFound(["alpha beta gamma", "alpha gamma"], text)
 
 def test_author_preferred():
 	text = "[A|B|C]"
@@ -175,9 +183,9 @@ def test_can_use_author_preferred_with_prob():
 
 def test_can_use_blanks_with_prob():
 	text = "[60>|40>pizza]"
-	verifyOneOrOther("", "pizza", text)
+	verifyEachIsFound(["", "pizza"], text)
 	text = "[65>pizza|35>]"
-	verifyOneOrOther("", "pizza", text)
+	verifyEachIsFound(["", "pizza"], text)
 
 def test_probability_works():
 	text = "[90>alpha|10>beta]"
@@ -374,7 +382,7 @@ def test_macro_bad():
 
 def test_macro_expansions():
 	text = '''[MACRO options][alpha|beta]{options}'''
-	verifyOneOrOther("alpha", "beta", text)
+	verifyEachIsFound(["alpha", "beta"], text)
 
 def test_nested_macros():
 	text = '''[DEFINE ^@alpha][@alpha>{mactest}][MACRO mactest][~beta]'''
