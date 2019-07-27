@@ -1,44 +1,40 @@
 
 import quantparse
 
-macros = {}
-sticky_macro_originals = {}
-sticky_macro_rendered = {}
+class Macros:
+	def __init__(self):
+		self.macros = {}
+		self.sticky_macro_originals = {}
+		self.sticky_macro_rendered = {}
+
+__m = Macros()
 
 def reset():
-	global macros
-	global sticky_macro_originals
-	global sticky_macro_rendered
-	macros = {}
-	sticky_macro_originals = {}
-	sticky_macro_rendered = {}
+	global __m
+	__m = Macros()
 
 def isMacro(key):
-	global macros
-	global sticky_macro_originals
-	return key in macros or key in sticky_macro_originals
+	global __m
+	return key in __m.macros or key in __m.sticky_macro_originals
 
 def addMacro(isSticky, key, body):
-	global macros
-	global sticky_macro_originals
+	global __m
 	if isSticky:
-		sticky_macro_originals[key] = body
+		__m.sticky_macro_originals[key] = body
 	else:
-		macros[key] = body
+		__m.macros[key] = body
 
 def renderMacro(key, params):
-	global macros
-	global sticky_macro_originals
-	global sticky_macro_rendered
-	if key in sticky_macro_rendered:
-		return sticky_macro_rendered[key]
-	elif key in sticky_macro_originals:
-		thingToRender = sticky_macro_originals[key]
+	global __m
+	if key in __m.sticky_macro_rendered:
+		return __m.sticky_macro_rendered[key]
+	elif key in __m.sticky_macro_originals:
+		thingToRender = __m.sticky_macro_originals[key]
 		result = quantparse.renderControlSequence(thingToRender, params)
-		sticky_macro_rendered[key] = result
+		__m.sticky_macro_rendered[key] = result
 		return result
-	elif key in macros:
-		thingToRender = macros[key]
+	elif key in __m.macros:
+		thingToRender = __m.macros[key]
 		result = quantparse.renderControlSequence(thingToRender, params)
 		return result
 	else:		
