@@ -325,11 +325,18 @@ def test_variable_refs():
 	params = quantparse.ParseParams(useAuthorPreferred=True)
 	result = parse(text, params)
 	assert result == "This is a test message. Huzzah!"
-	params = quantparse.ParseParams(useAuthorPreferred=False)
+	text = "[DEFINE @test][@test>This is a test message. ]Huzzah!"
 	result = parse(text, params)
 	assert result == "Huzzah!"
 
-
+def test_parse_variable_with_else():
+	text = "A [DEFINE @test][@test>if text|else text] C"
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	result = parse(text, params)
+	assert result == "A else text C"
+	text = "A [DEFINE ^@test][@test>if text|else text] C"
+	result = parse(text, params)
+	assert result == "A if text C"
 
 
 

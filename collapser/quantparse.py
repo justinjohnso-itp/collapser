@@ -263,14 +263,17 @@ def renderControlSequence(tokens, params):
 
 
 def renderVariable(tokens, params):
-	assert len(tokens) == 2
 	assert tokens[0].type == "VARIABLE"
 	assert tokens[1].type == "TEXT"
 	varName = tokens[0].value
 	text = tokens[1].value
 	if checkVar(varName):
 		return text
-	return ""
+	if len(tokens) == 2:
+		return ""
+	assert tokens[2].type == "DIVIDER"
+	assert tokens[3].type == "TEXT"
+	return tokens[3].value
 
 
 variables = {}
