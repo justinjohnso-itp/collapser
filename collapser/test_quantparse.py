@@ -56,53 +56,15 @@ def test_alt_spacing():
 
 def test_all_alts():
 	text = "[A|B|C]"
-	foundA = False
-	foundB = False
-	foundC = False
-	ctr = 0
-	while ((not foundA) or (not foundB) or (not foundC)) and ctr < 100:
-		result = parse(text)
-		if result == "A":
-			foundA = True
-		if result == "B":
-			foundB = True
-		if result == "C":
-			foundC = True
-		ctr += 1
-	assert foundA
-	assert foundB
-	assert foundC
+	verifyEachIsFound(["A", "B", "C"], text)
 	
 def test_empty_alts():
 	text = "[A|B|]"
-	foundEmpty = False
-	ctr = 0
-	while (not foundEmpty) and ctr < 100:
-		result = parse(text)
-		if result == "":
-			foundEmpty = True
-		ctr += 1
-	assert foundEmpty
-
+	verifyEachIsFound(["A", "B", ""], text)
 	text = "[A||B]"
-	foundEmpty = False
-	ctr = 0
-	while (not foundEmpty) and ctr < 100:
-		result = parse(text)
-		if result == "":
-			foundEmpty = True
-		ctr += 1
-	assert foundEmpty
-
+	verifyEachIsFound(["A", "B", ""], text)
 	text = "[|A|B]"
-	foundEmpty = False
-	ctr = 0
-	while (not foundEmpty) and ctr < 100:
-		result = parse(text)
-		if result == "":
-			foundEmpty = True
-		ctr += 1
-	assert foundEmpty
+	verifyEachIsFound(["A", "B", ""], text)
 
 def test_empty_alts_in_situ():
 	text = "Let's go[ already]."
@@ -212,21 +174,7 @@ def test_probability_works():
 
 def test_less_than_100_is_chance_of_blank():
 	text = "[25>alpha|35>beta]"
-	foundA = False
-	foundB = False;
-	foundBlank = False;
-	ctr = 0
-	while ((not foundA) or (not foundB) or (not foundBlank)) and ctr < 100:
-		result = parse(text)
-		if result == "":
-			foundBlank = True
-		elif result == "alpha":
-			foundA = True
-		elif result == "beta":
-			foundB = True
-	assert foundA
-	assert foundB
-	assert foundBlank
+	verifyEachIsFound(["alpha", "beta", ""], text)
 
 def test_defines_are_stripped():
 	text = "[DEFINE @test1][DEFINE @test2]This is a test of [DEFINE @test3]stripping.[DEFINE   @test4]"
