@@ -334,5 +334,15 @@ def test_lexing_define_with_else():
 	assert toks[8].value == "else text"
 	assert toks[9].type == "CTRLEND"
 
+	text = "[DEFINE @test][@test>|else text only]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert toks[5].type == "VARIABLE"
+	assert toks[5].value == "test"
+	assert toks[6].type == "DIVIDER"
+	assert toks[7].type == "TEXT"
+	assert toks[7].value == "else text only"
+	assert toks[8].type == "CTRLEND"
 
 

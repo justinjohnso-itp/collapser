@@ -338,6 +338,15 @@ def test_parse_variable_with_else():
 	result = parse(text, params)
 	assert result == "A if text C"
 
+def test_parse_variable_with_backward_else():
+	text = "A[DEFINE ^@test][@test>| else text only ]C"
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	result = parse(text, params)
+	assert result == "AC"
+	text = "A[DEFINE @test][@test>| else text only ]C"
+	result = parse(text, params)
+	assert result == "A else text only C"
+
 
 
 

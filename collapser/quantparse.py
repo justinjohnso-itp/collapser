@@ -264,16 +264,27 @@ def renderControlSequence(tokens, params):
 
 def renderVariable(tokens, params):
 	assert tokens[0].type == "VARIABLE"
-	assert tokens[1].type == "TEXT"
 	varName = tokens[0].value
-	text = tokens[1].value
-	if checkVar(varName):
+	if tokens[1].type == "TEXT":
+		# [@test>text]
+		text = tokens[1].value
+		if checkVar(varName):
+			return text
+		if len(tokens) == 2:
+			return ""
+		# [@test>text1|text2]
+		assert tokens[2].type == "DIVIDER"
+		assert tokens[3].type == "TEXT"
+		return tokens[3].value
+	else:
+		# [@test>|text]
+		assert tokens[1].type == "DIVIDER"
+		assert len(tokens) == 3
+		text = tokens[2].value
+		if checkVar(varName):
+			return ""
 		return text
-	if len(tokens) == 2:
-		return ""
-	assert tokens[2].type == "DIVIDER"
-	assert tokens[3].type == "TEXT"
-	return tokens[3].value
+
 
 
 variables = {}
