@@ -77,9 +77,9 @@ def handleMacroDefs(tokens, params):
 def handleDefines(tokens, params):
 	output = []
 	index = 0
-	foundAuthorPreferred = False
 	global variables
 	while index < len(tokens):
+		foundAuthorPreferred = False
 		token = tokens[index]
 		if token.type != "CTRLBEGIN":
 			output.append(token)

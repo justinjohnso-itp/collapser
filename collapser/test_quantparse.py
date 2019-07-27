@@ -208,6 +208,12 @@ def test_simple_define_with_author_preferred():
 	for _ in range(100):
 		parse(text, params)
 		assert quantparse.checkVar("test") == False
+	text = "[DEFINE ^@test1][DEFINE @test2]"
+	for _ in range(10):
+		parse(text, params)
+		assert quantparse.checkVar("test1") == True	
+		assert quantparse.checkVar("test2") == False	
+
 
 def test_defines_with_probabilities():
 	text = "A [DEFINE 80>@beta|20>^@barcelona] C"
