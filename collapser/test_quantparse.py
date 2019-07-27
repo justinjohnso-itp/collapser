@@ -361,6 +361,10 @@ def test_invalid_macro_def():
 	text = "[MACRO test] A macro always must be followed by a CtrlSeq"
 	with pytest.raises(Exception) as e_info:
 		parse(text)
+	text = "[MACRO test][~always] some stuff [MACRO test][~whatever]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+	
 
 # TODO macros defined twice or never defined
 
