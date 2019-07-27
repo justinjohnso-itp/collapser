@@ -108,14 +108,6 @@ Can specify an else by providing one other alternative, which can be empty.
 	[@wordy>he said loquaciously|he summarized] 
 	[@angry>|He was very calm. ]
 
-Can provide values for enums also: if any omitted are true, print nothing.
-
-	[@wordy>loquaciously|@taciturn>reflectively]
-
-Can use conditional logic with + for AND or / for OR. Or negate with ! before.
-
-	[@wordy+!@lostKeys>I can't find my keys!]
-
 
 ** Macros
 
@@ -132,6 +124,28 @@ Invoke a macro in text by wrapping it in curly braces.
 	"But {it's not} relevant"
 
 
+** Faking Conditional Logic **
+
+Conditional logic is not yet supported, but you can use macros to get around this if needed. For instance.
+
+	@wordy AND @lostKeys -> I can't find my keys!
+
+		[@wordy>{ifLostKeys}]
+		[MACRO ifLostKeys][@lostKeys>I can't find my keys!]
+
+	@wordy AND NOT @lostKeys -> I'm wordy and organized!
+
+		[@wordy>{ifNotLostKeys}]
+		[MACRO ifNotLostKeys][@lostKeys>|I can't find my keys!]
+
+	@wordy OR @lostKeys -> I'm wordy or confused!
+
+		[@wordy>{txt}|{orLostKeys}]
+		[MACRO orLostKeys][@lostKeys>{txt}]
+		[MACRO txt][~I'm wordy or confused!]
+
+
+
 ** Formatting Codes
 
 The system has a number of predefined formatting codes to print things in certain ways. They can either take parameters or not. These can appear within control sequences and are output verbatim. Complete list:
@@ -142,7 +156,7 @@ The system has a number of predefined formatting codes to print things in certai
 	{part:ONE|DOWNSTAIRS}
 	{verse:text}
 	{verse_inline:text}   => no pp breaks
-
+	{pp}
 
 
 
