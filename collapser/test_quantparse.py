@@ -366,15 +366,39 @@ def test_invalid_macro_def():
 		parse(text)
 
 def test_macro_expansion():
-	text = '''[MACRO test][~always show this]Hello, and {test}.'''
+	text = '''[MACRO test][~always show this]Hello, and {test}'''
 	result = parse(text)
-	assert result == "Hello, and always show this."	
-	text = '''Thank you, and {bye}.[MACRO bye][~goodnight]'''
+	assert result == "Hello, and always show this"	
+	text = '''Thank you, and {bye bye}.[MACRO bye bye][~goodnight]'''
 	result = parse(text)
 	assert result == "Thank you, and goodnight."	
+	text = '''{night}, and dream.[MACRO night][~Night]'''
+	result = parse(text)
+	assert result == "Night, and dream."	
+
+def test_macro_never_defined():
+	text = '''Thank you, and {goodnight}'''
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+	text = '''[MACRO goodnigh][~A]Thank you, and {goodnight}'''
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
+def test_macro_bad():
+	text = '''Thank you {} and whatever.'''
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 
 
-# TODO macros never defined, defined after usage
+def test_nested_macros():
+	text = '''[DEFINE ^@alpha][@alpha>{mactest}][MACRO mactest][~beta]'''
+	params = quantparse.ParseParams(useAuthorPreferred=True)
+	result = parse(text, params)
+	assert result == "beta"
+	text = '''[MACRO firstname][^Aaron|Bob|Carly][MACRO lastname][^Alda|Brockovich|Clayton]{firstname} {lastname}, {firstname} {lastname}'''
+	result = parse(text, params)
+	assert result == "Aaron Alda, Aaron Alda"
+
 
 # TODO test nested macros.
 

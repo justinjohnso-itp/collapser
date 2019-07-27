@@ -27,8 +27,8 @@ def parse(tokens, parseParams):
     tokens = handleDefines(tokens, parseParams)
     tokens = handleMacroDefs(tokens, parseParams)
     renderedChunks = process(tokens, parseParams)
-
     renderedString = ''.join(renderedChunks)
+    renderedString = replaceMacros(renderedString, parseParams)
 
     finalString = renderedString
     return finalString
@@ -228,14 +228,6 @@ def process(tokens, parseParams):
 		rendered = ""
 		if token.type == "TEXT":
 			rendered = token.value
-		elif token.type == "FMTBEGIN":
-			index += 1
-			token = tokens[index]
-			exp = getMacro(token.value)
-			if len(exp) == 0:
-				raise ValueError("Unrecognized macro {%s}" % token.value)
-			rendered = renderControlSequence(exp, parseParams)
-			index += 1 # FMTEND
 		elif token.type == "CTRLBEGIN":
 			ctrl_contents = []
 			index += 1
@@ -338,6 +330,27 @@ def renderVariable(tokens, params):
 			return ""
 		return text
 
+
+def replaceMacros(text, params):
+	mStart = '''{'''
+	mEnd = '''}'''
+	if text.find(mStart + mEnd) != -1:
+		raise ValueError("Can't have empty macro sequence {}")
+	startPos = text.find(mStart)
+	while startPos != -1:
+		endPos = text.find(mEnd, startPos+1)
+		key = text[startPos+1:endPos]
+		exp = getMacro(key)
+		if len(exp) == 0:
+			raise ValueError("Unrecognized macro {%s}" % key)
+		rendered = renderControlSequence(exp, params)
+		text = text[:startPos] + rendered + text[endPos+1:]
+		oldStartPos = startPos
+		startPos = text.find(mStart, startPos)
+		if oldStartPos == startPos:
+			raise ValueError("Can't resolve macro sequence starting '%s'...; breaking" % text[startPos:startPos+20])
+
+	return text
 
 
 variables = {}
