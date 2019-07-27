@@ -345,4 +345,25 @@ def test_lexing_define_with_else():
 	assert toks[7].value == "else text only"
 	assert toks[8].type == "CTRLEND"
 
+def test_lex_macro_defs():
+	text = "[MACRO this is a macro][~some text]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert toks[1].type == "MACRO"
+	assert toks[2].type == "TEXT"
+	assert toks[2].value == "this is a macro"
+	assert toks[3].type == "CTRLEND"
+	assert toks[4].type == "CTRLBEGIN"
+
+def test_bad_macro_lex():
+	text = "[MACRO 80>This is fun.][~text]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "[MACRO @test][~text]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	
+
+
 

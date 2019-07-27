@@ -23,6 +23,7 @@ tokens = (
    'COMMENT',
    'DEFINE',
    'VARIABLE',
+   'MACRO',
    'ERROR_LONE_GT',
    'ERROR_LONE_VAR'
 )
@@ -61,6 +62,10 @@ def t_ERROR_LONE_GT(t):
 	__lexState["flaggedBad"] = True
 	__lexState["errorMessage"] = "Number op > appeared in unexpected spot"
 	pass
+
+def t_MACRO(t):
+	r'MACRO\s*'
+	return t
 
 def t_DEFINE(t):
 	r'DEFINE\s*'
@@ -233,6 +238,13 @@ def lex(text):
 				result.errorLineText = find_line_text(text, tok.lexpos)
 				result.errorMessage = "Can't have a standalone [@variable]: must show text to print if true, i.e. [@var>hello]."
 				break;
+			if prevTok.type == "MACRO" and tok.type != "TEXT":
+				result.isValid = False
+				result.errorLineNumber = find_line_number(text, tok.lexpos)
+				result.errorColumn = find_column(text, tok.lexpos)
+				result.errorLineText = find_line_text(text, tok.lexpos)
+				result.errorMessage = "MACRO must be followed by text."
+
 
 
 
