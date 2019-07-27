@@ -13,8 +13,6 @@ def resetLexState():
 tokens = (
    'CTRLBEGIN',
    'CTRLEND',
-   'FMTBEGIN',
-   'FMTEND',
    'DIVIDER',
    'AUTHOR',
    'ALWAYS',
@@ -29,8 +27,6 @@ tokens = (
 )
 
 # Regular expression rules for simple tokens
-t_FMTBEGIN   = r'\{'
-t_FMTEND  = r'\}'
 t_AUTHOR = r'\^'
 t_ALWAYS = r'\~'
 
@@ -74,7 +70,7 @@ def t_DEFINE(t):
 	return t
 
 def t_TEXT(t):
-	r'[^\[\]\{\}\|\>\@\^\#\~]+'
+	r'[^\[\]\|\>\@\^\#\~]+'
 	return t
 
 def t_COMMENT(t):
