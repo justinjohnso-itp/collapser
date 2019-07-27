@@ -299,11 +299,9 @@ def test_macro_defs_are_recognized_and_stripped():
 	text = "[MACRO test macro][~always show this]"
 	result = parse(text)
 	assert result == ""
-	macro = quantparse.getMacro("test macro")
-	assert len(macro) == 2
-	assert macro[0].type == "ALWAYS"
-	assert macro[1].type == "TEXT"
-	assert macro[1].value == "always show this"
+	params = quantparse.ParseParams()
+	result = quantparse.macros.renderMacro("test macro", params)
+	assert result == "always show this"
 
 def test_invalid_macro_def():
 	text = "[MACRO test] A macro always must be followed by a CtrlSeq"
@@ -373,7 +371,18 @@ def test_layered_macros():
 	result = parse(text, params)
 	assert result == "Use not yotta macro."
 
-# def guard against recursive macros?
+# TODO def guard against recursive macros?
+
+def test_sticky_macro():
+	text = '''[MACRO Soda][25>Sprite|25>Pepsi|25>Coke|25>Fresca]{Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda}'''
+	params = quantparse.ParseParams(useAuthorPreferred=False)
+	result = parse(text, params).split()
+	assert result[0] != result[1] or result[1] != result[2] or result[2] != result[3] or result[3] != result[4] or result[4] != result[5] or result[5] != result[6] or result[6] != result[7] or result[7] != result[8] or result[8] != result[9]
+	text = '''[STICKY_MACRO Soda][25>Sprite|25>Pepsi|25>Coke|25>Fresca]{Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda}'''
+	result = parse(text, params).split()
+	assert result[0] == result[1] and result[1] == result[2] and result[2] == result[3] and result[3] == result[4] and result[4] == result[5] and result[5] == result[6] and result[6] == result[7] and result[7] == result[8] and result[8] == result[9]
+
+
 
 
 

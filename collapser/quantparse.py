@@ -5,6 +5,7 @@
 
 from quantlex import tokens
 import chooser
+import macros
 
 
 
@@ -22,55 +23,16 @@ def parse(tokens, parseParams):
     # print "** PARSING **"
     global variables
     variables = {}
-    global macros
-    macros = {}
+    macros.reset()
     tokens = handleDefines(tokens, parseParams)
-    tokens = handleMacroDefs(tokens, parseParams)
+    tokens = macros.handleDefs(tokens, parseParams)
     renderedChunks = process(tokens, parseParams)
     renderedString = ''.join(renderedChunks)
-    renderedString = replaceMacros(renderedString, parseParams)
+    renderedString = macros.expand(renderedString, parseParams)
 
     finalString = renderedString
     return finalString
 
-def handleMacroDefs(tokens, params):
-	output = []
-	index = 0
-	global macros
-	while index < len(tokens):
-		token = tokens[index]
-		if token.type != "CTRLBEGIN":
-			output.append(token)
-			index += 1
-			continue
-		index += 1
-		token = tokens[index]
-		if token.type != "MACRO":
-			output.append(tokens[index-1])
-			output.append(token)
-			index += 1
-			continue
-		index += 1
-		token = tokens[index]
-		assert token.type == "TEXT"
-		if token.value in macros:
-			raise ValueError("Macro '@%s' is defined twice." % token.value)
-		macroKey = token.value
-		if index+3 > len(tokens) or tokens[index+1].type != "CTRLEND" or tokens[index+2].type != "CTRLBEGIN":
-			raise ValueError("Macro '@%s' must be immediately followed by a control sequence." % macroKey)
-		index += 3
-		token = tokens[index]
-		macroBody = []
-		while token.type != "CTRLEND":
-			macroBody.append(token)
-			index += 1
-			token = tokens[index]
-
-		addMacro(macroKey, macroBody)
-		print "In macro key '%s', storing CtrlSeq: %s" % (macroKey, macroBody)
-		index += 1 # skip over final CTRLEND
-
-	return output
 
 
 # Store all DEFINE definitions in "variables" and strip them from the token stream.
@@ -331,27 +293,6 @@ def renderVariable(tokens, params):
 		return text
 
 
-def replaceMacros(text, params):
-	mStart = '''{'''
-	mEnd = '''}'''
-	if text.find(mStart + mEnd) != -1:
-		raise ValueError("Can't have empty macro sequence {}")
-	startPos = text.find(mStart)
-	while startPos != -1:
-		endPos = text.find(mEnd, startPos+1)
-		key = text[startPos+1:endPos]
-		exp = getMacro(key)
-		if len(exp) == 0:
-			raise ValueError("Unrecognized macro {%s}" % key)
-		rendered = renderControlSequence(exp, params)
-		text = text[:startPos] + rendered + text[endPos+1:]
-		# print "s: %d, e: %d, exp: %s, ren: %s, text: '%s'" % (startPos, endPos, exp, rendered, text)
-		oldStartPos = startPos
-		startPos = text.find(mStart, startPos)
-		if oldStartPos == startPos:
-			raise ValueError("Can't resolve macro sequence starting '%s'...; breaking" % text[startPos:startPos+20])
-
-	return text
 
 
 variables = {}
@@ -365,14 +306,4 @@ def checkVar(key):
 def showVars():
 	return variables.keys()
 
-
-macros = {}
-
-def addMacro(key, body):
-	macros[key] = body
-
-def getMacro(key):
-	if key in macros:
-		return macros[key]
-	return []
 
