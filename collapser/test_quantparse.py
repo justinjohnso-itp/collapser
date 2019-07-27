@@ -357,6 +357,12 @@ def test_macro_defs_are_recognized_and_stripped():
 	assert macro[1].type == "TEXT"
 	assert macro[1].value == "always show this"
 
+def test_invalid_macro_def():
+	text = "[MACRO test] A macro always must be followed by a CtrlSeq"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
+# TODO macros defined twice or never defined
 
 
 

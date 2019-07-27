@@ -53,8 +53,8 @@ def handleMacroDefs(tokens, params):
 		if token.value in macros:
 			raise ValueError("Macro '@%s' is defined twice." % token.value)
 		macroKey = token.value
-		assert tokens[index+1].type == "CTRLEND"
-		assert tokens[index+2].type == "CTRLBEGIN"
+		if index+3 > len(tokens) or tokens[index+1].type != "CTRLEND" or tokens[index+2].type != "CTRLBEGIN":
+			raise ValueError("Macro '@%s' must be immediately followed by a control sequence." % macroKey)
 		index += 3
 		token = tokens[index]
 		macroBody = []
