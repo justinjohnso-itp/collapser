@@ -363,7 +363,18 @@ def test_bad_macro_lex():
 	text = "[MACRO @test][~text]"
 	result = quantlex.lex(text)
 	assert result.isValid == False
-	
+
+def test_lex_using_macros():
+	text = "{macro trigger}"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.tokens
+	assert len(toks) == 3
+	assert toks[0].type == "FMTBEGIN"
+	assert toks[1].type == "TEXT"
+	assert toks[1].value == "macro trigger"
+	assert toks[2].type == "FMTEND"
+
 
 
 

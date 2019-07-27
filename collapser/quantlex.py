@@ -13,8 +13,8 @@ def resetLexState():
 tokens = (
    'CTRLBEGIN',
    'CTRLEND',
-   'MACROBEGIN',
-   'MACROEND',
+   'FMTBEGIN',
+   'FMTEND',
    'DIVIDER',
    'AUTHOR',
    'ALWAYS',
@@ -29,8 +29,8 @@ tokens = (
 )
 
 # Regular expression rules for simple tokens
-t_MACROBEGIN   = r'\{'
-t_MACROEND  = r'\}'
+t_FMTBEGIN   = r'\{'
+t_FMTEND  = r'\}'
 t_AUTHOR = r'\^'
 t_ALWAYS = r'\~'
 
