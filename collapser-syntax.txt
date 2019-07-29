@@ -38,7 +38,7 @@ Elipses. Replace … with Latex version.
 
 Control characters should never be ones that would appear in the manuscript. So far they are:
 	[ ] Begin and end a control sequence.
-	{ } Macro
+	{ } Macro/format block
 	|	Divide alternatives
 	*	Bold formatting
 	>	Conditional text
@@ -46,7 +46,7 @@ Control characters should never be ones that would appear in the manuscript. So 
 	^	Author-preferred
 	#	Comment
 	~	Always print this block.
-	+/	AND or OR
+	/	Split params in formatting block
 
 Start a line with a # for a comment to be stripped/ignored.
 
@@ -150,12 +150,12 @@ Conditional logic is not yet supported, but you can use macros to get around thi
 
 The system has a number of predefined formatting codes to print things in certain ways. They can either take parameters or not. These can appear within control sequences and are output verbatim. Complete list:
 
-	{eipgraph:Surely tis nobler...|William Shakespeare}
+	{eipgraph/Surely tis nobler.../William Shakespeare}
 	{section_break}
-	{chapter:2}
-	{part:ONE|DOWNSTAIRS}
-	{verse:text}
-	{verse_inline:text}   => no pp breaks
+	{chapter/2}
+	{part/ONE/DOWNSTAIRS}
+	{verse/text}
+	{verse_inline/text}   => no pp breaks
 	{pp}
 
 
