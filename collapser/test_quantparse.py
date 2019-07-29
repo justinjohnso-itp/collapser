@@ -321,13 +321,14 @@ def test_macro_expansion():
 	result = parse(text)
 	assert result == "Night, and dream."	
 
-def test_macro_never_defined():
-	text = '''Thank you, and {goodnight}'''
-	with pytest.raises(Exception) as e_info:
-		parse(text)
-	text = '''[MACRO goodnigh][~A]Thank you, and {goodnight}'''
-	with pytest.raises(Exception) as e_info:
-		parse(text)
+# Now we want to leave these to go forward to latexifier.
+# def test_macro_never_defined():
+# 	text = '''Thank you, and {goodnight}'''
+# 	with pytest.raises(Exception) as e_info:
+# 		parse(text)
+# 	text = '''[MACRO goodnigh][~A]Thank you, and {goodnight}'''
+# 	with pytest.raises(Exception) as e_info:
+# 		parse(text)
 
 def test_macro_bad():
 	text = '''Thank you {} and whatever.'''
