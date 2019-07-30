@@ -18,4 +18,4 @@ def test_stringSwap():
 def test_formatting():
 	text = "This is {i/italic}."
 	result = latexifier.go(text)
-	assert result == "This is \itshape{italic}."
+	assert result == "This is \\textit{italic}."
