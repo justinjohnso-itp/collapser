@@ -82,6 +82,8 @@ def handleDefs(tokens, params):
 
 	return output
 
+formatting_codes = ["section_break", "chapter", "part", "verse", "verse_inline", "pp", "i"]
+
 def expand(text, params):
 	mStart = '''{'''
 	mEnd = '''}'''
@@ -94,10 +96,11 @@ def expand(text, params):
 		key = text[startPos+1:endPos]
 		rendered = __m.render(key, params)
 		if rendered == None:
-			# raise ValueError("Unrecognized macro {%s}" % key)
-			print "Unrecognized macro {%s}" % key
-			startPos = text.find(mStart, startPos+1)
-			continue
+			parts = key.split('/')
+			if parts[0] in formatting_codes:
+				startPos = text.find(mStart, startPos+1)
+				continue
+			raise ValueError("Unrecognized macro {%s}" % key)
 		text = text[:startPos] + rendered + text[endPos+1:]
 		# print "s: %d, e: %d, exp: %s, ren: %s, text: '%s'" % (startPos, endPos, exp, rendered, text)
 		oldStartPos = startPos

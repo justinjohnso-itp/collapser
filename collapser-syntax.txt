@@ -155,6 +155,7 @@ The system has a number of predefined formatting codes to print things in certai
 	{verse/text}
 	{verse_inline/text}   => no pp breaks
 	{pp}
+	{i/italics}
 
 
 
