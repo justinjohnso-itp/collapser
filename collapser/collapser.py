@@ -35,11 +35,17 @@ def main():
 	inputFile = sys.argv[1]
 	outputFile = sys.argv[2]
 
+	files = []
 	inputText = fileio.readInputFile(inputFile)
+	files.append(inputText)
 
 	# print "Here is the input:\n%s" % inputText
 
-	collapsedText = collapse.go(inputText)
+	collapsedTexts = []
+	for file in files:
+		collapsedTexts.append(collapse.go(file))
+
+	collapsedText = ''.join(collapsedTexts)
 
 	outputText = latexifier.go(collapsedText)
 
