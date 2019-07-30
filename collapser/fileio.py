@@ -14,3 +14,17 @@ def writeOutputFile(outputFile, outputText):
 		fileObject.write(outputText)
 		print "\nWrote to '%s'.\n" % outputFile
 
+
+def loadManifest(path, manifest):
+	# We expect this to be a list of filenames, one per line.
+	# Ignore any line that begins with "#"
+	# We should return an array of texts, the contents of the files in order.
+	contents = []
+	lines = manifest.split('\n')
+	for line in lines:
+		if len(line) == 0 or line[0] == "#" or line.strip() == "":
+			continue
+		print " > Reading '%s'" % line
+		file = readInputFile(path + line)
+		contents.append(file)
+	return contents

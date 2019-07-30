@@ -17,7 +17,6 @@ def go(sourceText):
     # sampleData = '''[MACRO alpha][@zetta>Use {beta} macro.][MACRO beta][@yotta>this is yotta|not yotta][DEFINE ^@zetta][DEFINE @yotta]{alpha}'''
     # sourceText = sampleData
 
-    print "*** LEXING ***"
     result = quantlex.lex(sourceText)
     if not result.isValid:
     	caret = (" " * (result.errorColumn-1+2)) + "^"

@@ -76,7 +76,6 @@ def renderControlSeqs(sourceText):
 			raise ValueError("Found { without closing brace.")
 		codeSeq = sourceText[formatStartPos:formatEndPos+1]
 		contents = codeSeq[1:-1].split('/')
-		print contents
 		code = contents[0]
 		repl = ""
 

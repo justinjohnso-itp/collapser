@@ -37,7 +37,13 @@ def main():
 
 	files = []
 	inputText = fileio.readInputFile(inputFile)
-	files.append(inputText)
+	if inputFile[-12:] == "manifest.txt":
+		path = inputFile[:-12]
+		print "Reading manifest '%s'" % inputFile
+		files = fileio.loadManifest(path, inputText)
+	else:
+		print "Reading file '%s'" % inputFile
+		files = [inputText]
 
 	# print "Here is the input:\n%s" % inputText
 
