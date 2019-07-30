@@ -14,3 +14,8 @@ def test_stringSwap():
 	text = "This is my {test_param/alpha}"
 	result = latexifier.go(text)
 	assert result == "This is my <<TEST_PARAMS>>alpha<<END>>"
+
+def test_formatting():
+	text = "This is {i/italic}."
+	result = latexifier.go(text)
+	assert result == "This is \itshape{italic}."

@@ -16,10 +16,56 @@ template_chapter = ['''
 
 ''']
 
+template_part = ['''
 
+\\cleartorecto
+\\begin{ChapterStart}
+\\vspace*{4\\nbs} 
+\\ChapterTitle{PART ''', '''} 
+\\vspace*{2\\nbs} 
+\\ChapterTitle{''', '''} 
+\\end{ChapterStart}
 
-# Main entry point.
-def go(sourceText):
+\\vspace*{4\\nbs} 
+\\begin{adjustwidth}{3em}{3em}
+\\begin{parascale}[0.88]
+''', '''\\\\
+\\par
+\\noindent \\textit{''', '''}
+\\end{parascale}
+\\end{adjustwidth}
+\\cleartorecto
+
+''']
+
+template_section_break = '''
+
+\\scenebreak
+
+'''
+
+template_pp = '''
+
+'''
+
+template_i = ['''\\textit{''', '''}''']
+
+template_verse = ['''
+
+\\vspace*{1\\nbs}
+\\begin{adjustwidth}{3em}{} 
+\\textit{''', '''}
+\\end{adjustwidth}
+\\vspace*{1\\nbs}
+
+''']
+
+template_verse_inline = ['''\\begin{adjustwidth}{3em}{} 
+\\textit{''', '''}
+\\end{adjustwidth}
+\\noindent ''']
+
+def renderControlSeqs(sourceText):
 	rendered = []
 	pos = 0
 	formatStartPos = sourceText.find("{", pos)
@@ -33,23 +79,29 @@ def go(sourceText):
 		print contents
 		code = contents[0]
 		repl = ""
-		if code == "epigraph":
-			pass
-		elif code == "section_break":
-			pass
+
+		if code == "part":
+			partNum = contents[1]
+			partTitle = contents[2]
+			epigraph = contents[3]
+			source = contents[4]
+			repl = template_part[0] + partNum + template_part[1] + partTitle + template_part[2] + epigraph + template_part[3] + source + template_part[4]
 		elif code == "chapter":
 			chapNum = contents[1]
 			repl = template_chapter[0] + chapNum + template_chapter[1]
-			print repl
-			pass
-		elif code == "part":
-			pass
+		elif code == "section_break":
+			repl = template_section_break
 		elif code == "verse":
-			pass
+			text = contents[1]
+			repl = template_verse[0] + text + template_verse[1]
 		elif code == "verse_inline":
-			pass
+			text = contents[1]
+			repl = template_verse_inline[0] + text + template_verse_inline[1]
 		elif code == "pp":
-			pass
+			repl = template_pp
+		elif code == "i":
+			text = contents[1]
+			repl = template_i[0] + text + template_i[1]
 
 		elif code == "test":
 			repl = "<<TEST_STANDALONE>>"
@@ -65,6 +117,13 @@ def go(sourceText):
 
 	rendered.append(sourceText[pos:len(sourceText)])
 
-	return ''.join(rendered)
+	return ''.join(rendered)	
+
+
+# Main entry point.
+def go(sourceText):
+	output = renderControlSeqs(sourceText)
+	return output
+
 
 
