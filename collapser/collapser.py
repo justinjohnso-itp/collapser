@@ -5,6 +5,7 @@ import sys
 import fileio
 import collapse
 import latexifier
+import quantlex
 
 inputFile = ""
 outputFile = ""
@@ -15,8 +16,12 @@ def showUsage():
 	print """Usage: collapser <INPUT> <OUTPUT> options"""
 
 
-def sanityCheck(text):
+# Pre-latexifier.
+def postLatexSanityCheck(text):
 	# Look for unexpected characters etc. here
+	pos = text.find('_')
+	if pos is not -1:
+		raise ValueError("Found invalid underscore '_' character on line %d:\n%s" % (quantlex.find_line_number(text, pos), quantlex.find_line_text(text, pos)) )
 	return
 
 def main():
@@ -38,7 +43,8 @@ def main():
 
 	outputText = latexifier.go(collapsedText)
 
-	sanityCheck(outputText)
+	postLatexSanityCheck(outputText)
+
 
 	# print "\n\nHere is the output:\n%s" % outputText
 
