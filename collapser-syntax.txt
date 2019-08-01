@@ -1,6 +1,7 @@
 Guidelines
 	- Syntax should be easy to type, and minimize control characters.
 	- The smallest amount of variation is a word: don't waste time making versions with alternate punctuation. Also don't do minor variants like dialog tags.
+		- A good metric to shoot for is only have a variant when it's interesting. Avoid minor imperceptible variations.
 	- No nesting (to prevent wasting time on sub-probabilities of sub-probabilities). Every alternative is either seen or not.
 	- Think extremely hard before using a probability less than 10.
 
