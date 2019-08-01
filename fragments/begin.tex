@@ -1,0 +1,66 @@
+% !TeX TS-program = LuaLaTeX
+% !TeX encoding = UTF-8
+\documentclass{novel} % See list of class options; usually none needed.
+
+% https://mirror.las.iastate.edu/tex-archive/macros/luatex/latex/novel/doc/novel-documentation.html
+
+%%% METADATA (FILE DATA):
+\SetTitle{Subcutanean} % Required for PDF/X.
+\SetSubtitle{} % Default: empty.
+\SetAuthor{Aaron A. Reed} % Default: empty.
+\SetApplication{LuaLaTeX with novel and microtype}
+\SetProducer{LuaLaTeX with novel-pdfx and hyperref}
+\SetPDFX[CGATSTR001]{X-1a:2001}
+%%% DIMENSIONS:
+\SetTrimSize{5.5in}{8.5in} % Sets width, height of your book.
+% Default Media Size equals Trim Size.
+% Rarely-used over-ride, except for cover artwork:
+% \SetMediaSize[alignment]{width}{height}
+% Default margins vary with Trim Size. Defaults for {5.5in}{8.5in}:
+\SetMargins{0.65in}{0.65in}{0.65in}{0.775in}
+%%% GENERAL FONTS:
+% Percent at end of line is necessary, when writing font settings multi-line:
+\SetParentFont[%
+SmallCapsFeatures={Renderer=Basic},% Effective when small caps requested locally.
+Kerning=On, %
+Ligatures=TeX, %
+]{Libertinus Serif}
+% Main text font automatically adds Numbers=OldStyle,Ligatures=Common.
+% Default main font size is based on other layout settings.
+% Varies from 11pt to 12pt. With all default layouts, value is 11.4pt.
+% You may manually choose a different main font size:
+% \SetFontSize{length}
+% Default lines per page (main textblock) is calculated from other layout settings.
+% When using all defaults, the calculated value is 35.
+% If used, \SetLinesPerPage manually chooses the value:
+% \SetLinesPerPage{integer}
+\SetDecoFont{NovelDeco.otf}
+\setsansfont{Libertinus Sans}
+\setmonofont{Libertinus Mono}
+\setmathfont{Libertinus Math} % unicode-math
+%%% HEADERS/FOOTERS:
+\SetHeadFootStyle{2} % This style has headers only.
+\SetHeadJump{1.5}
+\SetFootJump{1.5}
+\SetLooseHead{50}
+\SetEmblems{}{} % Default blanks.
+\SetHeadFont[\parentfontfeatures,Letters=SmallCaps,Scale=0.92]{\parentfontname}
+\SetPageNumberStyle{\thepage}
+\SetVersoHeadText{\theAuthor}
+\SetRectoHeadText{\theTitle}
+%%% CHAPTERS:
+% \SetChapterStartStyle{footer} % Equivalent to empty, when style has no footer.
+% \SetChapterStartHeight{10}
+\SetChapterFont[Numbers=Lining,Scale=1.6]{\parentfontname}
+\SetSubchFont[Numbers=Lining,Scale=1.2]{\parentfontname}
+% \SetScenebreakIndent{false}
+%%% CUSTOM FONTS:
+% \NewFontFamily[]{} % Optional command.
+% \NewFontFace[]{} % Optional command.
+% \CreateFontFeature{}{} % Optional command.
+%%% OTHER:
+\setdefaultlanguage[variant=american]{english} % polyglossia
+\microtypesetup{config=novel-microtype,stretch=20,shrink=20,final} % microtype
+%%% BEGIN DOCUMENT:
+\begin{document}
+\frontmatter % Required.

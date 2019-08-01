@@ -12,8 +12,28 @@ outputFile = ""
 inputText = ""
 outputText = ""
 
+latexBegin = "fragments/begin.tex"
+latexEnd = "fragments/end.tex"
+latexFrontMatter = "fragments/frontmatter.tex"
+latexPostFrontMatter = "fragments/postfrontmatter.tex"
+
 def showUsage():
 	print """Usage: collapser <INPUT> <OUTPUT> options"""
+
+
+def latexWrapper(text, includeFrontMatter=True):
+	begin = fileio.readInputFile(latexBegin)
+	end = fileio.readInputFile(latexEnd)
+	frontMatter = fileio.readInputFile(latexFrontMatter)
+	postFrontMatter = fileio.readInputFile(latexPostFrontMatter)
+	output = begin
+	if includeFrontMatter:
+		output += frontMatter
+	output += postFrontMatter
+	output += text
+	output += end
+	return output
+
 
 
 # Pre-latexifier.
@@ -45,20 +65,17 @@ def main():
 		print "Reading file '%s'" % inputFile
 		files = [inputText]
 
-	# print "Here is the input:\n%s" % inputText
-
-	collapsedTexts = []
+	fileTexts = []
 	for file in files:
-		collapsedTexts.append(collapse.go(file))
-
-	collapsedText = ''.join(collapsedTexts)
+		fileTexts.append(file)
+	joinedFileTexts = ''.join(fileTexts)
+	collapsedText = collapse.go(joinedFileTexts)
 
 	outputText = latexifier.go(collapsedText)
 
 	postLatexSanityCheck(outputText)
 
-
-	# print "\n\nHere is the output:\n%s" % outputText
+	outputText = latexWrapper(outputText, includeFrontMatter=False)	
 
 	fileio.writeOutputFile(outputFile, outputText)
 
