@@ -75,6 +75,7 @@ Arguments:
   --help         Show this message
   --author       Make author-preferred version
   --seed=x       Use the given integer as a seed
+  --nopdf		 Skip pdf generation
 """
 
 
@@ -88,8 +89,9 @@ def main():
 	outputText = ""
 	seed = -1
 	authorPreferred = False
+	doPDF = True
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "author"])
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "author", "nopdf"])
 	print opts
 	print args
 	if len(args) > 0:
@@ -112,6 +114,8 @@ def main():
 				sys.exit()
 		elif opt == "--author":
 			authorPreferred = True
+		elif opt == "--nopdf":
+			doPDF = False
 
 	if inputFile == "" or outputFile == "":
 		print "Missing input or output file."
@@ -152,22 +156,25 @@ def main():
 
 	fileio.writeOutputFile(outputFile, outputText)
 
-	print "Running lualatex..."
-	cmdParams = '-interaction=nonstopmode -synctex=1 -recorder "%s"' % outputFile
-	cmdArray = shlex.split(cmdParams)
-	cmdArray.insert(0, "lualatex")
+	if doPDF:
+		print "Running lualatex..."
+		cmdParams = '-interaction=nonstopmode -synctex=1 -recorder "%s"' % outputFile
+		cmdArray = shlex.split(cmdParams)
+		cmdArray.insert(0, "lualatex")
 
-	try:
-		output = subprocess.check_output(cmdArray,stderr=subprocess.STDOUT)
-	except subprocess.CalledProcessError as e:
-		# For some reason this is failing with error code 1 even when it successfully works, so we need to do our own post-processing.
-		latexlog = e.output
-		result = postLatexSanityCheck(latexlog)
-		if result is False:
-			print "*** Generation failed. Check .log file in output folder."
-		else:
-			print "Success! Generated %d page PDF." % result
-		# raise RuntimeError("command '{}' return with error (code {})".format(e.cmd, e.returncode))
+		try:
+			output = subprocess.check_output(cmdArray,stderr=subprocess.STDOUT)
+		except subprocess.CalledProcessError as e:
+			# For some reason this is failing with error code 1 even when it successfully works, so we need to do our own post-processing.
+			latexlog = e.output
+			result = postLatexSanityCheck(latexlog)
+			if result is False:
+				print "*** Generation failed. Check .log file in output folder."
+			else:
+				print "Success! Generated %d page PDF." % result
+			# raise RuntimeError("command '{}' return with error (code {})".format(e.cmd, e.returncode))
+	else:
+		print "Skipping PDF."
 
 
 main()
