@@ -10,12 +10,12 @@ import macros
 
 
 class ParseParams:
-	def __init__(self, useAuthorPreferred=False, preferenceForAuthorsVersion=25):
-		self.useAuthorPreferred = useAuthorPreferred
+	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25):
+		self.chooseStrategy = chooseStrategy
 		self.preferenceForAuthorsVersion = preferenceForAuthorsVersion
 
 	def __str__(self):
-		return "useAuthorPreferred: %s, preferenceForAuthorsVersion: %s" % (self.useAuthorPreferred, self.preferenceForAuthorsVersion)
+		return "chooseStrategy: %s, preferenceForAuthorsVersion: %s" % (self.chooseStrategy, self.preferenceForAuthorsVersion)
 
 
 # Call with an object of type ParseParams.
@@ -83,10 +83,10 @@ def handleDefines(tokens, params):
 		if probTotal != 0 and probTotal != 100:
 			raise ValueError("Probabilities in a DEFINE must sum to 100: found %d instead. '%s'" % (probTotal, alts))
 
-		if params.useAuthorPreferred and len(alts) == 1 and not foundAuthorPreferred:
+		if params.chooseStrategy == "author" and len(alts) == 1 and not foundAuthorPreferred:
 			varPicked = alts.getAuthorPreferred()
 			variables[varPicked] = False
-		elif params.useAuthorPreferred or chooser.percent(params.preferenceForAuthorsVersion):
+		elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 			varPicked = alts.getAuthorPreferred()
 			variables[varPicked] = True
 		elif len(alts) == 1:
@@ -223,13 +223,13 @@ def renderControlSequence(tokens, params):
 	# [text] means a random chance of "text" or "", but if authorPreferred is true, never show it.
 	if len(tokens) == 1 and tokens[0].type == "TEXT":
 		alts.add("")
-		if not params.useAuthorPreferred:
+		if params.chooseStrategy != "author":
 			alts.add(tokens[0].value)
 
 	# [^text] means always show the text if authorPreferred is true.
 	elif len(tokens) == 2 and tokens[0].type == "AUTHOR" and tokens[1].type == "TEXT":
 		alts.add(tokens[1].value)
-		if not params.useAuthorPreferred:
+		if params.chooseStrategy != "author":
 			alts.add("")
 
 	# [~always print this]
@@ -262,7 +262,7 @@ def renderControlSequence(tokens, params):
 		if token.type == "DIVIDER":
 			alts.add("")
 
-	if params.useAuthorPreferred or chooser.percent(params.preferenceForAuthorsVersion):
+	if params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 		result = alts.getAuthorPreferred()
 	else:
 		result = alts.getRandom()

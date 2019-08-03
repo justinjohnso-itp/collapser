@@ -144,7 +144,7 @@ def main():
 	for file in files:
 		fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)
-	params = quantparse.ParseParams(useAuthorPreferred = authorPreferred, preferenceForAuthorsVersion = 20)
+	params = quantparse.ParseParams(chooseStrategy = "author", preferenceForAuthorsVersion = 20)
 	collapsedText = collapse.go(joinedFileTexts, params)
 	if collapsedText == "":
 		sys.exit()

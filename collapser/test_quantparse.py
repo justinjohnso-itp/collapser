@@ -10,7 +10,7 @@ def parse(text, params = None):
 		print lexed
 		assert False
 	if params == None:
-		params = quantparse.ParseParams(useAuthorPreferred=False)
+		params = quantparse.ParseParams(chooseStrategy="random")
 	return quantparse.parse(lexed.tokens, params)
 
 # When sent an array like ["A", "B", "C"] and a test to parse, will fail if after a large number of attempts to parse it hasn't seen each option appear as a parse result.
@@ -86,7 +86,7 @@ def test_single_texts():
 
 def test_author_preferred():
 	text = "[A|B|C]"
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	for i in range(10):
 		assert parse(text, params) == "A"
 
@@ -112,7 +112,7 @@ def test_author_preferred():
 
 def test_author_preferred_single():
 	text = "A[^B]C"
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	for i in range(10):
 		assert parse(text, params) == "ABC"
 	text = "A[B]C"
@@ -142,7 +142,7 @@ def test_number_values_cant_exceed_100():
 def test_can_use_author_preferred_with_prob():
 	text = "[80>alpha|10>beta|10>^gamma]"
 	assert parse(text) in ["alpha", "beta", "gamma"]
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	for i in range(10):
 		assert parse(text, params) == "gamma"
 
@@ -200,7 +200,7 @@ def test_simple_defines_set_randomly():
 
 def test_simple_define_with_author_preferred():
 	text = "[DEFINE ^@test]"
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	for _ in range(100):
 		parse(text, params)
 		assert quantparse.checkVar("test") == True
@@ -217,7 +217,7 @@ def test_simple_define_with_author_preferred():
 
 def test_defines_with_probabilities():
 	text = "A [DEFINE 80>@beta|20>^@barcelona] C"
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	for _ in range(100):
 		output = parse(text, params)
 		assert quantparse.variables["barcelona"] == True
@@ -253,7 +253,7 @@ def test_multiple_defines_is_bad():
 
 def test_okay_to_define_after_using():
 	text = "[@test>Test test.] Then stuff. [DEFINE ^@test]"
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	assert parse(text, params) == "Test test. Then stuff. "
 
 def test_vars_collected_and_stripped():
@@ -270,7 +270,7 @@ def test_vars_collected_and_stripped():
 
 def test_variable_refs():
 	text = "[DEFINE ^@test][@test>This is a test message. ]Huzzah!"
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	result = parse(text, params)
 	assert result == "This is a test message. Huzzah!"
 	text = "[DEFINE @test][@test>This is a test message. ]Huzzah!"
@@ -279,7 +279,7 @@ def test_variable_refs():
 
 def test_parse_variable_with_else():
 	text = "A [DEFINE @test][@test>if text|else text] C"
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	result = parse(text, params)
 	assert result == "A else text C"
 	text = "A [DEFINE ^@test][@test>if text|else text] C"
@@ -288,7 +288,7 @@ def test_parse_variable_with_else():
 
 def test_parse_variable_with_backward_else():
 	text = "A[DEFINE ^@test][@test>| else text only ]C"
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	result = parse(text, params)
 	assert result == "AC"
 	text = "A[DEFINE @test][@test>| else text only ]C"
@@ -346,7 +346,7 @@ def test_macro_expansions():
 
 def test_nested_macros():
 	text = '''[DEFINE ^@alpha][@alpha>{mactest}][MACRO mactest][~beta]'''
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	result = parse(text, params)
 	assert result == "beta"
 	text = '''[MACRO firstname][^Aaron|Bob|Carly][MACRO lastname][^Alda|Brockovich|Clayton]{firstname} {lastname}, {firstname} {lastname}'''
@@ -355,7 +355,7 @@ def test_nested_macros():
 
 def test_more_nested_macros():
 	text = '''[MACRO alpha][~apple {beta}][MACRO beta][~bear {cappa}][MACRO cappa][@delta>dog][DEFINE ^@delta]{alpha}'''
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	result = parse(text, params)
 	assert result == "apple bear dog"
 	text = '''{alpha}[MACRO alpha][~apple {beta}][MACRO beta][~bear {cappa}][MACRO cappa][@delta>dog][DEFINE ^@delta]'''
@@ -367,7 +367,7 @@ def test_more_nested_macros():
 
 def test_layered_macros():
 	text = '''[MACRO alpha][@zetta>Use {beta} macro.][MACRO beta][@yotta>this is yotta|not yotta][DEFINE ^@zetta][DEFINE @yotta]{alpha}'''
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	result = parse(text, params)
 	assert result == "Use not yotta macro."
 
@@ -375,7 +375,7 @@ def test_layered_macros():
 
 def test_sticky_macro():
 	text = '''[MACRO Soda][25>Sprite|25>Pepsi|25>Coke|25>Fresca]{Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda}'''
-	params = quantparse.ParseParams(useAuthorPreferred=False)
+	params = quantparse.ParseParams(chooseStrategy="random")
 	result = parse(text, params).split()
 	assert result[0] != result[1] or result[1] != result[2] or result[2] != result[3] or result[3] != result[4] or result[4] != result[5] or result[5] != result[6] or result[6] != result[7] or result[7] != result[8] or result[8] != result[9]
 	text = '''[STICKY_MACRO Soda][25>Sprite|25>Pepsi|25>Coke|25>Fresca]{Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda}'''
@@ -397,7 +397,7 @@ def test_long_passages():
 
 [MACRO stuff was cool][stuff was real cool|it was okay|I guess stuff was nice]
 '''
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	result = parse(text, params)
 	expected = '''
 
@@ -419,7 +419,7 @@ def test_long_passages():
 
 [DEFINE ^@canyons]
 [@canyons>Niko took me up into the canyons to teach me some climbing and test the {Grapples}. It felt strange to leave the house, breathe hot air and smell external things, outside things, moss and leaves and rain. Climbing didn't come naturally to me but Niko was patient and a good teacher, and knew his knots and technique. By the time we were loading our packs for the next expedition, I felt reasonably confident I wouldn't immediately kill us both.]'''
-	params = quantparse.ParseParams(useAuthorPreferred=True)
+	params = quantparse.ParseParams(chooseStrategy="author")
 	result = parse(text, params)
 	expected = '''grappling hooks we found at the sporting goods store. The box called them “Grapple Buddies,” which seemed incongruously cheerful.
 
