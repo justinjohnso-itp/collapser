@@ -30,14 +30,17 @@ def parse(tokens, parseParams):
     global variables
     variables = {}
     macros.reset()
-    tokens = handleDefines(tokens, parseParams)
-    tokens = macros.handleDefs(tokens, parseParams)
-    renderedChunks = process(tokens, parseParams)
-    renderedString = ''.join(renderedChunks)
-    renderedString = macros.expand(renderedString, parseParams)
+    renderedString = handleParsing(tokens, parseParams)
+    return renderedString
 
-    finalString = renderedString
-    return finalString
+
+def handleParsing(origtokens, params):
+    tokens = handleDefines(origtokens, params)
+    tokens = macros.handleDefs(tokens, params)
+    renderedChunks = process(tokens, params)
+    renderedString = ''.join(renderedChunks)
+    renderedString = macros.expand(renderedString, params)
+    return renderedString
 
 
 
