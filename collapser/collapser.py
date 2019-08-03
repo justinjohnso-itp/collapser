@@ -148,6 +148,8 @@ def main():
 	if collapsedText == "":
 		sys.exit()
 
+	fileio.writeOutputFile("output/raw_out.txt", collapsedText)
+
 	outputText = latexifier.go(collapsedText)
 
 	postConversionSanityCheck(outputText)

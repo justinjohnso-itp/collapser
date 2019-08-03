@@ -6,9 +6,7 @@
 
 import quantlex
 import quantparse
-
-
-
+import re
 
 
 # Main entry point.
@@ -25,6 +23,15 @@ def go(sourceText, params):
 
     output = quantparse.parse(result.tokens, params)
 
-    # print output
+    output = specialFixes(output)
 
     return output
+
+
+
+def specialFixes(text):
+    # Ensure verses don't break across pages.
+    # {verse/A looking-glass held above this stream...}
+    text = re.sub(r"{verse/(.*)}", r"{verse/\g<1> \\nowidow }", text)
+    
+    return text
