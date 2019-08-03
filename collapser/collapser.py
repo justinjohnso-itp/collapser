@@ -90,6 +90,7 @@ def main():
 	seed = -1
 	authorPreferred = False
 	doPDF = True
+	pdfOutputDir = "output/"
 
 	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "author", "nopdf"])
 	print opts
@@ -160,7 +161,7 @@ def main():
 
 	if doPDF:
 		print "Running lualatex..."
-		cmdParams = '-interaction=nonstopmode -synctex=1 -recorder "%s"' % outputFile
+		cmdParams = '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (pdfOutputDir, outputFile)
 		cmdArray = shlex.split(cmdParams)
 		cmdArray.insert(0, "lualatex")
 
