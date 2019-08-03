@@ -34,4 +34,6 @@ def specialFixes(text):
     # {verse/A looking-glass held above this stream...}
     text = re.sub(r"{verse/(.*)}", r"{verse/\g<1> \\nowidow }", text)
     
+    text = re.sub(r"([\n\s]*){chapter/", r" \\nowidow \g<1>{chapter/", text)
+    
     return text
