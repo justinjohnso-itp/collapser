@@ -10,7 +10,12 @@ import macros
 
 
 class ParseParams:
+
+	VALID_STRATEGIES = ["random", "author", "longest"]
+
 	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25):
+		if chooseStrategy not in self.VALID_STRATEGIES:
+			raise ValueError("Unrecognized choose strategy '%s'" % chooseStrategy)
 		self.chooseStrategy = chooseStrategy
 		self.preferenceForAuthorsVersion = preferenceForAuthorsVersion
 
@@ -89,6 +94,7 @@ def handleDefines(tokens, params):
 		elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 			varPicked = alts.getAuthorPreferred()
 			variables[varPicked] = True
+		# TODO: Figure out how to do Defines with longest/shortest
 		elif len(alts) == 1:
 			varPicked = alts.getRandom()
 			variables[varPicked] = chooser.percent(50)
@@ -130,6 +136,16 @@ class Alts:
 			return chooser.oneOf(self.alts).txt
 		else:
 			return chooser.distributedPick(self.alts)
+
+	def getLongest(self):
+		longestPos = -1
+		longestLength = -1
+		for pos, alt in enumerate(self.alts):
+			length = len(alt.txt)
+			if length > longestLength:
+				longestLength = length
+				longestPos = pos
+		return self.alts[longestPos].txt
 
 	def __len__(self):
 		return len(self.alts)
@@ -262,7 +278,9 @@ def renderControlSequence(tokens, params):
 		if token.type == "DIVIDER":
 			alts.add("")
 
-	if params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
+	if params.chooseStrategy == "longest":
+		return alts.getLongest()
+	elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 		result = alts.getAuthorPreferred()
 	else:
 		result = alts.getRandom()

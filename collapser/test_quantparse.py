@@ -382,6 +382,14 @@ def test_sticky_macro():
 	result = parse(text, params).split()
 	assert result[0] == result[1] and result[1] == result[2] and result[2] == result[3] and result[3] == result[4] and result[4] == result[5] and result[5] == result[6] and result[6] == result[7] and result[7] == result[8] and result[8] == result[9]
 
+def test_alt_choose_strategies():
+	text = '''[A|B|The longest possible option] is [A|definitely absolutely the longest|pretty long] and [this is the longest for sure|also pretty long, really|not so long].'''
+	params = quantparse.ParseParams(chooseStrategy="longest")
+	for i in range(10):
+		assert parse(text, params) == "The longest possible option is definitely absolutely the longest and this is the longest for sure."
+
+
+
 def test_long_passages():
 	text = '''
 
