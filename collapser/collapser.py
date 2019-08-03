@@ -2,17 +2,16 @@
 
 import sys
 import getopt
+import subprocess
+import shlex
 
 import fileio
 import collapse
 import latexifier
 import quantlex
+import quantparse
 import chooser
 
-inputFile = ""
-outputFile = ""
-inputText = ""
-outputText = ""
 
 latexBegin = "fragments/begin.tex"
 latexEnd = "fragments/end.tex"
@@ -46,14 +45,26 @@ def postLatexSanityCheck(text):
 
 
 def showUsage():
-	print """Usage: collapser -i <INPUT> -o <OUTPUT> options"""
+	print """Usage: collapser -i <INPUT> -o <OUTPUT> options
+Arguments:
+  --help         Show this message
+  --author       Make author-preferred version
+  --seed=x       Use the given integer as a seed
+"""
 
 
 def main():
 
 	print """Collapser 0.1"""
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help"])
+	inputFile = ""
+	outputFile = ""
+	inputText = ""
+	outputText = ""
+	seed = -1
+	authorPreferred = False
+
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "author"])
 	print opts
 	print args
 	if len(args) > 0:
@@ -68,15 +79,26 @@ def main():
 			print "Help."
 			showUsage()
 			sys.exit()
+		elif opt == "--seed":
+			try:
+				seed = int(arg)
+			except:
+				print "Invalid --seed parameter '%s': not an integer." % arg
+				sys.exit()
+		elif opt == "--author":
+			authorPreferred = True
 
 	if inputFile == "" or outputFile == "":
 		print "Missing input or output file."
 		showUsage()
 		sys.exit()
 
-	seed = chooser.number(10000000)
+	if seed is -1:
+		seed = chooser.number(10000000)
+		print "Seed (random): %d" % seed
+	else:
+		print "Seed (requested): %d" % seed
 	chooser.setSeed(seed)
-	print "Seed (random): %d" % seed
 
 	files = []
 	inputText = fileio.readInputFile(inputFile)
@@ -92,7 +114,8 @@ def main():
 	for file in files:
 		fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)
-	collapsedText = collapse.go(joinedFileTexts)
+	params = quantparse.ParseParams(useAuthorPreferred = authorPreferred, preferenceForAuthorsVersion = 20)
+	collapsedText = collapse.go(joinedFileTexts, params)
 
 	outputText = latexifier.go(collapsedText)
 
