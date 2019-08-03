@@ -52,11 +52,11 @@ template_i = ['''\\textit{''', '''}''']
 
 template_verse = ['''
 
-\\vspace*{1\\nbs}
+\\vspace{1\\nbs}
 \\begin{adjustwidth}{3em}{} 
 \\textit{''', '''}
 \\end{adjustwidth}
-\\vspace*{1\\nbs}
+\\vspace{1\\nbs}
 
 ''']
 
