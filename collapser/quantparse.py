@@ -81,6 +81,9 @@ def handleDefines(tokens, params):
 			if item.txt in params.setDefines:
 				variables[item.txt] = True
 				foundSetDefine = True
+			elif "!" + item.txt in params.setDefines:
+				variables[item.txt] = False
+				foundSetDefine = True
 			else:
 				if item.authorPreferred:
 					foundAuthorPreferred = True
