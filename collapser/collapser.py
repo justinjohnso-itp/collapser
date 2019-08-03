@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import getopt
 
 import fileio
 import collapse
@@ -18,8 +19,6 @@ latexEnd = "fragments/end.tex"
 latexFrontMatter = "fragments/frontmatter.tex"
 latexPostFrontMatter = "fragments/postfrontmatter.tex"
 
-def showUsage():
-	print """Usage: collapser <INPUT> <OUTPUT> options"""
 
 
 def latexWrapper(text, includeFrontMatter=True):
@@ -45,16 +44,35 @@ def postLatexSanityCheck(text):
 		raise ValueError("Found invalid underscore '_' character on line %d:\n%s" % (quantlex.find_line_number(text, pos), quantlex.find_line_text(text, pos)) )
 	return
 
+
+def showUsage():
+	print """Usage: collapser -i <INPUT> -o <OUTPUT> options"""
+
+
 def main():
 
 	print """Collapser 0.1"""
 
-	if len(sys.argv) != 3:
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help"])
+	print opts
+	print args
+	if len(args) > 0:
+		print "Unrecognized arguments: %s" % args
+		sys.exit()
+	for opt, arg in opts:
+		if opt == "-i":
+			inputFile = arg
+		elif opt == "-o":
+			outputFile = arg
+		elif opt == "--help":
+			print "Help."
+			showUsage()
+			sys.exit()
+
+	if inputFile == "" or outputFile == "":
+		print "Missing input or output file."
 		showUsage()
 		sys.exit()
-
-	inputFile = sys.argv[1]
-	outputFile = sys.argv[2]
 
 	seed = chooser.number(10000000)
 	chooser.setSeed(seed)
