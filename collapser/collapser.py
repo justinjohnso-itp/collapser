@@ -4,6 +4,7 @@ import sys
 import getopt
 import subprocess
 import shlex
+import re
 
 import fileio
 import collapse
@@ -36,12 +37,36 @@ def latexWrapper(text, includeFrontMatter=True):
 
 
 # Pre-latexifier.
-def postLatexSanityCheck(text):
+def postConversionSanityCheck(text):
 	# Look for unexpected characters etc. here
 	pos = text.find('_')
 	if pos is not -1:
 		raise ValueError("Found invalid underscore '_' character on line %d:\n%s" % (quantlex.find_line_number(text, pos), quantlex.find_line_text(text, pos)) )
 	return
+
+def postLatexSanityCheck(latexLog):
+	numPages = 0
+
+	overfulls = len(re.findall(r"\nOverfull \\hbox", latexLog))
+	if overfulls > 500:
+		print "Too many overfulls (found %d); halting." % overfulls
+		return False
+
+	status = re.search(r"Output written on .*\.pdf \(([0-9]+) pages, ([0-9]+) bytes", latexLog)
+	if status:
+		numPages = int(status.groups()[0])
+		numBytes = int(status.groups()[1])
+		if numPages < 5 or numPages > 300:
+			print "Unexpected page length (%d); halting." % numPages
+			return False
+		if numBytes < 100000 or numBytes > 1000000:
+			print "Unexpected size (%d kb); halting." % (numBytes / 1000)
+			return False
+	else:
+		print "Couldn't find output line; halting."
+		return False
+
+	return numPages
 
 
 def showUsage():
@@ -116,15 +141,33 @@ def main():
 	joinedFileTexts = ''.join(fileTexts)
 	params = quantparse.ParseParams(useAuthorPreferred = authorPreferred, preferenceForAuthorsVersion = 20)
 	collapsedText = collapse.go(joinedFileTexts, params)
+	if collapsedText == "":
+		sys.exit()
 
 	outputText = latexifier.go(collapsedText)
 
-	postLatexSanityCheck(outputText)
+	postConversionSanityCheck(outputText)
 
 	outputText = latexWrapper(outputText, includeFrontMatter=False)	
 
 	fileio.writeOutputFile(outputFile, outputText)
 
+	print "Running lualatex..."
+	cmdParams = '-interaction=nonstopmode -synctex=1 -recorder "%s"' % outputFile
+	cmdArray = shlex.split(cmdParams)
+	cmdArray.insert(0, "lualatex")
+
+	try:
+		output = subprocess.check_output(cmdArray,stderr=subprocess.STDOUT)
+	except subprocess.CalledProcessError as e:
+		# For some reason this is failing with error code 1 even when it successfully works, so we need to do our own post-processing.
+		latexlog = e.output
+		result = postLatexSanityCheck(latexlog)
+		if result is False:
+			print "*** Generation failed. Check .log file in output folder."
+		else:
+			print "Success! Generated %d page PDF." % result
+		# raise RuntimeError("command '{}' return with error (code {})".format(e.cmd, e.returncode))
 
 
 main()
