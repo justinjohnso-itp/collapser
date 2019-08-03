@@ -2,6 +2,8 @@
 import random
 
 
+def number(highest):
+	return random.randint(1,highest)
 
 def oneOf(item):
 	return random.choice(item)

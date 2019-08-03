@@ -6,6 +6,7 @@ import fileio
 import collapse
 import latexifier
 import quantlex
+import chooser
 
 inputFile = ""
 outputFile = ""
@@ -54,6 +55,10 @@ def main():
 
 	inputFile = sys.argv[1]
 	outputFile = sys.argv[2]
+
+	seed = chooser.number(10000000)
+	chooser.setSeed(seed)
+	print "Seed (random): %d" % seed
 
 	files = []
 	inputText = fileio.readInputFile(inputFile)
