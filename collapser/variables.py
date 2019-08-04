@@ -11,6 +11,9 @@ class Variables:
 			return self.variables[key]
 		return False
 
+	def set(self, key, val):
+		self.variables[key] = val
+
 	def render(self, tokens, params):
 		assert tokens[0].type == "VARIABLE"
 		varName = tokens[0].value
@@ -90,10 +93,10 @@ def handleDefs(tokens, params):
 			if item.txt in __v.variables:
 				raise ValueError("Variable '@%s' is defined twice." % item.txt)
 			if item.txt in params.setDefines:
-				__v.variables[item.txt] = True
+				__v.set(item.txt, True)
 				foundSetDefine = True
 			elif "!" + item.txt in params.setDefines:
-				__v.variables[item.txt] = False
+				__v.set(item.txt, False)
 				foundSetDefine = True
 			else:
 				if item.authorPreferred:
@@ -102,7 +105,7 @@ def handleDefs(tokens, params):
 				if item.prob:
 					probTotal += item.prob
 				alts.add(item.txt, item.prob)
-				__v.variables[item.txt] = False
+				__v.set(item.txt, False)
 
 			if token.type == "DIVIDER":
 				index += 1 
@@ -113,17 +116,17 @@ def handleDefs(tokens, params):
 				raise ValueError("Probabilities in a DEFINE must sum to 100: found %d instead. '%s'" % (probTotal, alts))
 			if params.chooseStrategy == "author" and len(alts) == 1 and not foundAuthorPreferred:
 				varPicked = alts.getAuthorPreferred()
-				__v.variables[varPicked] = False
+				__v.set(varPicked, False)
 			elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 				varPicked = alts.getAuthorPreferred()
-				__v.variables[varPicked] = True
+				__v.set(varPicked, True)
 			# TODO: Figure out how to do Defines with longest/shortest
 			elif len(alts) == 1:
 				varPicked = alts.getRandom()
-				__v.variables[varPicked] = chooser.percent(50)
+				__v.set(varPicked, chooser.percent(50))
 			else:
 				varPicked = alts.getRandom()
-				__v.variables[varPicked] = True
+				__v.set(varPicked, True)
 
 		index += 1 # skip over final CTRLEND
 	return output
