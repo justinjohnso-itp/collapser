@@ -8,6 +8,14 @@ def number(highest):
 def oneOf(item):
 	return random.choice(item)
 
+__iterators = {}
+def iter(key):
+	global __iterators
+	if key not in __iterators:
+		__iterators[key] = 0
+	__iterators[key] += 1
+	return __iterators[key]
+
 def percent(odds):
 	return random.randint(1,100) <= odds
 

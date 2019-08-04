@@ -5,6 +5,7 @@ import chooser
 class Variables:
 	def __init__(self):
 		self.variables = {}
+		self.varGroups = {}   # key=groupname, val=array of var keys in that group
 
 	# Note that this can be false EITHER if the variable has never been defined OR if it was set to false.
 	def check(self, key):
@@ -12,8 +13,11 @@ class Variables:
 			return self.variables[key]
 		return False
 
-	def set(self, key, val = True):
+	def set(self, groupname, key, val = True):
 		self.variables[key] = val
+		if groupname not in self.varGroups:
+			self.varGroups[groupname] = []
+			self.varGroups[groupname].append(key)
 
 	def render(self, tokens, params):
 		assert tokens[0].type == "VARIABLE"
@@ -81,6 +85,7 @@ def handleDefs(tokens, params):
 		alts = ctrlseq.Alts()
 		probTotal = 0
 		foundSetDefine = False
+		groupName = "group%d" % chooser.iter("groups")
 		while token.type != "CTRLEND":
 			ctrl_contents = []
 			while token.type not in ["DIVIDER", "CTRLEND"]:
@@ -92,10 +97,10 @@ def handleDefs(tokens, params):
 			if item.txt in __v.variables:
 				raise ValueError("Variable '@%s' is defined twice." % item.txt)
 			if item.txt in params.setDefines:
-				__v.set(item.txt)
+				__v.set(groupName, item.txt)
 				foundSetDefine = True
 			elif "!" + item.txt in params.setDefines:
-				__v.set(item.txt, False)
+				__v.set(groupName, item.txt, False)
 				foundSetDefine = True
 			else:
 				if item.authorPreferred:
@@ -104,7 +109,7 @@ def handleDefs(tokens, params):
 				if item.prob:
 					probTotal += item.prob
 				alts.add(item.txt, item.prob)
-				__v.set(item.txt, False)
+				__v.set(groupName, item.txt, False)
 
 			if token.type == "DIVIDER":
 				index += 1 
@@ -115,17 +120,17 @@ def handleDefs(tokens, params):
 				raise ValueError("Probabilities in a DEFINE must sum to 100: found %d instead. '%s'" % (probTotal, alts))
 			if params.chooseStrategy == "author" and len(alts) == 1 and not foundAuthorPreferred:
 				varPicked = alts.getAuthorPreferred()
-				__v.set(varPicked, False)
+				__v.set(groupName, varPicked, False)
 			elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 				varPicked = alts.getAuthorPreferred()
-				__v.set(varPicked)
+				__v.set(groupName, varPicked)
 			# TODO: Figure out how to do Defines with longest/shortest
 			elif len(alts) == 1:
 				varPicked = alts.getRandom()
-				__v.set(varPicked, chooser.percent(50))
+				__v.set(groupName, varPicked, chooser.percent(50))
 			else:
 				varPicked = alts.getRandom()
-				__v.set(varPicked)
+				__v.set(groupName, varPicked)
 
 		index += 1 # skip over final CTRLEND
 	return output
