@@ -13,7 +13,7 @@ import sys
 
 class ParseParams:
 
-	VALID_STRATEGIES = ["random", "author", "longest"]
+	VALID_STRATEGIES = ["random", "author", "longest", "shortest"]
 
 	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[]):
 		if chooseStrategy not in self.VALID_STRATEGIES:
@@ -32,10 +32,10 @@ class ParseParams:
 # Call with an object of type ParseParams.
 def parse(tokens, parseParams):
 	print "** PARSING **"
-	if parseParams.chooseStrategy == "longest":
-		print "Calculating longest defines (ignoring seed)..."
+	if parseParams.chooseStrategy in ["longest", "shortest"]:
+		print "Calculating %s defines (ignoring seed)..." % parseParams.chooseStrategy
 		print parseParams
-		longerDefines = []
+		bestDefines = []
 
 		# Process all the DEFINEs in the code, with a copy of everything.
 		variables.reset()
@@ -44,16 +44,20 @@ def parse(tokens, parseParams):
 		tempTokens = variables.handleDefs(tempTokens, parseParams)
 		tempTokens = macros.handleDefs(tempTokens, parseParams)
 
-		# Now for each option in a define group, see which one makes the longest text.
+		# Now for each option in a define group, see which one is best.
 		for info in variables.groups():
 			optsToTry = list(info)
+			for key in optsToTry:
+				variables.__v.variables[key] = False
 			# If just one option, we want to try it as True and False.
 			if len(optsToTry) is 1:
 				optsToTry.append("!" + optsToTry[0])
 			print "optsToTry: %s" % optsToTry
 
-			longestPos = -1
-			longestLen = -1
+			bestPos = -1
+			bestLen = -1
+			if parseParams.chooseStrategy == "shortest":
+				bestLen = 999999999
 			for pos, key in enumerate(optsToTry):
 				parseParamsCopy = parseParams.copy()
 				parseParamsCopy.setDefines.append(key)
@@ -72,17 +76,21 @@ def parse(tokens, parseParams):
 				variables.__v.variables[key] = oldVal
 
 				thisLen = len(testRender)
-				if thisLen > longestLen:
-					longestPos = pos
-					longestLen = thisLen
+				isBetter = False
+				if parseParams.chooseStrategy == "longest":
+					isBetter = thisLen > bestLen
+				elif parseParams.chooseStrategy == "shortest":
+					isBetter = thisLen < bestLen
+				if isBetter:
+					bestPos = pos
+					bestLen = thisLen
 
 				print "for %s, len=%d" % (key, thisLen)
 
-			print "Longest was %s at %d" % (optsToTry[longestPos], longestLen)
-			longerDefines.append(optsToTry[longestPos])
+			print "Best was %s at %d" % (optsToTry[bestPos], bestLen)
+			bestDefines.append(optsToTry[bestPos])
 
-		print "Longest: %s" % longerDefines
-		parseParams.setDefines = longerDefines
+		parseParams.setDefines = bestDefines
 		print "parseParams is now: %s" % parseParams
 
 	variables.reset()
