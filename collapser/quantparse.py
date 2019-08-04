@@ -22,7 +22,7 @@ class ParseParams:
 		self.setDefines = setDefines
 
 	def __str__(self):
-		return "chooseStrategy: %s, preferenceForAuthorsVersion: %s" % (self.chooseStrategy, self.preferenceForAuthorsVersion)
+		return "chooseStrategy: %s, preferenceForAuthorsVersion: %s, setDefines: %s" % (self.chooseStrategy, self.preferenceForAuthorsVersion, self.setDefines)
 
 	def copy(self):
 		return ParseParams(chooseStrategy=self.chooseStrategy, preferenceForAuthorsVersion=self.preferenceForAuthorsVersion, setDefines=list(self.setDefines))
