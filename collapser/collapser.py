@@ -76,6 +76,7 @@ Arguments:
   --author       Make author-preferred version
   --seed=x       Use the given integer as a seed
   --nopdf		 Skip pdf generation
+  --longest		 Make the longest possible variation
 """
 
 
@@ -89,10 +90,11 @@ def main():
 	outputText = ""
 	seed = -1
 	authorPreferred = False
+	longest = False
 	doPDF = True
 	pdfOutputDir = "output/"
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "author", "nopdf"])
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "author", "nopdf", "longest"])
 	print opts
 	print args
 	if len(args) > 0:
@@ -115,6 +117,8 @@ def main():
 				sys.exit()
 		elif opt == "--author":
 			authorPreferred = True
+		elif opt == "--longest":
+			longest = True
 		elif opt == "--nopdf":
 			doPDF = False
 
@@ -144,7 +148,12 @@ def main():
 	for file in files:
 		fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)
-	params = quantparse.ParseParams(chooseStrategy = "author", preferenceForAuthorsVersion = 20)
+	chooseStrategy = "random"
+	if authorPreferred:
+		chooseStrategy = "author"
+	elif longest:
+		chooseStrategy = "longest"
+	params = quantparse.ParseParams(chooseStrategy = chooseStrategy, preferenceForAuthorsVersion = 20)
 	collapsedText = collapse.go(joinedFileTexts, params)
 	if collapsedText == "":
 		sys.exit()
