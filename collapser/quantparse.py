@@ -7,7 +7,7 @@ from quantlex import tokens
 import chooser
 import macros
 import variables
-import units
+import ctrlseq
 
 import sys
 
@@ -109,7 +109,7 @@ def renderControlSequence(tokens, params):
 	if tokens[0].type == "VARIABLE":
 		return variables.render(tokens, params)
 
-	alts = units.Alts()
+	alts = ctrlseq.Alts()
 
 	# [text] means a random chance of "text" or "", but if authorPreferred is true, never show it.
 	if len(tokens) == 1 and tokens[0].type == "TEXT":
@@ -143,7 +143,7 @@ def renderControlSequence(tokens, params):
 					thisAltBits.append(token)
 					index += 1
 
-			item = units.parseItem(thisAltBits)
+			item = ctrlseq.parseItem(thisAltBits)
 			if item.authorPreferred:
 				alts.setAuthorPreferred()
 			alts.add(item.txt, item.prob)
