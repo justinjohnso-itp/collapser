@@ -248,9 +248,3 @@ def renderControlSequence(tokens, params):
 		result = alts.getRandom()
 	return result
 
-def checkVar(key):
-	return variables.checkVar(key)
-
-def showVars():
-	return variables.showVars()
-

@@ -190,9 +190,9 @@ def test_simple_defines_set_randomly():
 	ctr = 0
 	while ((not foundY) or (not foundN)) and ctr < 100:
 		result = parse(text)
-		if quantparse.checkVar("test") == True:
+		if quantparse.variables.check("test") == True:
 			foundY = True
-		elif quantparse.checkVar("test") == False:
+		elif quantparse.variables.check("test") == False:
 			foundN = True
 		ctr += 1
 	assert foundY
@@ -203,16 +203,16 @@ def test_simple_define_with_author_preferred():
 	params = quantparse.ParseParams(chooseStrategy="author")
 	for _ in range(100):
 		parse(text, params)
-		assert quantparse.checkVar("test") == True
+		assert quantparse.variables.check("test") == True
 	text = "[DEFINE @test]"
 	for _ in range(100):
 		parse(text, params)
-		assert quantparse.checkVar("test") == False
+		assert quantparse.variables.check("test") == False
 	text = "[DEFINE ^@test1][DEFINE @test2]"
 	for _ in range(10):
 		parse(text, params)
-		assert quantparse.checkVar("test1") == True	
-		assert quantparse.checkVar("test2") == False	
+		assert quantparse.variables.check("test1") == True	
+		assert quantparse.variables.check("test2") == False	
 
 
 def test_defines_with_probabilities():
@@ -220,7 +220,7 @@ def test_defines_with_probabilities():
 	params = quantparse.ParseParams(chooseStrategy="author")
 	for _ in range(100):
 		output = parse(text, params)
-		assert quantparse.checkVar("barcelona") == True
+		assert quantparse.variables.check("barcelona") == True
 
 def test_defines_with_probabilities_must_sum_to_100():
 	text = "[DEFINE 80>@A|19>@B]"
@@ -259,14 +259,14 @@ def test_okay_to_define_after_using():
 def test_vars_collected_and_stripped():
 	text = "[DEFINE @alpha][DEFINE 50>@beta|50>@gamma]Hello, friends![DEFINE @omega]"
 	result = parse(text)
-	keys = quantparse.showVars()
+	keys = quantparse.variables.showVars()
 	assert len(keys) == 4
 	assert "alpha" in keys
 	assert "beta" in keys
 	assert "gamma" in keys
 	assert "omega" in keys
 	assert result == "Hello, friends!"
-	assert quantparse.checkVar("random") == False
+	assert quantparse.variables.check("random") == False
 
 def test_variable_refs():
 	text = "[DEFINE ^@test][@test>This is a test message. ]Huzzah!"
