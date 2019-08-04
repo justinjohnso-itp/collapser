@@ -89,12 +89,11 @@ def main():
 	inputText = ""
 	outputText = ""
 	seed = -1
-	authorPreferred = False
-	longest = False
+	strategy = "random"
 	doPDF = True
 	pdfOutputDir = "output/"
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "author", "nopdf", "longest"])
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf"])
 	print opts
 	print args
 	if len(args) > 0:
@@ -115,10 +114,10 @@ def main():
 			except:
 				print "Invalid --seed parameter '%s': not an integer." % arg
 				sys.exit()
-		elif opt == "--author":
-			authorPreferred = True
-		elif opt == "--longest":
-			longest = True
+		elif opt == "--strategy":
+			if arg not in quantparse.ParseParams.VALID_STRATEGIES:
+				print "Invalid --strategy parameter '%s': must be one of %s" % (arg, quantparse.ParseParams.VALID_STRATEGIES)
+			strategy = arg
 		elif opt == "--nopdf":
 			doPDF = False
 
@@ -148,12 +147,7 @@ def main():
 	for file in files:
 		fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)
-	chooseStrategy = "random"
-	if authorPreferred:
-		chooseStrategy = "author"
-	elif longest:
-		chooseStrategy = "longest"
-	params = quantparse.ParseParams(chooseStrategy = chooseStrategy, preferenceForAuthorsVersion = 20)
+	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = 20)
 	collapsedText = collapse.go(joinedFileTexts, params)
 	if collapsedText == "":
 		sys.exit()
