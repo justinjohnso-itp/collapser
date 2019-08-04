@@ -1,5 +1,6 @@
 
 import chooser
+import variables
 
 
 # Create a class to store possible text alternatives we might print, and handle choosing an appropriate one.
@@ -87,4 +88,71 @@ def parseItem(altBits):
 		index += 1
 
 	return Item(text, prob, ap)
+
+
+
+# We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
+
+def renderControlSequence(tokens, params):
+
+	# Handle []
+	if len(tokens) == 0:
+		return ""
+
+	if tokens[0].type == "VARIABLE":
+		return variables.render(tokens, params)
+
+	alts = Alts()
+
+	# [text] means a random chance of "text" or "", but if authorPreferred is true, never show it.
+	if len(tokens) == 1 and tokens[0].type == "TEXT":
+		alts.add("")
+		if params.chooseStrategy != "author":
+			alts.add(tokens[0].value)
+
+	# [^text] means always show the text if authorPreferred is true.
+	elif len(tokens) == 2 and tokens[0].type == "AUTHOR" and tokens[1].type == "TEXT":
+		alts.add(tokens[1].value)
+		if params.chooseStrategy != "author":
+			alts.add("")
+
+	# [~always print this]
+	elif len(tokens) == 2 and tokens[0].type == "ALWAYS" and tokens[1].type == "TEXT":
+		alts.add(tokens[1].value)
+
+	else:
+		# We have a series of alternates which we want to handle individually.
+		index = 0
+		numDividers = 0
+		while index < len(tokens):
+
+			thisAltBits = []
+
+			endBit = False
+			while not endBit and index < len(tokens):
+				token = tokens[index]
+				endBit = token.type == "DIVIDER"
+				if not endBit:
+					thisAltBits.append(token)
+					index += 1
+
+			item = parseItem(thisAltBits)
+			if item.authorPreferred:
+				alts.setAuthorPreferred()
+			alts.add(item.txt, item.prob)
+
+			index += 1
+
+		if token.type == "DIVIDER":
+			alts.add("")
+
+	if params.chooseStrategy == "longest":
+		return alts.getLongest()
+	elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
+		result = alts.getAuthorPreferred()
+	else:
+		result = alts.getRandom()
+	return result
+
+
 
