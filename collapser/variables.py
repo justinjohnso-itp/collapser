@@ -1,5 +1,5 @@
 
-import quantparse
+import units
 import chooser
 
 class Variables:
@@ -78,7 +78,7 @@ def handleDefs(tokens, params):
 			continue
 		index += 1
 		token = tokens[index]
-		alts = quantparse.Alts()
+		alts = units.Alts()
 		probTotal = 0
 		foundSetDefine = False
 		while token.type != "CTRLEND":
@@ -87,7 +87,7 @@ def handleDefs(tokens, params):
 				ctrl_contents.append(token)
 				index += 1
 				token = tokens[index]
-			item = quantparse.parseItem(ctrl_contents)
+			item = units.parseItem(ctrl_contents)
 			assert tokens[index-1].type == "VARIABLE"
 			if item.txt in __v.variables:
 				raise ValueError("Variable '@%s' is defined twice." % item.txt)
