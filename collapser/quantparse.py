@@ -6,6 +6,7 @@
 import macros
 import variables
 import ctrlseq
+import chooser
 
 import sys
 
@@ -30,38 +31,69 @@ class ParseParams:
 
 # Call with an object of type ParseParams.
 def parse(tokens, parseParams):
-	# print "** PARSING **"
-	# if parseParams.chooseStrategy == "longest":
-	# 	sys.stdout.write("Calculating longest defines...")
-	# 	longerDefines = []
-	# 	ts = list(tokens)
-	# 	handleDefines(ts, parseParams)
-	# 	for key in variables:
-	# 		pp = parseParams.copy()
-	# 		pp.setDefines.append(key)
-	# 		testRender = handleParsing(tokens, pp)
-	# 		lenWith = len(testRender)
-	# 		pp = parseParams.copy()
-	# 		pp.setDefines.append("!" + key)
-	# 		testRender = handleParsing(tokens, pp)
-	# 		lenWithout = len(testRender)
-	# 		print "for %s: with=%d, without=%d" % (key, lenWith, lenWithout)
-	# 		if lenWith > lenWithout:
-	# 			longerDefines.append(key)
-	# 		else:
-	# 			longerDefines.append("!" + key)
-	# 	parseParams.setDefines = longerDefines
-	# 	print longerDefines
+	print "** PARSING **"
+	if parseParams.chooseStrategy == "longest":
+		print "Calculating longest defines (ignoring seed)..."
+		print parseParams
+		longerDefines = []
 
+		# Process all the DEFINEs in the code, with a copy of everything.
+		variables.reset()
+		macros.reset()
+		tempTokens = list(tokens)
+		tempTokens = variables.handleDefs(tempTokens, parseParams)
+		tempTokens = macros.handleDefs(tempTokens, parseParams)
+
+		# Now for each option in a define group, see which one makes the longest text.
+		for info in variables.groups():
+			optsToTry = list(info)
+			# If just one option, we want to try it as True and False.
+			if len(optsToTry) is 1:
+				optsToTry.append("!" + optsToTry[0])
+			print "optsToTry: %s" % optsToTry
+
+			longestPos = -1
+			longestLen = -1
+			for pos, key in enumerate(optsToTry):
+				parseParamsCopy = parseParams.copy()
+				parseParamsCopy.setDefines.append(key)
+				chooser.unSeed()
+
+				oldVal = ""
+				if key[0] != "!":
+					oldVal = variables.__v.variables[key]
+					variables.__v.variables[key] = True
+				else:
+					oldVal = variables.__v.variables[key[1:]]
+					variables.__v.variables[key[1:]] = False
+
+				testRender = handleParsing(tempTokens, parseParamsCopy)
+
+				variables.__v.variables[key] = oldVal
+
+				thisLen = len(testRender)
+				if thisLen > longestLen:
+					longestPos = pos
+					longestLen = thisLen
+
+				print "for %s, len=%d" % (key, thisLen)
+
+			print "Longest was %s at %d" % (optsToTry[longestPos], longestLen)
+			longerDefines.append(optsToTry[longestPos])
+
+		print "Longest: %s" % longerDefines
+		parseParams.setDefines = longerDefines
+		print "parseParams is now: %s" % parseParams
+
+	variables.reset()
+	macros.reset()
+	tokens = variables.handleDefs(tokens, parseParams)
+	tokens = macros.handleDefs(tokens, parseParams)
 	renderedString = handleParsing(tokens, parseParams)
 	return renderedString
 
 
-def handleParsing(origtokens, params):
-	variables.reset()
-	macros.reset()
-	tokens = variables.handleDefs(origtokens, params)
-	tokens = macros.handleDefs(tokens, params)
+def handleParsing(tokens, params):
 	renderedChunks = process(tokens, params)
 	renderedString = ''.join(renderedChunks)
 	renderedString = macros.expand(renderedString, params)
