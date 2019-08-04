@@ -220,7 +220,7 @@ def test_defines_with_probabilities():
 	params = quantparse.ParseParams(chooseStrategy="author")
 	for _ in range(100):
 		output = parse(text, params)
-		assert quantparse.variables["barcelona"] == True
+		assert quantparse.checkVar("barcelona") == True
 
 def test_defines_with_probabilities_must_sum_to_100():
 	text = "[DEFINE 80>@A|19>@B]"
