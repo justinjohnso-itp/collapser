@@ -17,6 +17,7 @@ class Variables:
 		self.variables[key] = val
 		if groupname not in self.varGroups:
 			self.varGroups[groupname] = []
+		if key not in self.varGroups[groupname]:
 			self.varGroups[groupname].append(key)
 
 	def render(self, tokens, params):
