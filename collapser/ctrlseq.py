@@ -67,33 +67,11 @@ class Item:
 		if self.prob is not None:
 			return "%s>%s" % (self.prob, base)
 		return base
-		
-
-# A chunk will be one alternative and metadata: "alpha", "80>alpha", "45>^", "". This is always in a context where we have multiple possibilities.
-def parseItem(altBits):
-	index = 0
-	text = ""
-	ap = False
-	prob = None
-	while index < len(altBits):
-		token = altBits[index]
-		if token.type in ("TEXT", "VARIABLE"):
-			text = token.value
-		elif token.type == "AUTHOR":
-			ap = True
-		elif token.type == "NUMBER":
-			prob = token.value
-		else:
-			raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))		
-		index += 1
-
-	return Item(text, prob, ap)
-
 
 
 # We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
 
-def renderControlSequence(tokens, params):
+def render(tokens, params):
 
 	# Handle []
 	if len(tokens) == 0:
@@ -153,6 +131,31 @@ def renderControlSequence(tokens, params):
 	else:
 		result = alts.getRandom()
 	return result
+
+
+
+		
+
+# A chunk will be one alternative and metadata: "alpha", "80>alpha", "45>^", "". This is always in a context where we have multiple possibilities.
+def parseItem(altBits):
+	index = 0
+	text = ""
+	ap = False
+	prob = None
+	while index < len(altBits):
+		token = altBits[index]
+		if token.type in ("TEXT", "VARIABLE"):
+			text = token.value
+		elif token.type == "AUTHOR":
+			ap = True
+		elif token.type == "NUMBER":
+			prob = token.value
+		else:
+			raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))		
+		index += 1
+
+	return Item(text, prob, ap)
+
 
 
 

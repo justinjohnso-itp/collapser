@@ -3,8 +3,6 @@
 
 
 
-from quantlex import tokens
-import chooser
 import macros
 import variables
 import ctrlseq
@@ -89,7 +87,7 @@ def process(tokens, parseParams):
 				ctrl_contents.append(token)
 				index += 1
 				token = tokens[index]
-			rendered = ctrlseq.renderControlSequence(ctrl_contents, parseParams)
+			rendered = ctrlseq.render(ctrl_contents, parseParams)
 
 		output.append(rendered)
 		
