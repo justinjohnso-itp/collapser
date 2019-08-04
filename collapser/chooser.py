@@ -21,7 +21,7 @@ def unSeed():
 def distributedPick(alts):
 	pick = random.randint(1,100)
 	measure = 0
-	for pos, item in enumerate(alts):
+	for item in alts:
 		measure += item.prob
 		if pick <= measure:
 			return item.txt
