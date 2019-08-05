@@ -66,6 +66,11 @@ def reset():
 	global __v
 	__v = Variables()
 
+def setAllTo(val):
+	global __v
+	for key in __v.variables:
+		__v.variables[key] = val
+
 def render(tokens, params):
 	global __v
 	return __v.render(tokens, params)

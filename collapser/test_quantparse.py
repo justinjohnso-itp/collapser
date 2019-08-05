@@ -403,6 +403,36 @@ def test_negated_set_defines():
 	for i in range(10):
 		assert parse(text, params) == "This is null. This is D text. "
 
+def test_longest():
+	text = '''This is [so very super long|short] and that is [quick|such a laborious process].'''
+	params = quantparse.ParseParams(chooseStrategy="longest")
+	for i in range(10):
+		assert parse(text, params) == "This is so very super long and that is such a laborious process."
+	params = quantparse.ParseParams(chooseStrategy="shortest")
+	for i in range(10):
+		assert parse(text, params) == "This is short and that is quick."
+
+
+def test_longest_bool_defines():
+	text = '''[DEFINE @alpha][DEFINE @beta]This is [@alpha>quite long|short] and this is [@beta>extremely long|small].'''
+	params = quantparse.ParseParams(chooseStrategy="longest")
+	for i in range(10):
+		assert parse(text, params) == "This is quite long and this is extremely long."
+	params = quantparse.ParseParams(chooseStrategy="shortest")
+	for i in range(10):
+		assert parse(text, params) == "This is short and this is small."
+
+def test_longest_enum_defines():
+	text = '''[DEFINE 50>@alpha|50>@beta][DEFINE 33>@A|33>@B|34>@C]This is [@alpha>quite a long thing to say][@beta>not much], and that is [@A>succinct][@B>rather long-winded if you ask me].'''
+	params = quantparse.ParseParams(chooseStrategy="longest")
+	for i in range(10):
+		assert parse(text, params) == "This is quite a long thing to say, and that is rather long-winded if you ask me."
+	params = quantparse.ParseParams(chooseStrategy="shortest")
+	for i in range(10):
+		assert parse(text, params) == "This is not much, and that is ."
+
+
+
 
 
 def test_long_passages():

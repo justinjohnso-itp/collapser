@@ -45,10 +45,10 @@ def parse(tokens, parseParams):
 		tempTokens = macros.handleDefs(tempTokens, parseParams)
 
 		# Now for each option in a define group, see which one is best.
-		for info in variables.groups():
-			optsToTry = list(info)
-			for key in optsToTry:
-				variables.__v.variables[key] = False
+		groups = variables.__v.varGroups.keys()
+		for groupname in groups:
+			optsToTry = list(variables.__v.varGroups[groupname])
+
 			# If just one option, we want to try it as True and False.
 			if len(optsToTry) is 1:
 				optsToTry.append("!" + optsToTry[0])
@@ -59,9 +59,11 @@ def parse(tokens, parseParams):
 			if parseParams.chooseStrategy == "shortest":
 				bestLen = 999999999
 			for pos, key in enumerate(optsToTry):
+				variables.setAllTo(False)
 				parseParamsCopy = parseParams.copy()
-				parseParamsCopy.setDefines.append(key)
-				chooser.unSeed()
+				parseParamsCopy.preferenceForAuthorsVersion = 0
+				parseParamsCopy.setDefines = []
+				chooser.setSeed(12345)
 
 				oldVal = ""
 				if key[0] != "!":
@@ -72,8 +74,6 @@ def parse(tokens, parseParams):
 					variables.__v.variables[key[1:]] = False
 
 				testRender = handleParsing(tempTokens, parseParamsCopy)
-
-				variables.__v.variables[key] = oldVal
 
 				thisLen = len(testRender)
 				isBetter = False

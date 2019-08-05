@@ -32,15 +32,15 @@ class Alts:
 		else:
 			return chooser.distributedPick(self.alts)
 
+	def getSortedAlts(self):
+		return sorted(self.alts, key = lambda a: len(a.txt))
+
 	def getLongest(self):
-		longestPos = -1
-		longestLength = -1
-		for pos, alt in enumerate(self.alts):
-			length = len(alt.txt)
-			if length > longestLength:
-				longestLength = length
-				longestPos = pos
-		return self.alts[longestPos].txt
+		lastPos = len(self.alts)-1
+		return self.getSortedAlts()[lastPos].txt
+
+	def getShortest(self):
+		return self.getSortedAlts()[0].txt
 
 	def __len__(self):
 		return len(self.alts)
@@ -52,7 +52,6 @@ class Alts:
 			output.append("%s%s" % (ap, item))
 		return str(output)
 
-		# return str(list(map(lambda x: "%s%s" % ("^", x), self.alts)))
 
 # Create a class for a single text item with probability.
 
@@ -126,6 +125,8 @@ def render(tokens, params):
 
 	if params.chooseStrategy == "longest":
 		return alts.getLongest()
+	elif params.chooseStrategy == "shortest":
+		return alts.getShortest()
 	elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 		result = alts.getAuthorPreferred()
 	else:
