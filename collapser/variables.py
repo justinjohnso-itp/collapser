@@ -54,14 +54,6 @@ def showGroups():
 	global __v
 	return __v.varGroups
 
-def groups():
-	global __v
-	pos = 0
-	keys = __v.varGroups.keys()
-	while pos < len(keys):
-		yield __v.varGroups[keys[pos]]
-		pos += 1
-
 def reset():
 	global __v
 	__v = Variables()

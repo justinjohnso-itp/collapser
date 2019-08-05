@@ -43,6 +43,9 @@ def parse(tokens, parseParams):
 		tempTokens = list(tokens)
 		tempTokens = variables.handleDefs(tempTokens, parseParams)
 		tempTokens = macros.handleDefs(tempTokens, parseParams)
+		parseParamsCopy = parseParams.copy()
+		parseParamsCopy.preferenceForAuthorsVersion = 0
+		chooser.setSeed(chooser.number(100000))
 
 		# Now for each option in a define group, see which one is best.
 		groups = variables.__v.varGroups.keys()
@@ -52,7 +55,6 @@ def parse(tokens, parseParams):
 			# If just one option, we want to try it as True and False.
 			if len(optsToTry) is 1:
 				optsToTry.append("!" + optsToTry[0])
-			print "optsToTry: %s" % optsToTry
 
 			bestPos = -1
 			bestLen = -1
@@ -60,22 +62,12 @@ def parse(tokens, parseParams):
 				bestLen = 999999999
 			for pos, key in enumerate(optsToTry):
 				variables.setAllTo(False)
-				parseParamsCopy = parseParams.copy()
-				parseParamsCopy.preferenceForAuthorsVersion = 0
-				parseParamsCopy.setDefines = []
-				chooser.setSeed(12345)
 
-				oldVal = ""
 				if key[0] != "!":
-					oldVal = variables.__v.variables[key]
 					variables.__v.variables[key] = True
-				else:
-					oldVal = variables.__v.variables[key[1:]]
-					variables.__v.variables[key[1:]] = False
 
-				testRender = handleParsing(tempTokens, parseParamsCopy)
+				thisLen = len(handleParsing(tempTokens, parseParamsCopy))
 
-				thisLen = len(testRender)
 				isBetter = False
 				if parseParams.chooseStrategy == "longest":
 					isBetter = thisLen > bestLen
@@ -85,13 +77,10 @@ def parse(tokens, parseParams):
 					bestPos = pos
 					bestLen = thisLen
 
-				print "for %s, len=%d" % (key, thisLen)
-
 			print "Best was %s at %d" % (optsToTry[bestPos], bestLen)
 			bestDefines.append(optsToTry[bestPos])
 
 		parseParams.setDefines = bestDefines
-		print "parseParams is now: %s" % parseParams
 
 	variables.reset()
 	macros.reset()
