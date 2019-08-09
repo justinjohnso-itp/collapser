@@ -182,13 +182,16 @@ def lex(text):
 		if prevTok is not -1:
 			onlyAllowedAtStart = ["AUTHOR", "ALWAYS"]
 			apAfterText = tok.type in onlyAllowedAtStart and prevTok.type == "TEXT"
-			apBeforeInvalid = tok.type != "TEXT" and tok.type != "DIVIDER" and tok.type != "VARIABLE" and prevTok.type in onlyAllowedAtStart
+			apBeforeInvalid = tok.type != "TEXT" and tok.type != "DIVIDER" and tok.type != "VARIABLE" and tok.type != "CTRLEND" and prevTok.type in onlyAllowedAtStart
 			if apAfterText or apBeforeInvalid:
 				result.isValid = False
 				result.errorLineNumber = find_line_number(text, tok.lexpos)
 				result.errorColumn = find_column(text, tok.lexpos)
 				result.errorLineText = find_line_text(text, tok.lexpos)
-				result.errorMessage = "%s can only come at the start of a text" % tok.type
+				if apAfterText:
+					result.errorMessage = "%s can only come at the start of a text" % tok.type
+				else:
+					result.errorMessage = "Found '%s' but this is only allowed before TEXT, DIVIDER, VARIABLE, or CTRLEND" % tok.type
 				break
 		if tok.type == "DEFINE" and ( prevTok is -1 or prevTok.type != "CTRLBEGIN" ):
 			result.isValid = False

@@ -152,6 +152,14 @@ def test_lex_probabilities():
 	assert toks[8].type == "TEXT"
 	assert toks[8].value == " text"
 
+def test_lex_nums_with_alts():
+	text = "[20> as mine|^]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	text = "[20>^ as mine|]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+
 def test_numbers_one_or_two_digits():
 	text = "[>test]"
 	result = quantlex.lex(text)
