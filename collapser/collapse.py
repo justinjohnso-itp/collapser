@@ -40,5 +40,8 @@ def specialFixes(text):
     # Ensure no orphans right after section breaks.
     text = re.sub(r"{section_break}(\n*)(.*)\n", r"{section_break}\g<1>\g<2> \\noclub \n", text)
 
+    # Use proper latex elipses
+    text = re.sub(r"\.\.\. ", r"\ldots\ ", text)
+
 
     return text
