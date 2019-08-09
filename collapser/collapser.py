@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding=utf-8
 
 import sys
 import getopt
@@ -12,6 +13,10 @@ import latexifier
 import quantlex
 import quantparse
 import chooser
+
+
+# TODO: Detect this invalid syntax: [33: here,]
+# TODO: Allow this syntax: [20> as mine|^]
 
 
 latexBegin = "fragments/begin.tex"
@@ -42,6 +47,11 @@ def postConversionSanityCheck(text):
 	pos = text.find('_')
 	if pos is not -1:
 		raise ValueError("Found invalid underscore '_' character on line %d:\n%s" % (quantlex.find_line_number(text, pos), quantlex.find_line_text(text, pos)) )
+	
+	# pos = text.find('''"''')
+	# if pos is not -1:
+	# 	raise ValueError("Found dumb quote character on line %d; use “ ” \n%s" % (quantlex.find_line_number(text, pos), quantlex.find_line_text(text, pos)) )
+
 	return
 
 def postLatexSanityCheck(latexLog):
