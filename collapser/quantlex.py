@@ -200,7 +200,7 @@ def lex(text):
 			result.errorLineText = find_line_text(text, tok.lexpos)
 			result.errorMessage = "DEFINE can only appear at the start of a control sequence."
 			break;
-		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER", "CTRLBEGIN"] ):
+		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER", "CTRLBEGIN", "DIVIDER"] ):
 			result.isValid = False
 			result.errorLineNumber = find_line_number(text, tok.lexpos)
 			result.errorColumn = find_column(text, tok.lexpos)

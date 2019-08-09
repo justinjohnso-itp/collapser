@@ -302,6 +302,12 @@ def test_parse_variable_with_backward_else():
 	result = parse(text, params)
 	assert result == "A else text only C"
 
+def test_variable_with_named_options():
+	text = "[DEFINE 25>@alpha|25>@beta|25>@gamma|25>@epsilon][@alpha>Adam|@beta>Barney|@gamma>Gerald|@epsilon>Ernie]"
+	result = parse(text)
+	assert result in ["Adam", "Barney", "Gerald", "Ernie"]
+
+
 def test_macro_defs_are_recognized_and_stripped():
 	text = "[MACRO test macro][~always show this]"
 	result = parse(text)

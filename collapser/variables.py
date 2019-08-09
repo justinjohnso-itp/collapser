@@ -20,28 +20,42 @@ class Variables:
 		if key not in self.varGroups[groupname]:
 			self.varGroups[groupname].append(key)
 
+	# [ @alpha> A ]
+	# [ @alpha> A | B ]
+	# [ @alpha> | B ]
+	# [ @alpha> A | @beta> B]
+	# TODO check multiple options are all in same control group
+
 	def render(self, tokens, params):
-		assert tokens[0].type == "VARIABLE"
-		varName = tokens[0].value
-		if tokens[1].type == "TEXT":
-			# [@test>text]
-			text = tokens[1].value
-			if self.check(varName):
-				return text
-			if len(tokens) == 2:
-				return ""
-			# [@test>text1|text2]
-			assert tokens[2].type == "DIVIDER"
-			assert tokens[3].type == "TEXT"
-			return tokens[3].value
-		else:
-			# [@test>|text]
-			assert tokens[1].type == "DIVIDER"
-			assert len(tokens) == 3
-			text = tokens[2].value
-			if self.check(varName):
-				return ""
-			return text
+		pos = 0
+		while pos < len(tokens):
+			# For this group, if we have only text, this is an alternative where nothing previous matched; we should return it.
+			if tokens[pos].type == "TEXT":
+				return tokens[pos].value
+
+			if tokens[pos].type == "DIVIDER":
+				pos += 1
+				continue
+
+			#Otherwise, we must be at a variable.
+			assert tokens[pos].type == "VARIABLE"
+			varName = tokens[pos].value
+			pos += 1
+
+			# A variable can be followed by either text, or a divider or end of the stream. If text, return the text if that variable is true.
+			if tokens[pos].type == "TEXT":
+				if self.check(varName):
+					return tokens[pos].value
+
+			# If it's a divider, return an empty string if the variable is true.
+			elif tokens[pos].type == "DIVIDER":
+				if self.check(varName):
+					return ""
+
+			pos += 1
+
+		return ""
+
 
 
 __v = Variables()

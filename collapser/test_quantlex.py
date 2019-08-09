@@ -180,6 +180,10 @@ def test_numbers_one_or_two_digits():
 	result = quantlex.lex(text)
 	assert result.isValid == False
 
+def test_variable_with_named_options():
+	text = "[DEFINE 25>@alpha|25>@beta|25>@gamma|25>@epsilon][@alpha>Adam|@beta>Barney|@gamma>Gerald|@epsilon>Ernie]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
 
 def test_numbers_only_parsed_in_right_place():
 	text = "I'm 40 years old! [50>alpha]"
