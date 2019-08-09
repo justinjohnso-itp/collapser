@@ -30,6 +30,9 @@ def distributedPick(alts):
 	pick = random.randint(1,100)
 	measure = 0
 	for item in alts:
+		if item.prob is None:
+			# Case of [X or|^]
+			return item.txt
 		measure += item.prob
 		if pick <= measure:
 			return item.txt

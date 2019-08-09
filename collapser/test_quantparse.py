@@ -119,6 +119,13 @@ def test_author_preferred_single():
 	for i in range(10):
 		assert parse(text, params) == "AC"
 
+def test_empty_with_author_pref():
+	text = "[50> as mine|^]"
+	verifyEachIsFound([" as mine", ""], text)
+	params = quantparse.ParseParams(chooseStrategy="author")
+	for i in range(10):
+		assert parse(text, params) == ""
+
 def test_always():
 	text = "[~alpha]"
 	for i in range(10):
