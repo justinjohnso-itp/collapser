@@ -20,6 +20,12 @@ class Variables:
 		if key not in self.varGroups[groupname]:
 			self.varGroups[groupname].append(key)
 
+	def getGroupFromVar(self, key):
+		for groupKey, groupVal in self.varGroups.iteritems():
+			if key in groupVal:
+				return groupKey
+		return ""
+
 	# [ @alpha> A ]
 	# [ @alpha> A | B ]
 	# [ @alpha> | B ]
@@ -28,6 +34,7 @@ class Variables:
 
 	def render(self, tokens, params):
 		pos = 0
+		varCtrlGroup = ""
 		while pos < len(tokens):
 			# For this group, if we have only text, this is an alternative where nothing previous matched; we should return it.
 			if tokens[pos].type == "TEXT":
@@ -40,6 +47,11 @@ class Variables:
 			#Otherwise, we must be at a variable.
 			assert tokens[pos].type == "VARIABLE"
 			varName = tokens[pos].value
+			thisCtrlGroup = self.getGroupFromVar(varName)
+			if varCtrlGroup == "":
+				varCtrlGroup = thisCtrlGroup
+			elif varCtrlGroup != thisCtrlGroup:
+				raise ValueError("Found variables from different groups in tokenstream '%'" % tokens)
 			pos += 1
 
 			# A variable can be followed by either text, or a divider or end of the stream. If text, return the text if that variable is true.
