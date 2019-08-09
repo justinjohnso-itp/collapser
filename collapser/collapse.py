@@ -18,7 +18,7 @@ def go(sourceText, params):
     result = quantlex.lex(sourceText)
     if not result.isValid:
         printedErrorLineText = result.errorLineText
-        printedCol = result.errorColumn
+        printedColumn = result.errorColumn
         if result.errorColumn > 80:
             printedErrorLineText = result.errorLineText[-80:]
             printedColumn = result.errorColumn - (len(result.errorLineText) - len(printedErrorLineText))
