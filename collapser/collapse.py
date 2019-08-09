@@ -17,8 +17,13 @@ def go(sourceText, params):
 
     result = quantlex.lex(sourceText)
     if not result.isValid:
-    	caret = (" " * (result.errorColumn-1+2)) + "^"
-    	print "Lexer found a problem on line %d column %d: %s\n> %s\n%s" % (result.errorLineNumber, result.errorColumn, result.errorMessage, result.errorLineText, caret)
+        printedErrorLineText = result.errorLineText
+        printedCol = result.errorColumn
+        if result.errorColumn > 80:
+            printedErrorLineText = result.errorLineText[-80:]
+            printedColumn = result.errorColumn - (len(result.errorLineText) - len(printedErrorLineText))
+    	caret = (" " * (printedColumn-1+2)) + "^"
+    	print "Lexer found a problem on line %d column %d: %s\n> %s\n%s" % (result.errorLineNumber, result.errorColumn, result.errorMessage, printedErrorLineText, caret)
     	return ""
 
     output = quantparse.parse(result.tokens, params)
