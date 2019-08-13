@@ -8,6 +8,7 @@ import variables
 import ctrlseq
 import chooser
 import result
+import confirm
 
 import sys
 
@@ -16,12 +17,13 @@ class ParseParams:
 
 	VALID_STRATEGIES = ["random", "author", "longest", "shortest"]
 
-	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[]):
+	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=True):
 		if chooseStrategy not in self.VALID_STRATEGIES:
 			raise ValueError("Unrecognized choose strategy '%s'" % chooseStrategy)
 		self.chooseStrategy = chooseStrategy
 		self.preferenceForAuthorsVersion = preferenceForAuthorsVersion
 		self.setDefines = setDefines
+		self.doConfirm = doConfirm
 
 	def __str__(self):
 		return "chooseStrategy: %s, preferenceForAuthorsVersion: %s, setDefines: %s" % (self.chooseStrategy, self.preferenceForAuthorsVersion, self.setDefines)
@@ -92,6 +94,8 @@ def parse(tokens, parseParams):
 	try:
 		tokens = variables.handleDefs(tokens, parseParams)
 		tokens = macros.handleDefs(tokens, parseParams)
+		if parseParams.doConfirm:
+			confirm.process(tokens, ParseParams())
 		renderedString = handleParsing(tokens, parseParams)
 	except result.ParseException, e:
 		print e

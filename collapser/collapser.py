@@ -83,6 +83,7 @@ Arguments:
   --front		 Include frontmatter
   --seed=x       Use the given integer as a seed
   --nopdf		 Skip pdf generation
+  --noconfirm	 Skip variant confirmation
   --strategy=x   Selection strategy.
   		"random": default
   		"author": Author's preferred
@@ -104,10 +105,11 @@ def main():
 	strategy = "random"
 	doPDF = True
 	doFront = False
+	doConfirm = True
 	pdfOutputDir = "output/"
 	setDefines = []
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "front", "set="])
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "noconfirm", "front", "set="])
 	print opts
 	print args
 	if len(args) > 0:
@@ -134,6 +136,8 @@ def main():
 			strategy = arg
 		elif opt == "--nopdf":
 			doPDF = False
+		elif opt == "--noconfirm":
+			doConfirm = False
 		elif opt == "--front":
 			doFront = True
 		elif opt == "--set":
@@ -165,7 +169,7 @@ def main():
 	for file in files:
 		fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)
-	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = 20, setDefines = setDefines)
+	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = 20, setDefines = setDefines, doConfirm = doConfirm)
 	collapsedText = collapse.go(joinedFileTexts, params)
 	if collapsedText == "":
 		sys.exit()
