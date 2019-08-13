@@ -130,7 +130,13 @@ def test_bad_divider_pos():
 	assert result.errorColumn == 11
 
 # TODO test empty control sequence []
-
+def test_bad_empty_control_seq():
+	text = "Can't [have] [] empty control sequence."
+	result = quantlex.lex(text)
+	assert result.isValid == False
+	text = "An optional space[ ] is okay."
+	result = quantlex.lex(text)
+	assert result.isValid == True
 
 def test_lex_probabilities():
 	text = "Text [40>alpha|60>gamma] text"

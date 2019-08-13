@@ -78,6 +78,12 @@ def t_COMMENT(t):
 	r'\#.*\n?'
 	pass # No return value. Token discarded
 
+def t_EMPTY_CTRL_SEQ(t):
+	r'\[\]'
+	__lexState["flaggedBad"] = True
+	__lexState["errorMessage"] = "Empty control sequence"
+	pass
+
 def t_CTRLBEGIN(t):
 	r'\['
 	global __lexState
