@@ -18,7 +18,7 @@ def parseResult(text, params = None):
 		assert False
 	if params == None:
 		params = quantparse.ParseParams(chooseStrategy="random")
-	return quantparse.parse(lexed.package, params)
+	return quantparse.parse(lexed.package, text, params)
 
 
 

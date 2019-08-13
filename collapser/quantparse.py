@@ -33,7 +33,7 @@ class ParseParams:
 
 
 # Call with an object of type ParseParams.
-def parse(tokens, parseParams):
+def parse(tokens, sourceText, parseParams):
 	print "** PARSING **"
 
 	# Calculate and pre-set variables for Longest/Shortest case.

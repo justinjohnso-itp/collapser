@@ -20,7 +20,7 @@ def go(sourceText, params):
         print result
     	return ""
 
-    output = quantparse.parse(result.package, params)
+    output = quantparse.parse(result.package, sourceText, params)
     if not output.isValid:
         print output
         return ""
