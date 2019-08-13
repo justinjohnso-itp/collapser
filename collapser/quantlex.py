@@ -144,7 +144,7 @@ lexer = lex.lex()
 def lex(text):
 	resetLexState()
 	lexer.input(text)
-	result = res.Result()
+	result = res.Result(res.LEX_RESULT)
 	prevTok = -1
 	penultTok = -1
 	while True:

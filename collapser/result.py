@@ -1,7 +1,10 @@
 
+LEX_RESULT = 10
+PARSE_RESULT = 11
 
 class Result:
-	def __init__(self):
+	def __init__(self, resultType):
+		self.resultType = resultType
 		self.tokens = []
 		self.isValid = True
 		self.errorLineNumber = -1
