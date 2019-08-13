@@ -396,7 +396,20 @@ def test_layered_macros():
 	result = parse(text, params)
 	assert result == "Use not yotta macro."
 
-# TODO def guard against recursive macros?
+	# Expanding macros should work even if start pos stays the same each time for a few expansions.
+	text = '''{alpha}[MACRO alpha][~{beta}][MACRO beta][~{gamma}][MACRO gamma][~asdf]'''
+	result = parse(text)
+	assert result == "asdf"
+
+def test_recursive_macro_guard():
+	text = '''{alpha}[MACRO alpha][~{alpha}]'''
+	with pytest.raises(Exception) as e_info:
+		result = parse(text)
+
+	text = '''{alpha}[MACRO alpha][~{beta}][MACRO beta][~{gamma}][MACRO gamma][~{alpha}]'''
+	with pytest.raises(Exception) as e_info:
+		result = parse(text)
+
 
 def test_sticky_macro():
 	text = '''[MACRO Soda][25>Sprite|25>Pepsi|25>Coke|25>Fresca]{Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda} {Soda}'''

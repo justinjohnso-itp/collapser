@@ -87,10 +87,12 @@ formatting_codes = ["section_break", "chapter", "part", "verse", "verse_inline",
 def expand(text, params):
 	mStart = '''{'''
 	mEnd = '''}'''
+	MAX_MACRO_DEPTH = 6
 	global __m
 	if text.find(mStart + mEnd) != -1:
 		raise ValueError("Can't have empty macro sequence {}")
 	startPos = text.find(mStart)
+	renderHadMoreMacrosCtr = 0
 	while startPos != -1:
 		endPos = text.find(mEnd, startPos+1)
 		key = text[startPos+1:endPos]
@@ -101,11 +103,14 @@ def expand(text, params):
 				startPos = text.find(mStart, startPos+1)
 				continue
 			raise ValueError("Unrecognized macro {%s}" % key)
+		if rendered.find(mStart) >= 0:
+			renderHadMoreMacrosCtr += 1
+		else:
+			renderHadMoreMacrosCtr = 0
+		if renderHadMoreMacrosCtr > MAX_MACRO_DEPTH:
+			raise ValueError("Possibly recursive macro loop near: '%s'" % text[startPos:startPos+20])
 		text = text[:startPos] + rendered + text[endPos+1:]
-		# print "s: %d, e: %d, exp: %s, ren: %s, text: '%s'" % (startPos, endPos, exp, rendered, text)
 		oldStartPos = startPos
 		startPos = text.find(mStart, startPos)
-		if oldStartPos == startPos:
-			raise ValueError("Can't resolve macro sequence starting '%s'...; breaking" % text[startPos:startPos+20])
 
 	return text
