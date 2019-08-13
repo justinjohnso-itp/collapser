@@ -95,7 +95,7 @@ def parse(tokens, sourceText, parseParams):
 		tokens = variables.handleDefs(tokens, parseParams)
 		tokens = macros.handleDefs(tokens, parseParams)
 		if parseParams.doConfirm:
-			confirm.process(tokens, ParseParams())
+			confirm.process(tokens, sourceText, ParseParams())
 		renderedString = handleParsing(tokens, parseParams)
 	except result.ParseException, e:
 		print e
