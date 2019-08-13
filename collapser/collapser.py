@@ -80,6 +80,7 @@ def showUsage():
 	print """Usage: collapser -i <INPUT> -o <OUTPUT> options
 Arguments:
   --help         Show this message
+  --front		 Include frontmatter
   --author       Make author-preferred version
   --seed=x       Use the given integer as a seed
   --nopdf		 Skip pdf generation
@@ -98,9 +99,10 @@ def main():
 	seed = -1
 	strategy = "random"
 	doPDF = True
+	doFront = False
 	pdfOutputDir = "output/"
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf"])
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "front"])
 	print opts
 	print args
 	if len(args) > 0:
@@ -127,6 +129,8 @@ def main():
 			strategy = arg
 		elif opt == "--nopdf":
 			doPDF = False
+		elif opt == "--front":
+			doFront = True
 
 	if inputFile == "" or outputFile == "":
 		print "Missing input or output file."
@@ -165,7 +169,7 @@ def main():
 
 	postConversionSanityCheck(outputText)
 
-	outputText = latexWrapper(outputText, includeFrontMatter=False)	
+	outputText = latexWrapper(outputText, includeFrontMatter=doFront)	
 
 	fileio.writeOutputFile(outputFile, outputText)
 
