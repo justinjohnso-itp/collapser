@@ -21,13 +21,19 @@ class Result:
 
 	def showError(self):
 		# Only show one line's worth of line
-		if self.errorColumn > 80:
-			self.errorLineText = self.errorLineText[-80:]
-			self.errorColumn = self.errorColumn - (len(self.errorLineText) - len(self.errorLineText))
+		col = self.errorColumn
+		lineText = self.errorLineText
+		if col > 80:
+			if len(lineText) < 120:
+				lineText = lineText + (" " * 40)
+			lineText = lineText[col-40:col+40]
+			col = 40
+		elif len(lineText) > 80:
+			lineText = lineText[0:80]
 
-		caret = (" " * (self.errorColumn-1+2)) + "^"
+		caret = (" " * (col-1+2)) + "^"
 		typeName = self.getPrintedTypeName().capitalize()
-		return "%s found a problem on line %d column %d: %s\n> %s\n%s" % (typeName, self.errorLineNumber, self.errorColumn, self.errorMessage, self.errorLineText, caret)
+		return "******************************************************\n %s found a problem on line %d column %d:\n ** %s\n\n> %s\n%s" % (typeName, self.errorLineNumber, self.errorColumn, self.errorMessage, lineText, caret)
 
 	def getPrintedTypeName(self):
 		if self.resultType == LEX_RESULT:
