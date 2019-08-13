@@ -2,10 +2,12 @@
 
 import ctrlseq
 import result
+import re
 
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
 	index = 0
+	ws = re.compile(r"\s\s+")
 	while index < len(tokens):
 		token = tokens[index]
 		if token.type == "CTRLBEGIN":
@@ -42,7 +44,9 @@ def process(tokens, sourceText, parseParams):
 			for variant in variants.alts:
 				print "************************************"
 				print '''"%s"''' % str(variant)[:80]
-				print "...%s%s%s..." % (pre, variant, post)
+				rendered = "...%s%s%s..." % (pre, variant, post)
+				rendered = ws.sub(" ", rendered)
+				print rendered
 				print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
 			print "************************************"
 
