@@ -88,6 +88,7 @@ Arguments:
   		"author": Author's preferred
   		"longest"
   		"shortest"
+  --set=x,y,z	 A list of variables to set true for this run.
 """
 
 
@@ -104,8 +105,9 @@ def main():
 	doPDF = True
 	doFront = False
 	pdfOutputDir = "output/"
+	setDefines = []
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "front"])
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "front", "set="])
 	print opts
 	print args
 	if len(args) > 0:
@@ -134,6 +136,8 @@ def main():
 			doPDF = False
 		elif opt == "--front":
 			doFront = True
+		elif opt == "--set":
+			setDefines = arg.split(',')
 
 	if inputFile == "" or outputFile == "":
 		print "Missing input or output file."
@@ -161,7 +165,7 @@ def main():
 	for file in files:
 		fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)
-	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = 20)
+	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = 20, setDefines = setDefines)
 	collapsedText = collapse.go(joinedFileTexts, params)
 	if collapsedText == "":
 		sys.exit()
