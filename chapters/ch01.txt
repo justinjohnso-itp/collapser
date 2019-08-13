@@ -48,7 +48,7 @@ Although our story really [did happen|happened]. [You know that.|You know that, 
 
 [Fine then. Here goes.|Okay, so. Here goes.|Fine. So.|Okay, then. Here goes nothing.|Fine. Okay.] You ready?
 
-This is what happened[15>, Niko,|^] when we found [75>a staircase|25>stairs] under[^neath] my bed, and [decided to go see what was down there|decided to take them down|went down them|took them all the way down].
+This is what happened[15>, Niko,|^] when we found [stairs|some stairs|the stairs|a flight of stairs|the impossible stairs] under[^neath] my bed, and [decided to go see what was down them|decided to take them down|went down them|took them all the way down|decided to find out what was at the bottom|decided to find out where they went|found out where they led].
 
 
 
@@ -61,10 +61,10 @@ This is what happened[15>, Niko,|^] when we found [75>a staircase|25>stairs] und
 
 [DEFINE 50>^@noodlesintro|50>@fightintro]
 
-[MACRO We'd moved in a few weeks back][~We’d just moved in a few weeks back, Niko and I and our friends, mostly his, students and lapsed students and a few brave graduates, still settling into the rambling old off-campus house we’d found in the paper. (Cast your mind back to a time when kids like us had figured out the internet but people old enough to own property hadn’t, so instead of browsing classifieds our bandwidth went entirely to downloading all the music in the world.)]
+[MACRO We'd moved in a few weeks back][~We’d just moved in a few weeks back, Niko and I and our friends, mostly his, students and lapsed students and a few brave graduates, still settling into the rambling old off-campus house we’d found in the newspaper. (Cast your mind back to a time when kids like us had figured out the internet but people old enough to own property hadn’t, so instead of browsing classifieds our bandwidth went entirely to downloading all the music in the world.)]
 
 
-Right from the start things were wrong, but I couldn’t see it. Maybe I didn’t want to. Or maybe I’m being too hard on myself. There wasn’t exactly a roadmap for what happened, a script to follow. But it’s undeniable that even on that very first night---the night of the Russian dance club, remember?---things started happening that shouldn’t have. 
+Right from the start things were wrong, but I couldn’t see it. Maybe I didn’t want to. Or maybe I’m being too hard on myself. There wasn’t exactly a roadmap for what happened[ to us], a script to follow. But it’s undeniable that even on that very first night---the night of the Russian dance club, remember?---[things started happening that shouldn’t have|everything was already wrong]. 
 
 [@noodlesintro>I was in the kitchen making ramen, that big kitchen with its vintage appliances and endless counter space, completely wasted on college kids. {We'd moved in a few weeks back}
 
@@ -76,31 +76,35 @@ I was stirring noodles when Niko forced his way in through the side door, perpet
 
 Resigned. “Tell me.”
 
-“A bunch of people, like everyone really, are heading out to Orbits. Heard of it?” I shook my head; he rolled his eyes. “Course you haven't. It's that new dance club over by the old stadium.][@fightintro>I was on the back patio of our house, looking over the dying backyard grass at the sunset reddening the top of college hill. {We'd moved in a few weeks back} My bio homework was in my lap but I couldn't remember what page the reading started on, or why I cared. All I could think about was whether I'd lost my best friend forever.
+“A bunch of people, like everyone really, are heading out to Orbits. Heard of it?” I shook my head; he rolled his eyes. “Course you haven't. It's that new dance club over by the old stadium.][@fightintro>I was on the back porch, looking over the dying backyard grass at the sunset reddening the top of college hill. {We'd moved in a few weeks back} My bio homework was in my lap but I couldn't remember what page the reading started on, or why I cared. All I could think about was the argument and whether I'd lost my best friend forever.
 
-And then I heard him force his way in through the juddering side door, and stiffened. I didn't want to see him, and I wanted to see him more than anything. Maybe you know how it is. But at any rate I hadn't even started working through my feelings about the fight we'd had. I didn't know what to say, let alone how I felt about it.
+So when I heard him force his way into the house through the juddering side door, I stiffened. I didn't want to see him, and I wanted to see him more than anything. Maybe you know how it is. But at any rate I hadn't even started to work through my feelings about the fight we'd had. I didn't know what to say, let alone how I felt about it.
 
-I tensed, wondering if he would find me out here, or if he'd go upstairs to his room, not sure which I wanted.
+I tensed, wondering if he would find me out here, or if he'd go upstairs to his room, not sure which I wanted. The possibility seemed suspended, unresolved, for an uncomfortably long time.
 
-The screen door creaked open and he came out onto the porch, an unlit cigarette between his lips. "Hey man," he said, noticing me, and then, incredibly, added "What's up?"
+The screen door creaked open and Niko stepped out onto the porch, an unlit cigarette between his lips. "Hey man," he said, noticing me, and then, incredibly, added "What's up?"
 
-I blinked at him while he fumbled for his lighter, oblivious. Was he just playing it cool? Was this some kind of power play? 
+I blinked at him while he fumbled for his lighter, oblivious. Was he just playing it cool? Was this some kind of détente? 
 
-Or had he actually forgotten that eight hours earlier we'd been screaming at each other?
+Or had he actually forgotten that eight hours earlier, we'd been screaming at each other?
 
-He met my eyes at last with a smile that turned quizzical and then slowly morphed into guilt. {i/He had}. Oh my god. He fucking had.
+He met my eyes at last with a smile so unburdened by worries that the answer was immediately obvious, and become more so as his expression turned quizzical and then flushed with guilt. He {i/had} forgotten. Oh my god.
 
-I thought about everything I'd said. Recriminations. Tired arguments. Needs and the various ways they were failing to be met. It all seemed pointless, suddenly. He wasn't going to change and neither was I. We weren't going to give up on friendship because of one fight. Or one more fight, maybe. I wasn't counting.
+Of course he had.
 
-It also hurt to see him looking at me like that. I couldn't take it. His eyes were so fucking sharp. When they looked at you with pain in them, you hurt too.
+I thought about everything we'd said: recriminations, tired arguments, patterns and unmet needs, and it all seemed pointless, suddenly. Neither of us were going to change. Our friction couldn't be talked away, but we were both still here, so I guess that meant we could live with it. Our friendship wouldn't die over just one fight. One more fight, anyway. I wasn't counting.
 
-"Nothing," I said, answering his question, watching the last gasp of light hit the top of the psych building. "Homework. In theory. Did you want something?"
+Or maybe I was making a much bigger deal out of couple heated words than he was, building it up into something with way more significance. That was probably it.
 
-"Wanted to invite you out," he said. "With a bunch of us," he added a bit too smoothly: "there's this new dance club over by the old stadium.] Supposedly they play this fucking feral, crotch-pummeling Russian dance music and lots of sexy people will be there tonight, including us.”
+Anyway he looked guilty now and regretful and it hurt to see him looking at me like that. His eyes were so fucking sharp. When they looked at you with pain in them, you hurt too.
+
+{i/What's up.} "Nothing," I said, making it true with a little sigh, and turned away to watch the last gasp of light hit the top of the earth sciences building. "Homework. In theory. Did you want something?"
+
+"Wanted to invite you out. With a bunch of us," he added, a bit too smoothly. "There's this new dance club over by the old stadium.] Supposedly they play this fucking feral, crotch-pummeling Russian dance music and lots of sexy people will be there tonight, including us.”
 
 “Huh.” [@noodlesintro>I stirred the pot.][@fightintro>I blinked. Green. His eyes were green.] “Not really my thing.”
 
-“Leaving the house isn't really your thing, yeah, I get it.” [@noodlesintro>He came over beside me and reached a bronzed hand over to pinch a couple of noodles, wincing at the heat and slurping them up fast, grinning.][@fightintro>He finally got his cigarette lit and came over to stand by the railing next to me, facing the sunset.] “But sometimes you have to get outside your comfort zone, you know?” [@noodlesintro>He licked his fingers and fixed me with a look that said he wasn't taking no for an answer, and maybe it said something else, or maybe I just wanted to pretend it did. His eyes were so fucking sharp. When they looked at you and wanted something, it hurt.]
+“Leaving the house isn't really your thing, yeah, I get it.” [@noodlesintro>He came over beside me and reached a bronzed hand over to pinch a couple of noodles, wincing at the heat and slurping them up fast, grinning.][@fightintro>He finally got his cigarette lit and came over to stand by the railing next to me, facing the twilight.] “But sometimes you have to get outside your comfort zone, you know?” [@noodlesintro>He licked his fingers and fixed me with a look that said he wasn't taking no for an answer, and maybe it said something else, or maybe I just wanted to pretend it did. His eyes were so fucking sharp. When they looked at you and wanted something, it hurt.]
 
 “Uh. I've got Bio homework.” [@noodlesintro>I blinked. Green. His eyes were green.][@fightintro>I looked down helplessly at the still-closed textbook in my lap, face reddening.] “And I don't want to be around a [lot|bunch] of loud drunk people tonight. Or loud drunk music.”
 
@@ -110,15 +114,15 @@ It also hurt to see him looking at me like that. I couldn't take it. His eyes we
 
 “Look man, what was the point of coming out if you never actually {i/go out}?” [@noodlesintro>He crossed his arms.][@fightintro>He sighed in frustration, and reached up to scratch behind his ear, feet scuffing the deck's unswept wooden planks. He looked back up and caught my eye again with a look that meant he was trying to convey something.] “Come on. Please?”
 
-[@noodlesintro>It clicked then that {i/he} was the one hoping to get some action tonight, probably with][@fightintro>And then it clicked for me what was going on, why he'd forgotten all about this morning. He'd met someone. Probably] some sweet-smelling, dark-skinned exchange student with feathers weaved into her long, black hair. (Yes, {i/her}. I know, I know.) She was the one he wanted to take to this club. Maybe it had been her idea. The thought of watching from a corner while he made moves on some intoxicating girl made my stomach knot up.
+[@noodlesintro>It clicked then that {i/he} was the one hoping to get some action tonight, probably with][@fightintro>And then it clicked for me what was going on, why he'd forgotten all about this morning. He'd met someone. Probably] some sweet-smelling, dark-skinned exchange student with feathers weaved into her long, black hair. [@noodlesintro>(Yes, {i/her}. I know, I know.)] She was the one he wanted to take to this club. Maybe it had been her idea. The thought of watching from a corner while he made moves on some intoxicating girl made my stomach knot up.
 
-But there was something insistent in the way he demanded my presence. Why did he want me there, too? What role was I supposed to play? [@fightintro>Maybe this was a peace offering, of a sort. A way of redefining boundaries. The roadmap for continued friendship, despite everything. {pp} Or maybe, despite everything, something else was going on.]
+But there was something insistent in the way he demanded my presence. Why did he want me there, too? What role was I supposed to play? [@fightintro>Maybe this was a peace offering, of a sort. A way of redefining boundaries. {pp} Or maybe, despite everything, something else was going on.]
 
 I sighed. “I'm going to hate it.”
 
 “Yeah you are.” He grinned wickedly. “Every second. We're leaving at eight. I'll knock on your door.” 
 
-I was somehow committed. I was going, like he'd wanted. [@noodlesintro>On the off-chance that something interesting would happen. {pp} Something did. But not till][@fightintro>Still trapped in his orbit, for better and worse. {pp} That wasn't the reason that night was memorable, of course. That happened] much later, after we got back home, drunk and exhausted.
+I was somehow committed. I was going, like he'd wanted. [@noodlesintro>On the off-chance that something interesting would happen. {pp} Something did. But not till much later, after we got back home, drunk and exhausted.][@fightintro>Still trapped in his orbit, for better and worse.] 
 
 {section_break}
 
@@ -126,11 +130,11 @@ I’d hated the club, as predicted. The music was so loud it hurt, almost as muc
 
 Walking home through the chill night air [back up to the house] was a relief. It was nice just walking with him, and not only because by that point in the evening it would have been hard to walk a straight line on my own. We’d been friends since freshman year of college and best friends since the year after that, and by now [^we] felt like something more, placidly absorbing jokes about being joined at the hip, going everywhere together. [We were; we did|We did]. Especially since his accident, we’d had a profound if unspoken level of companionship I’d never felt with anyone. Usually I was content with that.
 
-We'd been through a lot together. It had been an especially tumultuous gauntlet of an undergrad, although I guess it probably seems that way to everyone. In some ways we had so little in common it was astonishing we'd become friends. But then in othe moments it was like the universe had meant for us to find each other. Over the years we had grown into each other, like two plants in the same small pot. Shared roots twined us together now, half-remembered fragments of stories and selves: pulling an all-nighter crunching on some mad final project of his for which inspiration had only struck in the last possible moment; skipping a funeral to camp together in the rocky canyons of Brushwillow, sharing long silences amidst the lakes and pines; driving to the next town over through a summer midnight, windows rolled down and air thrumming through, desperate to find fresh vegetables for reasons that seemed incredibly important at the time, buzzed from both caffeine and alcohol as in so many stories involving Niko. In our defense the alcohol was supposed to go in the ragu. 
+In some ways we had so little in common it was astonishing we'd become friends. But then in other moments it was like the universe had meant for us to find each other. Over the years we had grown together, like two plants in the same small pot. It had been an especially tumultuous gauntlet of an undergrad---although I guess it probably seems that way to everyone---so shared roots twined us together now, half-remembered fragments of stories and selves: pulling an all-nighter crunching on some mad final project of his for which inspiration had only struck in the last possible moment; skipping a funeral to camp together in the rocky canyons of Brushwillow, sharing long silences amidst the lakes and pines; driving to the next town over through a summer midnight, windows rolled down and air thrumming through, desperate to find fresh vegetables for reasons that seemed incredibly important at the time, buzzed from both caffeine and alcohol as in so many stories involving Niko. In our defense the alcohol was supposed to go in the ragu. 
 
-Now we were both seniors, but neither of us were particularly close to the credits necessary to graduate with any particular degree, and the future that had been staked out before us our whole lives was running out. Neither of us knew what we wanted next: a blank canvas ought to have been exciting but all the directions we could imagine to go in seemed blocked off, inaccessible, unrealistic, closed. Friends were starting to pick from the remaining well-trodden routes: getting careers, getting married, getting pregnant, getting gone to new cities, new lives. It would be our turn soon enough.
+Last spring we'd been seniors, and in the fall would be again[@fightintro> (summer repeats aside)], neither of us particularly close to graduating with any particular degree. The future that had been staked out before us our whole lives was running out. A blank canvas ought to have been exciting, but any direction we could imagine to go in seemed blocked off, prematurely closed, inaccessible or unrealistic. Friends were picking already between the few remaining well-flagged routes: getting careers, getting married, getting pregnant, getting gone to new cities, new lives, new starts. It would be our turn soon enough.
 
-On the way back from the club I got ranty about real music, and by the time we reached the house had a half-dozen songs queued up to play for him. Mentally, I mean: digital music players weren’t really a thing yet, although it was still tragically too late for my records to be anything but an anachronism. Vinyl wouldn't start making a comeback for years and was deader than dead. Maybe that was why I liked it. When we moved in, I’d stacked my crates of LPs precariously in the closet, so now as we tromped up the stairs to my room and dragged them out to hunt for the albums I wanted to play for him, we got drunkenly annoyed at the lack of anywhere to put them. So that was how I ended up on my hands and knees, searching fruitlessly for a way to open up my bed.
+On the way back from the club I got ranty about real music, and by the time we reached the house had a half-dozen songs queued up to play for Niko. Mentally, I mean: digital music players weren’t really a thing yet, although it was still tragically too late for my records to be anything but an anachronism. Vinyl wouldn't start making a comeback for years and was deader than dead. Maybe that was why I liked it. When we moved in, I’d stacked my crates of LPs precariously in the closet, so now as we tromped up the stairs to my room and dragged them out to hunt for the albums I wanted to play for him, we got drunkenly annoyed at the lack of anywhere to put them. So that was how I ended up on my hands and knees, searching fruitlessly for a way to open up my bed.
 
 “Bed” was generous: it was really just a mattress, thrown on a raised wooden platform built into a corner of the room. The platform was mattress-sized and had therefore seemed like the sensible spot to put one, but the bulky thing also really seemed like it ought to be hollow and have some storage space inside. I’d never found any handles or hinges, but in our drink-addled haze it seemed ridiculous that the thing couldn’t be opened somehow, and because I can’t leave well enough alone and because unsolved challenges annoy me, and, okay, because booze, there I was on hands and knees fiddling with the paneled edges of the platform, shoving and kneading and banging on them. When something finally gave with a satisfying {i/chunk}, I whooped in satisfaction; but leapt back startled when the whole platform groaned and swung up, pencils and organic chemistry textbooks sliding off the mattress onto the pitted hardwood floor.
 
