@@ -7,7 +7,10 @@ import re
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
 	index = 0
-	ws = re.compile(r"\s\s+")
+	ws = re.compile(r"  +")
+	preBufferLen = 60
+	postBufferLen = 60
+	maxCaretLen = 80
 	while index < len(tokens):
 		token = tokens[index]
 		if token.type == "CTRLBEGIN":
@@ -23,8 +26,6 @@ def process(tokens, sourceText, parseParams):
 
 			ctrlEndPos = token.lexpos
 			ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)
-			preBufferLen = 60
-			postBufferLen = 60
 			if ctrlStartPos < preBufferLen:
 				preBufferLen = ctrlStartPos
 			if ctrlEndPos + postBufferLen > len(sourceText):
@@ -41,13 +42,15 @@ def process(tokens, sourceText, parseParams):
 			print "##################################################"
 			print "VARIANT FOUND AT LINE %d COL %d: '%s'" % (lineNumber, lineColumn, originalCtrlSeq)
 			# print "KEY: '%s'" % key
-			for variant in variants.alts:
-				print "************************************"
-				print '''"%s"''' % str(variant)[:80]
+			for v in variants.alts:
+				variant = v.txt
+				print '''************************************'''
+				# print '''> "%s"\n''' % str(variant)[:80]
 				rendered = "...%s%s%s..." % (pre, variant, post)
 				rendered = ws.sub(" ", rendered)
 				print rendered
-				print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
+				if len(str(variant)) < maxCaretLen:
+					print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
 			print "************************************"
 
 
