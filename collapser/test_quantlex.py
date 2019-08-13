@@ -11,11 +11,11 @@ def test_basic_count():
 	text = "This is text with [some values] inside."
 	result = quantlex.lex(text)
 	assert result.isValid
-	assert len(result.tokens) == 5  # text, ctrlbegin, text, ctrlend, text
+	assert len(result.package) == 5  # text, ctrlbegin, text, ctrlend, text
 
 def test_identify_text():
 	text = "This is text."
-	toks = quantlex.lex(text).tokens
+	toks = quantlex.lex(text).package
 	assert len(toks) == 1
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "This is text."
@@ -26,7 +26,7 @@ But this is text.
 #And another # comment####.   # 
 More normal text.
 Even more normal text"""
-	toks = quantlex.lex(text).tokens
+	toks = quantlex.lex(text).package
 	assert len(toks) == 2
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "But this is text.\n"
@@ -35,14 +35,14 @@ Even more normal text"""
 
 def test_end_line_comments_ignored():
 	text = "This is text. #and this is a comment."
-	toks = quantlex.lex(text).tokens
+	toks = quantlex.lex(text).package
 	assert len(toks) == 1
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "This is text. "
 
 def test_alternatives():
 	text = "This is text with [some|alternatives] inside it."
-	toks = quantlex.lex(text).tokens
+	toks = quantlex.lex(text).package
 	assert len(toks) == 7
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "This is text with "
@@ -58,7 +58,7 @@ def test_alternatives():
 
 def test_author_preferred():
 	text = "[^author preferred|alt]"
-	toks = quantlex.lex(text).tokens
+	toks = quantlex.lex(text).package
 	assert toks[0].type == "CTRLBEGIN"
 	assert toks[1].type == "AUTHOR"
 	assert toks[2].type == "TEXT"
@@ -75,7 +75,7 @@ def test_bad_author_preferred():
 
 def test_always_print():
 	text = "[~always print this]"
-	toks = quantlex.lex(text).tokens
+	toks = quantlex.lex(text).package
 	assert toks[0].type == "CTRLBEGIN"
 	assert toks[1].type == "ALWAYS"
 	assert toks[2].type == "TEXT"
@@ -97,8 +97,8 @@ while before ending] with the
 last character."""
 	result = quantlex.lex(text)
 	assert result.isValid
-	assert len(result.tokens) == 5
-	assert result.tokens[2].value == "start of a big\nsequence that spans a number\nof lines and goes on for a\nwhile before ending"
+	assert len(result.package) == 5
+	assert result.package[2].value == "start of a big\nsequence that spans a number\nof lines and goes on for a\nwhile before ending"
 
 def test_no_end_ctrl():
 	text = """
@@ -141,7 +141,7 @@ def test_lex_probabilities():
 	text = "Text [40>alpha|60>gamma] text"
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[0].type == "TEXT"
 	assert toks[1].type == "CTRLBEGIN"
 	assert toks[2].type == "NUMBER"
@@ -192,12 +192,12 @@ def test_variable_with_named_options():
 
 def test_numbers_only_parsed_in_right_place():
 	text = "I'm 40 years old! [50>alpha]"
-	toks = quantlex.lex(text).tokens
+	toks = quantlex.lex(text).package
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == "I'm 40 years old! "
 	
 	text = "[10>I'm 50 years old.|90>I'm 90 years old.]"
-	toks = quantlex.lex(text).tokens
+	toks = quantlex.lex(text).package
 	assert toks[2].value == "I'm 50 years old."
 	assert toks[5].value == "I'm 90 years old."
 
@@ -213,7 +213,7 @@ def test_define_and_variable_lexing():
 	text = "Should see [DEFINE @temp]."
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[2].type == "DEFINE"
 	assert toks[3].type == "VARIABLE"
 	assert toks[3].value == "temp"
@@ -241,14 +241,14 @@ def test_complex_defines():
 	text = "[DEFINE @test1][DEFINE @test2]This is a test of [DEFINE @test3]stripping.[DEFINE   @test4]"
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert len(toks) == 18
 
 def test_define_with_author_preferred():
 	text = "Text [DEFINE ^@var] text."
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[2].type == "DEFINE"
 	assert toks[3].type == "AUTHOR"
 	assert toks[4].type == "VARIABLE"
@@ -259,13 +259,13 @@ def test_define_lone_probabilities():
 	text = "Blah de blah [DEFINE 80>@wordy]."
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[3].value == 80
 	assert toks[4].value == "wordy"
 	text = "Blah de blah [DEFINE 10>^@dorky]."
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[3].value == 10
 	assert toks[4].type == "AUTHOR"
 	assert toks[5].value == "dorky"
@@ -274,7 +274,7 @@ def test_define_with_probabilities():
 	text = "Text [DEFINE 80>@wordy|20>^@taciturn] end."
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[2].type == "DEFINE"
 	assert toks[3].type == "NUMBER"
 	assert toks[3].value == 80
@@ -306,7 +306,7 @@ def test_using_defines():
 	text = "[DEFINE @using]test of [@using>defines]."
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[0].type == "CTRLBEGIN"
 	assert toks[1].type == "DEFINE"
 	assert toks[2].type == "VARIABLE"
@@ -341,7 +341,7 @@ def test_lexing_define_with_else():
 	text = "[DEFINE @test][@test>if text|else text]"
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[5].type == "VARIABLE"
 	assert toks[5].value == "test"
 	assert toks[6].type == "TEXT"
@@ -354,7 +354,7 @@ def test_lexing_define_with_else():
 	text = "[DEFINE @test][@test>|else text only]"
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[5].type == "VARIABLE"
 	assert toks[5].value == "test"
 	assert toks[6].type == "DIVIDER"
@@ -366,7 +366,7 @@ def test_lex_macro_defs():
 	text = "[MACRO this is a macro][~some text]"
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert toks[1].type == "MACRO"
 	assert toks[2].type == "TEXT"
 	assert toks[2].value == "this is a macro"
@@ -385,7 +385,7 @@ def test_macro_triggers_lex_as_text():
 	text = '''Some {macro trigger} fun'''
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert len(toks) == 1
 	assert toks[0].type == "TEXT"
 	assert toks[0].value == '''Some {macro trigger} fun'''
@@ -394,7 +394,7 @@ def test_lex_sticky_macro():
 	text = "[STICKY_MACRO fun times]"
 	result = quantlex.lex(text)
 	assert result.isValid == True
-	toks = result.tokens
+	toks = result.package
 	assert len(toks) == 4
 	assert toks[0].type == "CTRLBEGIN"
 	assert toks[1].type == "MACRO"
@@ -403,7 +403,7 @@ def test_lex_sticky_macro():
 	assert toks[2].value == "fun times"
 	assert toks[3].type == "CTRLEND"
 	text = "[MACRO fun times]"
-	toks = quantlex.lex(text).tokens
+	toks = quantlex.lex(text).package
 	assert toks[1].value == "MACRO"
 
 

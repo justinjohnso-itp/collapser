@@ -5,7 +5,7 @@ PARSE_RESULT = 11
 class Result:
 	def __init__(self, resultType):
 		self.resultType = resultType
-		self.tokens = []
+		self.package = []
 		self.isValid = True
 		self.errorLineNumber = -1
 		self.errorColumn = -1
@@ -17,6 +17,6 @@ class Result:
 			return "INVALID: Line %d Col %d %s (%s)" % (self.errorLineNumber, self.errorColumn, self.errorMessage, self.errorLineText)
 		else:
 			output = ""
-			for token in self.tokens:
-				output += token + ", "
+			for item in self.package:
+				output += item + ", "
 			return output

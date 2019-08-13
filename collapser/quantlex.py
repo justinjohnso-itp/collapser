@@ -236,7 +236,7 @@ def lex(text):
 
 
 
-		result.tokens.append(tok)
+		result.package.append(tok)
 		penultTok = prevTok
 		prevTok = tok
 	return result
