@@ -113,7 +113,7 @@ def render(tokens, params):
 					thisAltBits.append(token)
 					index += 1
 
-			item = parseItem(thisAltBits)
+			item = parseItem(thisAltBits, variablesAllowed=False)
 			if item.authorPreferred:
 				alts.setAuthorPreferred()
 			alts.add(item.txt, item.prob)
@@ -138,13 +138,15 @@ def render(tokens, params):
 		
 
 # A chunk will be one alternative and metadata: "alpha", "80>alpha", "45>^", "". This is always in a context where we have multiple possibilities.
-def parseItem(altBits):
+def parseItem(altBits, variablesAllowed=True):
 	index = 0
 	text = ""
 	ap = False
 	prob = None
 	while index < len(altBits):
 		token = altBits[index]
+		if variablesAllowed == False and token.type == "VARIABLE":
+			raise ValueError("Found unexpected variable: '%s'" % altBits)
 		if token.type in ("TEXT", "VARIABLE"):
 			text = token.value
 		elif token.type == "AUTHOR":

@@ -307,12 +307,15 @@ def test_variable_with_named_options():
 	result = parse(text)
 	assert result in ["Adam", "Barney", "Gerald", "Ernie"]
 
+def test_if_some_named_only_last_unnamed():
+	text = "[DEFINE 50>@alpha|50>@beta][Barney|@alpha>Arnold]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
 def test_named_options_all_in_same_ctrl_group():
 	text = "[DEFINE 25>@alpha|25>@beta|25>@gamma|25>@epsilon][DEFINE 50>@larry|25>@moe|25>@curly][@alpha>Adam|@beta>Barney|@larry>Gerald|@epsilon>Ernie]"
 	with pytest.raises(Exception) as e_info:
 		parse(text)
-
-
 
 def test_macro_defs_are_recognized_and_stripped():
 	text = "[MACRO test macro][~always show this]"
