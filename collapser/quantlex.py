@@ -136,12 +136,12 @@ def lex(text):
 		__lexState["flaggedBad"] = False
 		tok = lexer.token()
 		if __lexState["flaggedBad"]:
-			result.flagBad(__lexState["errorMessage"], text, tok.lexpos, res.find_line_text(text, tok.lexpos))
+			result.flagBad(__lexState["errorMessage"], text, tok.lexpos)
 			break
 		if not tok: 
 			if __lexState["inCtrlSequence"]:
 				posOfCtrlStart = res.find_previous(text, '[', len(text)-1) - 1
-				result.flagBad("No ending control sequence character", text, posOfCtrlStart, res.find_line_text(text, posOfCtrlStart))
+				result.flagBad("No ending control sequence character", text, posOfCtrlStart)
 			break
 		if prevTok is not -1:
 			onlyAllowedAtStart = ["AUTHOR", "ALWAYS"]
@@ -153,31 +153,31 @@ def lex(text):
 					errMsg = "%s can only come at the start of a text" % tok.type
 				else:
 					errMsg = "Found '%s' but this is only allowed before TEXT, DIVIDER, VARIABLE, or CTRLEND" % tok.type
-				result.flagBad(errMsg, text, tok.lexpos, res.find_line_text(text, tok.lexpos))
+				result.flagBad(errMsg, text, tok.lexpos)
 				break
 		if tok.type == "DEFINE" and ( prevTok is -1 or prevTok.type != "CTRLBEGIN" ):
-			result.flagBad("DEFINE can only appear at the start of a control sequence.", text, tok.lexpos, res.find_line_text(text, tok.lexpos))
+			result.flagBad("DEFINE can only appear at the start of a control sequence.", text, tok.lexpos)
 			break;
 		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER", "CTRLBEGIN", "DIVIDER"] ):
-			result.flagBad("Found a @variable but in an unexpected spot.", text, tok.lexpos, res.find_line_text(text, tok.lexpos))
+			result.flagBad("Found a @variable but in an unexpected spot.", text, tok.lexpos)
 			break;
 		if prevTok is not -1:
 			if prevTok.type == "DEFINE" and tok.type not in ["VARIABLE", "AUTHOR", "NUMBER"]:
-				result.flagBad("DEFINE must be followed by a variable name, as in [DEFINE @var].", text, prevTok.lexpos, res.find_line_text(text, prevTok.lexpos))
+				result.flagBad("DEFINE must be followed by a variable name, as in [DEFINE @var].", text, prevTok.lexpos)
 				break;
 
 			if tok.type == "DIVIDER" and prevTok.type == "NUMBER" and __lexState["inDefine"]:
-				result.flagBad("A divider can't immediately follow a number within a define.", text, tok.lexpos, res.find_line_text(text, tok.lexpos))
+				result.flagBad("A divider can't immediately follow a number within a define.", text, tok.lexpos)
 				break;
 			if __lexState["inCtrlSequence"]:
 				if tok.type == "NUMBER" and prevTok.type == "NUMBER":
-					result.flagBad("Two numbers immediately following each other is invalid.", text, tok.lexpos, res.find_line_text(text, tok.lexpos))
+					result.flagBad("Two numbers immediately following each other is invalid.", text, tok.lexpos)
 					break;
 			if penultTok is not -1 and penultTok.type == "CTRLBEGIN" and prevTok.type == "VARIABLE" and tok.type == "CTRLEND":
-				result.flagBad("Can't have a standalone [@variable]: must show text to print if true, i.e. [@var>hello].", text, tok.lexpos, res.find_line_text(text, tok.lexpos))
+				result.flagBad("Can't have a standalone [@variable]: must show text to print if true, i.e. [@var>hello].", text, tok.lexpos)
 				break;
 			if prevTok.type == "MACRO" and tok.type != "TEXT":
-				result.flagBad("MACRO must be followed by text.", text, tok.lexpos, res.find_line_text(text, tok.lexpos))
+				result.flagBad("MACRO must be followed by text.", text, tok.lexpos)
 
 		result.package.append(tok)
 		penultTok = prevTok
