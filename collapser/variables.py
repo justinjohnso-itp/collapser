@@ -88,7 +88,6 @@ class Variables:
 		return ""
 
 
-
 __v = Variables()
 
 def showVars():
@@ -111,6 +110,25 @@ def setAllTo(val):
 def render(tokens, params):
 	global __v
 	return __v.render(tokens, params)
+
+def renderAll(tokens):
+	pos = 0
+	alts = ctrlseq.Alts()
+	while pos < len(tokens):
+		if tokens[pos].type == "TEXT":
+			alts.add(tokens[pos].value)
+		if tokens[pos].type == "DIVIDER":
+			pos += 1
+			continue
+		assert tokens[pos].type == "VARIABLE"
+		varName = tokens[pos].value
+		pos += 1
+		if tokens[pos].type == "TEXT":
+			alts.add(tokens[pos].value)
+		elif tokens[pos].type == "DIVIDER":
+			alts.add("")
+		pos += 1
+	return alts.alts
 
 def check(key):
 	global __v

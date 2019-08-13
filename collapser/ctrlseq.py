@@ -78,7 +78,7 @@ def renderAll(tokens, params):
 		return alts
 
 	if tokens[0].type == "VARIABLE":
-		alts.add(variables.render(tokens, params))
+		alts.alts.extend(variables.renderAll(tokens))
 
 	# [text] means a random chance of "text" or "", but if authorPreferred is true, never show it.
 	elif len(tokens) == 1 and tokens[0].type == "TEXT":
@@ -140,7 +140,7 @@ def render(tokens, params):
 		result = alts.getAuthorPreferred()
 	else:
 		result = alts.getRandom()
-		
+
 	return result
 
 
