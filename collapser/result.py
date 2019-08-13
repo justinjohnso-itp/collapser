@@ -19,9 +19,26 @@ class Result:
 		self.errorColumn = find_column(text, startPos)
 		self.errorLineText = find_line_text(text, startPos)
 
+	def showError(self):
+		# Only show one line's worth of line
+		if self.errorColumn > 80:
+			self.errorLineText = self.errorLineText[-80:]
+			self.errorColumn = self.errorColumn - (len(self.errorLineText) - len(self.errorLineText))
+
+		caret = (" " * (self.errorColumn-1+2)) + "^"
+		typeName = self.getPrintedTypeName().capitalize()
+		return "%s found a problem on line %d column %d: %s\n> %s\n%s" % (typeName, self.errorLineNumber, self.errorColumn, self.errorMessage, self.errorLineText, caret)
+
+	def getPrintedTypeName(self):
+		if self.resultType == LEX_RESULT:
+			return "lexer"
+		elif self.resultType == PARSE_RESULT:
+			return "parser"
+		return "unknown result"
+
 	def __str__(self):
 		if self.isValid == False:
-			return "INVALID: Line %d Col %d %s (%s)" % (self.errorLineNumber, self.errorColumn, self.errorMessage, self.errorLineText)
+			return self.showError()
 		else:
 			output = ""
 			for item in self.package:
@@ -29,7 +46,7 @@ class Result:
 			return output
 
 
-# Compute stuff about the current lex position.
+# Compute stuff about the current position.
 def find_column(input, pos):
     line_start = input.rfind('\n', 0, pos) + 1
     return (pos - line_start) + 1
