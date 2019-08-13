@@ -17,7 +17,7 @@ class ParseParams:
 
 	VALID_STRATEGIES = ["random", "author", "longest", "shortest"]
 
-	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=True):
+	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=False):
 		if chooseStrategy not in self.VALID_STRATEGIES:
 			raise ValueError("Unrecognized choose strategy '%s'" % chooseStrategy)
 		self.chooseStrategy = chooseStrategy
