@@ -117,6 +117,7 @@ def renderAll(tokens):
 	while pos < len(tokens):
 		if tokens[pos].type == "TEXT":
 			alts.add(tokens[pos].value)
+			return alts.alts
 		if tokens[pos].type == "DIVIDER":
 			pos += 1
 			continue
