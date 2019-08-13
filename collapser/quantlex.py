@@ -122,21 +122,6 @@ def t_error(t):
 	t.lexer.skip(1)
 
 
-# Compute stuff about the current lex position.
-def find_column(input, pos):
-    line_start = input.rfind('\n', 0, pos) + 1
-    return (pos - line_start) + 1
-
-def find_line_number(input, pos):
-	return input[:pos].count('\n') + 1
-
-def find_previous(input, txt, pos):
-	return input.rfind(txt, 0, pos) + 1
-
-def find_line_text(input, pos):
-	line_start = find_previous(input, '\n', pos)
-	line_end = input.find('\n', line_start)
-	return input[line_start:line_end]
 
 # Build the lexer
 lexer = lex.lex()
@@ -151,12 +136,12 @@ def lex(text):
 		__lexState["flaggedBad"] = False
 		tok = lexer.token()
 		if __lexState["flaggedBad"]:
-			result.flagBad(__lexState["errorMessage"], find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
+			result.flagBad(__lexState["errorMessage"], res.find_line_number(text, tok.lexpos), res.find_column(text, tok.lexpos), res.find_line_text(text, tok.lexpos))
 			break
 		if not tok: 
 			if __lexState["inCtrlSequence"]:
-				posOfCtrlStart = find_previous(text, '[', len(text)-1) - 1
-				result.flagBad("No ending control sequence character", find_line_number(text, posOfCtrlStart), find_column(text, posOfCtrlStart), find_line_text(text, posOfCtrlStart))
+				posOfCtrlStart = res.find_previous(text, '[', len(text)-1) - 1
+				result.flagBad("No ending control sequence character", res.find_line_number(text, posOfCtrlStart), res.find_column(text, posOfCtrlStart), res.find_line_text(text, posOfCtrlStart))
 			break
 		if prevTok is not -1:
 			onlyAllowedAtStart = ["AUTHOR", "ALWAYS"]
@@ -168,31 +153,31 @@ def lex(text):
 					errMsg = "%s can only come at the start of a text" % tok.type
 				else:
 					errMsg = "Found '%s' but this is only allowed before TEXT, DIVIDER, VARIABLE, or CTRLEND" % tok.type
-				result.flagBad(errMsg, find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
+				result.flagBad(errMsg, res.find_line_number(text, tok.lexpos), res.find_column(text, tok.lexpos), res.find_line_text(text, tok.lexpos))
 				break
 		if tok.type == "DEFINE" and ( prevTok is -1 or prevTok.type != "CTRLBEGIN" ):
-			result.flagBad("DEFINE can only appear at the start of a control sequence.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
+			result.flagBad("DEFINE can only appear at the start of a control sequence.", res.find_line_number(text, tok.lexpos), res.find_column(text, tok.lexpos), res.find_line_text(text, tok.lexpos))
 			break;
 		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER", "CTRLBEGIN", "DIVIDER"] ):
-			result.flagBad("Found a @variable but in an unexpected spot.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
+			result.flagBad("Found a @variable but in an unexpected spot.", res.find_line_number(text, tok.lexpos), res.find_column(text, tok.lexpos), res.find_line_text(text, tok.lexpos))
 			break;
 		if prevTok is not -1:
 			if prevTok.type == "DEFINE" and tok.type not in ["VARIABLE", "AUTHOR", "NUMBER"]:
-				result.flagBad("DEFINE must be followed by a variable name, as in [DEFINE @var].", find_line_number(text, prevTok.lexpos), find_column(text, prevTok.lexpos), find_line_text(text, prevTok.lexpos))
+				result.flagBad("DEFINE must be followed by a variable name, as in [DEFINE @var].", res.find_line_number(text, prevTok.lexpos), res.find_column(text, prevTok.lexpos), res.find_line_text(text, prevTok.lexpos))
 				break;
 
 			if tok.type == "DIVIDER" and prevTok.type == "NUMBER" and __lexState["inDefine"]:
-				result.flagBad("A divider can't immediately follow a number within a define.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
+				result.flagBad("A divider can't immediately follow a number within a define.", res.find_line_number(text, tok.lexpos), res.find_column(text, tok.lexpos), res.find_line_text(text, tok.lexpos))
 				break;
 			if __lexState["inCtrlSequence"]:
 				if tok.type == "NUMBER" and prevTok.type == "NUMBER":
-					result.flagBad("Two numbers immediately following each other is invalid.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
+					result.flagBad("Two numbers immediately following each other is invalid.", res.find_line_number(text, tok.lexpos), res.find_column(text, tok.lexpos), res.find_line_text(text, tok.lexpos))
 					break;
 			if penultTok is not -1 and penultTok.type == "CTRLBEGIN" and prevTok.type == "VARIABLE" and tok.type == "CTRLEND":
-				result.flagBad("Can't have a standalone [@variable]: must show text to print if true, i.e. [@var>hello].", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
+				result.flagBad("Can't have a standalone [@variable]: must show text to print if true, i.e. [@var>hello].", res.find_line_number(text, tok.lexpos), res.find_column(text, tok.lexpos), res.find_line_text(text, tok.lexpos))
 				break;
 			if prevTok.type == "MACRO" and tok.type != "TEXT":
-				result.flagBad("MACRO must be followed by text.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
+				result.flagBad("MACRO must be followed by text.", res.find_line_number(text, tok.lexpos), res.find_column(text, tok.lexpos), res.find_line_text(text, tok.lexpos))
 
 		result.package.append(tok)
 		penultTok = prevTok

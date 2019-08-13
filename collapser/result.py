@@ -27,3 +27,21 @@ class Result:
 			for item in self.package:
 				output += item + ", "
 			return output
+
+
+# Compute stuff about the current lex position.
+def find_column(input, pos):
+    line_start = input.rfind('\n', 0, pos) + 1
+    return (pos - line_start) + 1
+
+def find_line_number(input, pos):
+	return input[:pos].count('\n') + 1
+
+def find_previous(input, txt, pos):
+	return input.rfind(txt, 0, pos) + 1
+
+def find_line_text(input, pos):
+	line_start = find_previous(input, '\n', pos)
+	line_end = input.find('\n', line_start)
+	return input[line_start:line_end]
+
