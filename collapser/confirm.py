@@ -38,10 +38,10 @@ def process(tokens, sourceText, parseParams):
 			print "\n\n"
 			print "##################################################"
 			print "VARIANT FOUND AT LINE %d COL %d: '%s'" % (lineNumber, lineColumn, originalCtrlSeq)
-			print "KEY: '%s'" % key
+			# print "KEY: '%s'" % key
 			for variant in variants.alts:
 				print "************************************"
-				print '''"%s"''' % variant
+				print '''"%s"''' % str(variant)[:80]
 				print "...%s%s%s..." % (pre, variant, post)
 				print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
 			print "************************************"
