@@ -12,6 +12,13 @@ class Result:
 		self.errorLineText = ""
 		self.errorMessage = ""
 
+	def flagBad(self, msg, line, col, lineText):
+		self.isValid = False
+		self.errorMessage = msg
+		self.errorLineNumber = line
+		self.errorColumn = col
+		self.errorLineText = lineText
+
 	def __str__(self):
 		if self.isValid == False:
 			return "INVALID: Line %d Col %d %s (%s)" % (self.errorLineNumber, self.errorColumn, self.errorMessage, self.errorLineText)

@@ -151,90 +151,48 @@ def lex(text):
 		__lexState["flaggedBad"] = False
 		tok = lexer.token()
 		if __lexState["flaggedBad"]:
-			result.isValid = False
-			result.errorLineNumber = find_line_number(text, tok.lexpos)
-			result.errorColumn = find_column(text, tok.lexpos)
-			result.errorLineText = find_line_text(text, tok.lexpos)
-			result.errorMessage = __lexState["errorMessage"]
+			result.flagBad(__lexState["errorMessage"], find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
 			break
 		if not tok: 
 			if __lexState["inCtrlSequence"]:
 				posOfCtrlStart = find_previous(text, '[', len(text)-1) - 1
-				result.isValid = False
-				result.errorLineNumber = find_line_number(text, posOfCtrlStart)
-				result.errorColumn = find_column(text, posOfCtrlStart)
-				result.errorLineText = find_line_text(text, posOfCtrlStart)
-				result.errorMessage = "No ending control sequence character"
-			break      # No more input
+				result.flagBad("No ending control sequence character", find_line_number(text, posOfCtrlStart), find_column(text, posOfCtrlStart), find_line_text(text, posOfCtrlStart))
+			break
 		if prevTok is not -1:
 			onlyAllowedAtStart = ["AUTHOR", "ALWAYS"]
 			apAfterText = tok.type in onlyAllowedAtStart and prevTok.type == "TEXT"
 			apBeforeInvalid = tok.type != "TEXT" and tok.type != "DIVIDER" and tok.type != "VARIABLE" and tok.type != "CTRLEND" and prevTok.type in onlyAllowedAtStart
 			if apAfterText or apBeforeInvalid:
-				result.isValid = False
-				result.errorLineNumber = find_line_number(text, tok.lexpos)
-				result.errorColumn = find_column(text, tok.lexpos)
-				result.errorLineText = find_line_text(text, tok.lexpos)
+				errMsg = ""
 				if apAfterText:
-					result.errorMessage = "%s can only come at the start of a text" % tok.type
+					errMsg = "%s can only come at the start of a text" % tok.type
 				else:
-					result.errorMessage = "Found '%s' but this is only allowed before TEXT, DIVIDER, VARIABLE, or CTRLEND" % tok.type
+					errMsg = "Found '%s' but this is only allowed before TEXT, DIVIDER, VARIABLE, or CTRLEND" % tok.type
+				result.flagBad(errMsg, find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
 				break
 		if tok.type == "DEFINE" and ( prevTok is -1 or prevTok.type != "CTRLBEGIN" ):
-			result.isValid = False
-			result.errorLineNumber = find_line_number(text, tok.lexpos)
-			result.errorColumn = find_column(text, tok.lexpos)
-			result.errorLineText = find_line_text(text, tok.lexpos)
-			result.errorMessage = "DEFINE can only appear at the start of a control sequence."
+			result.flagBad("DEFINE can only appear at the start of a control sequence.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
 			break;
 		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER", "CTRLBEGIN", "DIVIDER"] ):
-			result.isValid = False
-			result.errorLineNumber = find_line_number(text, tok.lexpos)
-			result.errorColumn = find_column(text, tok.lexpos)
-			result.errorLineText = find_line_text(text, tok.lexpos)
-			result.errorMessage = "Found a @variable but in an unexpected spot."
+			result.flagBad("Found a @variable but in an unexpected spot.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
 			break;
 		if prevTok is not -1:
 			if prevTok.type == "DEFINE" and tok.type not in ["VARIABLE", "AUTHOR", "NUMBER"]:
-				result.isValid = False
-				result.errorLineNumber = find_line_number(text, prevTok.lexpos)
-				result.errorColumn = find_column(text, prevTok.lexpos)
-				result.errorLineText = find_line_text(text, prevTok.lexpos)
-				result.errorMessage = "DEFINE must be followed by a variable name, as in [DEFINE @var]."
+				result.flagBad("DEFINE must be followed by a variable name, as in [DEFINE @var].", find_line_number(text, prevTok.lexpos), find_column(text, prevTok.lexpos), find_line_text(text, prevTok.lexpos))
 				break;
 
 			if tok.type == "DIVIDER" and prevTok.type == "NUMBER" and __lexState["inDefine"]:
-				result.isValid = False
-				result.errorLineNumber = find_line_number(text, tok.lexpos)
-				result.errorColumn = find_column(text, tok.lexpos)
-				result.errorLineText = find_line_text(text, tok.lexpos)
-				result.errorMessage = "A divider can't immediately follow a number within a define."
+				result.flagBad("A divider can't immediately follow a number within a define.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
 				break;
 			if __lexState["inCtrlSequence"]:
 				if tok.type == "NUMBER" and prevTok.type == "NUMBER":
-					result.isValid = False
-					result.errorLineNumber = find_line_number(text, tok.lexpos)
-					result.errorColumn = find_column(text, tok.lexpos)
-					result.errorLineText = find_line_text(text, tok.lexpos)
-					result.errorMessage = "Two numbers immediately following each other is invalid."
+					result.flagBad("Two numbers immediately following each other is invalid.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
 					break;
 			if penultTok is not -1 and penultTok.type == "CTRLBEGIN" and prevTok.type == "VARIABLE" and tok.type == "CTRLEND":
-				result.isValid = False
-				result.errorLineNumber = find_line_number(text, tok.lexpos)
-				result.errorColumn = find_column(text, tok.lexpos)
-				result.errorLineText = find_line_text(text, tok.lexpos)
-				result.errorMessage = "Can't have a standalone [@variable]: must show text to print if true, i.e. [@var>hello]."
+				result.flagBad("Can't have a standalone [@variable]: must show text to print if true, i.e. [@var>hello].", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
 				break;
 			if prevTok.type == "MACRO" and tok.type != "TEXT":
-				result.isValid = False
-				result.errorLineNumber = find_line_number(text, tok.lexpos)
-				result.errorColumn = find_column(text, tok.lexpos)
-				result.errorLineText = find_line_text(text, tok.lexpos)
-				result.errorMessage = "MACRO must be followed by text."
-
-
-
-
+				result.flagBad("MACRO must be followed by text.", find_line_number(text, tok.lexpos), find_column(text, tok.lexpos), find_line_text(text, tok.lexpos))
 
 		result.package.append(tok)
 		penultTok = prevTok
