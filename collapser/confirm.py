@@ -17,7 +17,7 @@ def process(tokens, sourceText, parseParams):
 				index += 1
 				token = tokens[index]
 			
-			variants = ctrlseq.renderAll(ctrl_contents, parseParams)
+			variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 
 			ctrlEndPos = token.lexpos
 			ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)

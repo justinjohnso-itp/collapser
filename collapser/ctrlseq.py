@@ -69,7 +69,7 @@ class Item:
 		return base
 
 
-def renderAll(tokens, params):
+def renderAll(tokens, params, showAllVars=False):
 
 	alts = Alts()
 
@@ -78,7 +78,10 @@ def renderAll(tokens, params):
 		return alts
 
 	if tokens[0].type == "VARIABLE":
-		alts.alts.extend(variables.renderAll(tokens))
+		if showAllVars:
+			alts.alts.extend(variables.renderAll(tokens))
+		else:
+			alts.add(variables.render(tokens, params))
 
 	# [text] means a random chance of "text" or "", but if authorPreferred is true, never show it.
 	elif len(tokens) == 1 and tokens[0].type == "TEXT":
