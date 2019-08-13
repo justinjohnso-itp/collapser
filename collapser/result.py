@@ -68,3 +68,10 @@ def find_line_text(input, pos):
 	line_end = input.find('\n', line_start)
 	return input[line_start:line_end]
 
+
+class ParseException(Exception):
+	def __init__(self, result):
+		Exception.__init__(self, "ParseException")
+		self.result = result
+
+

@@ -88,15 +88,22 @@ def parse(tokens, parseParams):
 	# Handle the rendering.
 	variables.reset()
 	macros.reset()
-	tokens = variables.handleDefs(tokens, parseParams)
-	tokens = macros.handleDefs(tokens, parseParams)
-	renderedString = handleParsing(tokens, parseParams)
 	output = result.Result(result.PARSE_RESULT)
+	try:
+		tokens = variables.handleDefs(tokens, parseParams)
+		tokens = macros.handleDefs(tokens, parseParams)
+		renderedString = handleParsing(tokens, parseParams)
+	except result.ParseException, e:
+		print e
+		return e.result
 	output.package = renderedString
 	return output
 
 
 def handleParsing(tokens, params):
+	# badResult = result.Result(result.PARSE_RESULT)
+	# badResult.flagBad("Test Bad Result", "line text", 0)
+	# raise result.ParseException(badResult)
 	renderedChunks = process(tokens, params)
 	renderedString = ''.join(renderedChunks)
 	renderedString = macros.expand(renderedString, params)
