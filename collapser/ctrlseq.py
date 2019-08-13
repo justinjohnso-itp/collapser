@@ -69,21 +69,19 @@ class Item:
 		return base
 
 
-# We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
-
-def render(tokens, params):
-
-	# Handle []
-	if len(tokens) == 0:
-		return ""
-
-	if tokens[0].type == "VARIABLE":
-		return variables.render(tokens, params)
+def renderAll(tokens, params):
 
 	alts = Alts()
 
+	# Handle []
+	if len(tokens) == 0:
+		return alts
+
+	if tokens[0].type == "VARIABLE":
+		alts.add(variables.render(tokens, params))
+
 	# [text] means a random chance of "text" or "", but if authorPreferred is true, never show it.
-	if len(tokens) == 1 and tokens[0].type == "TEXT":
+	elif len(tokens) == 1 and tokens[0].type == "TEXT":
 		alts.add("")
 		if params.chooseStrategy != "author":
 			alts.add(tokens[0].value)
@@ -124,6 +122,16 @@ def render(tokens, params):
 		if token.type == "DIVIDER":
 			alts.add("")
 
+	return alts
+
+# We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
+
+def render(tokens, params):
+
+	alts = renderAll(tokens, params)
+	if len(alts) == 0:
+		return ""
+
 	if params.chooseStrategy == "longest":
 		return alts.getLongest()
 	elif params.chooseStrategy == "shortest":
@@ -132,6 +140,7 @@ def render(tokens, params):
 		result = alts.getAuthorPreferred()
 	else:
 		result = alts.getRandom()
+		
 	return result
 
 
