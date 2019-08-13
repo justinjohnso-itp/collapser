@@ -28,7 +28,9 @@ def process(tokens, sourceText, parseParams):
 			if ctrlEndPos + postBufferLen > len(sourceText):
 				postBufferLen = len(sourceText) - ctrlEndPos
 			pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
+			pre = pre.replace("\n", "\\")
 			post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
+			post = post.replace("\n", "\\")
 			originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 			key = "%s%s%s" % (pre, originalCtrlSeq, post)
 			lineNumber = result.find_line_number(sourceText, ctrlStartPos)
