@@ -1,6 +1,7 @@
 
 import ctrlseq
 import chooser
+import result
 
 class Variables:
 	def __init__(self):
@@ -44,13 +45,17 @@ class Variables:
 				if varCtrlGroup == "":
 					varCtrlGroup = thisCtrlGroup
 				elif varCtrlGroup != thisCtrlGroup:
-					raise ValueError("Found variables from different groups in tokenstream '%'" % tokens)
+					badResult = result.Result(result.PARSE_RESULT)
+					badResult.flagBad("Found variables from different groups", str(tokens), 0)
+					raise result.ParseException(badResult)
 			elif tokens[pos].type == "TEXT" and pos > 0 and tokens[pos-1].type != "VARIABLE":
 				posOfFreeText = pos
 			pos += 1
 
 		if posOfFreeText >= 0 and posOfFreeText != len(tokens) - 1:
-			raise ValueError("Found unexpected variable at pos %d: '%s'" % (posOfFreeText, tokens))
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Found unexpected variable at pos %d" % posOfFreeText, str(tokens), 0)
+			raise result.ParseException(badResult)
 
 		# Now figure out how to render.
 		pos = 0
@@ -146,7 +151,9 @@ def handleDefs(tokens, params):
 			item = ctrlseq.parseItem(ctrl_contents)
 			assert tokens[index-1].type == "VARIABLE"
 			if item.txt in __v.variables:
-				raise ValueError("Variable '@%s' is defined twice." % item.txt)
+				badResult = result.Result(result.PARSE_RESULT)
+				badResult.flagBad("Variable '@%s' is defined twice." % item.txt, item.txt, 0)
+				raise result.ParseException(badResult)
 			if item.txt in params.setDefines:
 				__v.set(groupName, item.txt)
 				foundSetDefine = True
@@ -168,7 +175,9 @@ def handleDefs(tokens, params):
 
 		if not foundSetDefine:
 			if probTotal != 0 and probTotal != 100:
-				raise ValueError("Probabilities in a DEFINE must sum to 100: found %d instead. '%s'" % (probTotal, alts))
+				badResult = result.Result(result.PARSE_RESULT)
+				badResult.flagBad("Probabilities in a DEFINE must sum to 100: found %d instead." % probTotal, str(alts), 0)
+				raise result.ParseException(badResult)
 			if params.chooseStrategy == "author" and len(alts) == 1 and not foundAuthorPreferred:
 				varPicked = alts.getAuthorPreferred()
 				__v.set(groupName, varPicked, False)
