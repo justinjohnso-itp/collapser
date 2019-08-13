@@ -30,11 +30,25 @@ class Variables:
 	# [ @alpha> A | B ]
 	# [ @alpha> | B ]
 	# [ @alpha> A | @beta> B]
-	# TODO check multiple options are all in same control group
+	# TODO This should be invalid: [ B | @alpha> A ]
 
 	def render(self, tokens, params):
 		pos = 0
+
+		# First ensure all vars are in same control group
 		varCtrlGroup = ""
+		while pos < len(tokens):
+			if tokens[pos].type == "VARIABLE":
+				varName = tokens[pos].value
+				thisCtrlGroup = self.getGroupFromVar(varName)
+				if varCtrlGroup == "":
+					varCtrlGroup = thisCtrlGroup
+				elif varCtrlGroup != thisCtrlGroup:
+					raise ValueError("Found variables from different groups in tokenstream '%'" % tokens)
+			pos += 1
+
+		# Now figure out how to render.
+		pos = 0
 		while pos < len(tokens):
 			# For this group, if we have only text, this is an alternative where nothing previous matched; we should return it.
 			if tokens[pos].type == "TEXT":
@@ -47,11 +61,6 @@ class Variables:
 			#Otherwise, we must be at a variable.
 			assert tokens[pos].type == "VARIABLE"
 			varName = tokens[pos].value
-			thisCtrlGroup = self.getGroupFromVar(varName)
-			if varCtrlGroup == "":
-				varCtrlGroup = thisCtrlGroup
-			elif varCtrlGroup != thisCtrlGroup:
-				raise ValueError("Found variables from different groups in tokenstream '%'" % tokens)
 			pos += 1
 
 			# A variable can be followed by either text, or a divider or end of the stream. If text, return the text if that variable is true.
