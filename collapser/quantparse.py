@@ -94,8 +94,10 @@ def parse(tokens, sourceText, parseParams):
 	try:
 		tokens = variables.handleDefs(tokens, parseParams)
 		tokens = macros.handleDefs(tokens, parseParams)
+		strippedText = sourceText
+		# TODO: for the above to work, we'd need to be stripping out the DEFINE and MACRO tags from sourceText also as we went.
 		if parseParams.doConfirm:
-			confirm.process(tokens, sourceText, ParseParams())
+			confirm.process(tokens, strippedText, ParseParams())
 		renderedString = handleParsing(tokens, parseParams)
 	except result.ParseException, e:
 		print e
