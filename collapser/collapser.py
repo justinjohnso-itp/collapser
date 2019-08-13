@@ -81,10 +81,13 @@ def showUsage():
 Arguments:
   --help         Show this message
   --front		 Include frontmatter
-  --author       Make author-preferred version
   --seed=x       Use the given integer as a seed
   --nopdf		 Skip pdf generation
-  --longest		 Make the longest possible variation
+  --strategy=x   Selection strategy.
+  		"random": default
+  		"author": Author's preferred
+  		"longest"
+  		"shortest"
 """
 
 
