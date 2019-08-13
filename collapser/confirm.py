@@ -1,6 +1,7 @@
 # Manually confirm each use of variants.
 
 import ctrlseq
+import result
 
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
@@ -30,9 +31,11 @@ def process(tokens, sourceText, parseParams):
 			post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
 			originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 			key = "%s%s%s" % (pre, originalCtrlSeq, post)
+			lineNumber = result.find_line_number(sourceText, ctrlStartPos)
+			lineColumn = result.find_column(sourceText, ctrlStartPos)
 			print "\n\n"
-			print "####################################"
-			print "VARIANT FOUND AT POS %d: '%s'" % (token.lexpos, originalCtrlSeq)
+			print "##################################################"
+			print "VARIANT FOUND AT LINE %d COL %d: '%s'" % (lineNumber, lineColumn, originalCtrlSeq)
 			print "KEY: '%s'" % key
 			for variant in variants.alts:
 				print "************************************"
