@@ -129,7 +129,6 @@ def test_bad_divider_pos():
 	assert result.errorLineNumber == 1
 	assert result.errorColumn == 11
 
-# TODO test empty control sequence []
 def test_bad_empty_control_seq():
 	text = "Can't [have] [] empty control sequence."
 	result = quantlex.lex(text)

@@ -30,7 +30,6 @@ class Variables:
 	# [ @alpha> A | B ]
 	# [ @alpha> | B ]
 	# [ @alpha> A | @beta> B]
-	# TODO This should be invalid: [ B | @alpha> A ]
 
 	def render(self, tokens, params):
 		pos = 0
@@ -176,7 +175,6 @@ def handleDefs(tokens, params):
 			elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 				varPicked = alts.getAuthorPreferred()
 				__v.set(groupName, varPicked)
-			# TODO: Figure out how to do Defines with longest/shortest
 			elif len(alts) == 1:
 				varPicked = alts.getRandom()
 				__v.set(groupName, varPicked, chooser.percent(50))

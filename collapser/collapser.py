@@ -15,9 +15,6 @@ import quantparse
 import chooser
 
 
-# TODO: Detect this invalid syntax: [33: here,]
-# TODO: Allow this syntax: [20> as mine|^]
-
 
 latexBegin = "fragments/begin.tex"
 latexEnd = "fragments/end.tex"
