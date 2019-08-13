@@ -86,7 +86,7 @@ def handleDefs(tokens, params):
 
 	return output
 
-formatting_codes = ["section_break", "chapter", "part", "verse", "verse_inline", "pp", "i"]
+formatting_codes = ["section_break", "chapter", "part", "verse", "verse_inline", "pp", "i", "vspace"]
 
 def expand(text, params):
 	mStart = '''{'''

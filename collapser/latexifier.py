@@ -65,6 +65,12 @@ template_verse_inline = ['''\\begin{adjustwidth}{3em}{}
 \\end{adjustwidth}
 \\noindent ''']
 
+template_vspace = ['''
+
+\\vspace*{''', '''\\nbs}
+
+'''] 
+
 def renderControlSeqs(sourceText):
 	rendered = []
 	pos = 0
@@ -101,6 +107,9 @@ def renderControlSeqs(sourceText):
 		elif code == "i":
 			text = contents[1]
 			repl = template_i[0] + text + template_i[1]
+		elif code == "vspace":
+			text = contents[1]
+			repl = template_vspace[0] + text + template_vspace[1]
 
 		elif code == "test":
 			repl = "<<TEST_STANDALONE>>"
