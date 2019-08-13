@@ -19,6 +19,7 @@ template_chapter = ['''
 template_part = ['''
 
 \\cleartorecto
+
 \\begin{ChapterStart}
 \\vspace*{4\\nbs} 
 \\ChapterTitle{PART ''', '''} 
@@ -34,6 +35,7 @@ template_part = ['''
 \\noindent \\textit{''', '''}
 \\end{parascale}
 \\end{adjustwidth}
+
 \\cleartorecto
 
 ''']

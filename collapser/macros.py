@@ -1,5 +1,6 @@
 
 import ctrlseq
+import result
 
 class Macros:
 	def __init__(self):
