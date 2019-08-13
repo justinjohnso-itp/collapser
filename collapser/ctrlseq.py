@@ -1,7 +1,7 @@
 
 import chooser
 import variables
-
+import result
 
 # Create a class to store possible text alternatives we might print, and handle choosing an appropriate one.
 
@@ -146,7 +146,9 @@ def parseItem(altBits, variablesAllowed=True):
 	while index < len(altBits):
 		token = altBits[index]
 		if variablesAllowed == False and token.type == "VARIABLE":
-			raise ValueError("Found unexpected variable: '%s'" % altBits)
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Found unexpected variable '%s'" % token.value, str(altBits), 0)
+			raise result.ParseException(badResult)
 		if token.type in ("TEXT", "VARIABLE"):
 			text = token.value
 		elif token.type == "AUTHOR":

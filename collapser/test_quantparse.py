@@ -5,14 +5,22 @@ import quantparse
 import pytest
 
 def parse(text, params = None):
+	result = parseResult(text, params)
+	if not result.isValid:
+		print result
+		assert False
+	return result.package
+
+def parseResult(text, params = None):
 	lexed = quantlex.lex(text)
 	if not lexed.isValid:
 		print lexed
 		assert False
 	if params == None:
 		params = quantparse.ParseParams(chooseStrategy="random")
-	result = quantparse.parse(lexed.package, params)
-	return result.package
+	return quantparse.parse(lexed.package, params)
+
+
 
 # When sent an array like ["A", "B", "C"] and a test to parse, will fail if after a large number of attempts to parse it hasn't seen each option appear as a parse result.
 def verifyEachIsFound(opts, text):
@@ -310,8 +318,8 @@ def test_variable_with_named_options():
 
 def test_if_some_named_only_last_unnamed():
 	text = "[DEFINE 50>@alpha|50>@beta][Barney|@alpha>Arnold]"
-	with pytest.raises(Exception) as e_info:
-		parse(text)
+	result = parseResult(text)
+	assert result.isValid == False
 	text = "[DEFINE 33>@alpha|33>@beta|34>@gamma][@alpha>Andrew|Bailey|@gamma>Gary]"
 	with pytest.raises(Exception) as e_info:
 		parse(text)
