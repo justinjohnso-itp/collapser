@@ -1,6 +1,7 @@
 # file:///Users/aaron/projects/stories/subcutanean/Collapser/collapser/origply/doc/ply.html#ply_nn2
 
 import ply.lex as lex
+import result as res
 
 __lexState = { "inCtrlSequence": False, "flaggedBad": False, "errorMessage": "" }
 
@@ -140,30 +141,10 @@ def find_line_text(input, pos):
 # Build the lexer
 lexer = lex.lex()
 
-
-class LexerResult:
-
-	def __init__(self):
-		self.tokens = []
-		self.isValid = True
-		self.errorLineNumber = -1
-		self.errorColumn = -1
-		self.errorLineText = ""
-		self.errorMessage = ""
-
-	def __str__(self):
-		if self.isValid == False:
-			return "INVALID: Line %d Col %d %s (%s)" % (self.errorLineNumber, self.errorColumn, self.errorMessage, self.errorLineText)
-		else:
-			output = ""
-			for token in self.tokens:
-				output += token + ", "
-			return output
-
 def lex(text):
 	resetLexState()
 	lexer.input(text)
-	result = LexerResult()
+	result = res.Result()
 	prevTok = -1
 	penultTok = -1
 	while True:
