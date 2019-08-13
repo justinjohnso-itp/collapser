@@ -65,10 +65,14 @@ def handleDefs(tokens, params):
 		token = tokens[index]
 		assert token.type == "TEXT"
 		if __m.isMacro(token.value):
-			raise ValueError("Macro '@%s' is defined twice." % token.value)
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Macro '@%s' is defined twice." % token.value, token.value, 0)
+			raise result.ParseException(badResult)
 		macroKey = token.value
 		if index+3 > len(tokens) or tokens[index+1].type != "CTRLEND" or tokens[index+2].type != "CTRLBEGIN":
-			raise ValueError("Macro '@%s' must be immediately followed by a control sequence." % macroKey)
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Macro '@%s' must be immediately followed by a control sequence." % macroKey, macroKey, 0)
+			raise result.ParseException(badResult)
 		index += 3
 		token = tokens[index]
 		macroBody = []
@@ -90,7 +94,9 @@ def expand(text, params):
 	MAX_MACRO_DEPTH = 6
 	global __m
 	if text.find(mStart + mEnd) != -1:
-		raise ValueError("Can't have empty macro sequence {}")
+		badResult = result.Result(result.PARSE_RESULT)
+		badResult.flagBad("Can't have empty macro sequence {}", str(altBits), 0)
+		raise result.ParseException(badResult)
 	startPos = text.find(mStart)
 	renderHadMoreMacrosCtr = 0
 	while startPos != -1:
@@ -102,13 +108,17 @@ def expand(text, params):
 			if parts[0] in formatting_codes:
 				startPos = text.find(mStart, startPos+1)
 				continue
-			raise ValueError("Unrecognized macro {%s}" % key)
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Unrecognized macro {%s}" % key, key, 0)
+			raise result.ParseException(badResult)
 		if rendered.find(mStart) >= 0:
 			renderHadMoreMacrosCtr += 1
 		else:
 			renderHadMoreMacrosCtr = 0
 		if renderHadMoreMacrosCtr > MAX_MACRO_DEPTH:
-			raise ValueError("Possibly recursive macro loop near: '%s'" % text[startPos:startPos+20])
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Possibly recursive macro loop near here", text[startPos:startPos+20], 0)
+			raise result.ParseException(badResult)
 		text = text[:startPos] + rendered + text[endPos+1:]
 		oldStartPos = startPos
 		startPos = text.find(mStart, startPos)
