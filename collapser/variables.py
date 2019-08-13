@@ -37,6 +37,7 @@ class Variables:
 
 		# First ensure all vars are in same control group
 		varCtrlGroup = ""
+		posOfFreeText = -1
 		while pos < len(tokens):
 			if tokens[pos].type == "VARIABLE":
 				varName = tokens[pos].value
@@ -45,7 +46,12 @@ class Variables:
 					varCtrlGroup = thisCtrlGroup
 				elif varCtrlGroup != thisCtrlGroup:
 					raise ValueError("Found variables from different groups in tokenstream '%'" % tokens)
+			elif tokens[pos].type == "TEXT" and pos > 0 and tokens[pos-1].type != "VARIABLE":
+				posOfFreeText = pos
 			pos += 1
+
+		if posOfFreeText >= 0 and posOfFreeText != len(tokens) - 1:
+			raise ValueError("Found unexpected variable at pos %d: '%s'" % (posOfFreeText, tokens))
 
 		# Now figure out how to render.
 		pos = 0

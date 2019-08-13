@@ -311,6 +311,9 @@ def test_if_some_named_only_last_unnamed():
 	text = "[DEFINE 50>@alpha|50>@beta][Barney|@alpha>Arnold]"
 	with pytest.raises(Exception) as e_info:
 		parse(text)
+	text = "[DEFINE 33>@alpha|33>@beta|34>@gamma][@alpha>Andrew|Bailey|@gamma>Gary]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 
 def test_named_options_all_in_same_ctrl_group():
 	text = "[DEFINE 25>@alpha|25>@beta|25>@gamma|25>@epsilon][DEFINE 50>@larry|25>@moe|25>@curly][@alpha>Adam|@beta>Barney|@larry>Gerald|@epsilon>Ernie]"
