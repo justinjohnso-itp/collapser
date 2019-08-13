@@ -149,11 +149,11 @@ def test_number_values_cant_exceed_100():
 	text = "[50>alpha|50>omega]"
 	assert parse(text) in ["alpha", "omega"]
 	text = "[50>alpha|51>omega]"
-	with pytest.raises(Exception) as e_info:
-		parse(text)
+	res = parseResult(text)
+	assert res.isValid == False
 	text = "[50>alpha|50>omega|50>omega|50>omega|50>omega]"
-	with pytest.raises(Exception) as e_info:
-		parse(text)
+	res = parseResult(text)
+	assert res.isValid == False
 
 def test_can_use_author_preferred_with_prob():
 	text = "[80>alpha|10>beta|10>^gamma]"

@@ -17,8 +17,9 @@ class Alts:
 		if prob is not None:
 			self.probabilityTotal += prob
 			if self.probabilityTotal > 100:
-				raise ValueError("Probabilities in ctrl sequence add up to %d which is > 100: '%s'" % (self.probabilityTotal, self))
-		# print "Adding alt: list is now %s" % self
+				badResult = result.Result(result.PARSE_RESULT)
+				badResult.flagBad("Probabilities in ctrl sequence add up to %d which is > 100" % self.probabilityTotal, str(self), 0)
+				raise result.ParseException(badResult)
 
 	def setAuthorPreferred(self):
 		self.authorPreferredPos = len(self.alts)
@@ -156,7 +157,9 @@ def parseItem(altBits, variablesAllowed=True):
 		elif token.type == "NUMBER":
 			prob = token.value
 		else:
-			raise ValueError("Unhandled token %s: '%s'" % (token.type, token.value))		
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Unhandled token %s: '%s'" % (token.type, token.value), str(altBits), 0)
+			raise result.ParseException(badResult)
 		index += 1
 
 	return Item(text, prob, ap)
