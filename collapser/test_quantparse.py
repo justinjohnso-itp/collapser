@@ -11,7 +11,8 @@ def parse(text, params = None):
 		assert False
 	if params == None:
 		params = quantparse.ParseParams(chooseStrategy="random")
-	return quantparse.parse(lexed.package, params)
+	result = quantparse.parse(lexed.package, params)
+	return result.package
 
 # When sent an array like ["A", "B", "C"] and a test to parse, will fail if after a large number of attempts to parse it hasn't seen each option appear as a parse result.
 def verifyEachIsFound(opts, text):

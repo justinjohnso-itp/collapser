@@ -21,10 +21,15 @@ def go(sourceText, params):
     	return ""
 
     output = quantparse.parse(result.package, params)
+    if not output.isValid:
+        print output
+        return ""
+        
+    outputText = output.package
 
-    output = specialFixes(output)
+    outputText = specialFixes(outputText)
 
-    return output
+    return outputText
 
 
 

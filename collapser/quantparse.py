@@ -7,6 +7,7 @@ import macros
 import variables
 import ctrlseq
 import chooser
+import result
 
 import sys
 
@@ -32,6 +33,8 @@ class ParseParams:
 # Call with an object of type ParseParams.
 def parse(tokens, parseParams):
 	print "** PARSING **"
+
+	# Calculate and pre-set variables for Longest/Shortest case.
 	if parseParams.chooseStrategy in ["longest", "shortest"]:
 		print "Calculating %s defines (ignoring seed)..." % parseParams.chooseStrategy
 		print parseParams
@@ -82,12 +85,15 @@ def parse(tokens, parseParams):
 
 		parseParams.setDefines = bestDefines
 
+	# Handle the rendering.
 	variables.reset()
 	macros.reset()
 	tokens = variables.handleDefs(tokens, parseParams)
 	tokens = macros.handleDefs(tokens, parseParams)
 	renderedString = handleParsing(tokens, parseParams)
-	return renderedString
+	output = result.Result(result.PARSE_RESULT)
+	output.package = renderedString
+	return output
 
 
 def handleParsing(tokens, params):
