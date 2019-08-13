@@ -12,11 +12,11 @@ class Result:
 		self.errorLineText = ""
 		self.errorMessage = ""
 
-	def flagBad(self, msg, text, startPos, col, lineText):
+	def flagBad(self, msg, text, startPos, lineText):
 		self.isValid = False
 		self.errorMessage = msg
 		self.errorLineNumber = find_line_number(text, startPos)
-		self.errorColumn = col
+		self.errorColumn = find_column(text, startPos)
 		self.errorLineText = lineText
 
 	def __str__(self):
