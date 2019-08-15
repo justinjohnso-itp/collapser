@@ -3,6 +3,8 @@
 import ctrlseq
 import result
 import re
+import getch
+import sys
 
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
@@ -59,4 +61,17 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		print rendered
 		if len(str(variant)) < maxCaretLen:
 			print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
-	print "************************************"	
+	print "************************************"
+
+	sys.stdout.write("1) Confirm, 2) Skip, 3) Stop > ")
+	choice = getch.getch()
+	print choice + "\n"
+	if choice == "1":
+		print " >>> Confirmed."
+	elif choice == "2":
+		print " >>> Skipping."
+	elif choice == "3":
+		print " >>> Halting."
+		sys.exit(0)
+
+
