@@ -27,25 +27,6 @@ def go(sourceText, params):
         
     outputText = output.package
 
-    outputText = specialFixes(outputText)
-
     return outputText
 
 
-
-def specialFixes(text):
-    # Ensure verses don't break across pages.
-    # {verse/A looking-glass held above this stream...}
-    text = re.sub(r"{verse/(.*)}", r"{verse/\g<1> \\nowidow }", text)
-    
-    # Ensure no widows right before chapter breaks.
-    text = re.sub(r"([\n\s]*){chapter/", r" \\nowidow \g<1>{chapter/", text)
-    
-    # Ensure no orphans right after section breaks.
-    text = re.sub(r"{section_break}(\n*)(.*)\n", r"{section_break}\g<1>\g<2> \\noclub \n", text)
-
-    # Use proper latex elipses
-    text = re.sub(r"\.\.\. ", r"\ldots\ ", text)
-
-
-    return text
