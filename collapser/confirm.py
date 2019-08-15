@@ -44,7 +44,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	key = "%s%s%s" % (pre, originalCtrlSeq, post)
 	filename = result.find_filename(sourceText, ctrlStartPos)
-	lineNumber = result.find_line_number(sourceText, ctrlStartPos)
+	lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)
 	lineColumn = result.find_column(sourceText, ctrlStartPos)
 	print "\n\n"
 	print "##################################################"
