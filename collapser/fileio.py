@@ -49,7 +49,6 @@ def startConfirmKeys():
 		try:
 			__confirms = pickle.loads(file)
 			print "Loaded confirms from %s" % __kfname
-			print __confirms
 		except IOError as e:
 			print "Couldn't load confirms from %s: %s" % (__kfname, e)
 			sys.exit()
@@ -62,7 +61,7 @@ def finishConfirmKeys():
 	try:
 		writeOutputFile(__kfname, pickle.dumps(__newconfirms))
 	except IOError as e:
-		print "Could save confirms to %s: %s" % (__kfname, e)
+		print "Couldn't save confirms to %s: %s" % (__kfname, e)
 
 def confirmKey(key):
 	global __newconfirms
@@ -71,7 +70,6 @@ def confirmKey(key):
 def isKeyConfirmed(key):
 	global __confirms
 	global __newconfirms
-	print "key in confirms? %s" % (key in __confirms)
 	if key in __confirms and __confirms[key] == True:
 		confirmKey(key)
 		return True

@@ -59,7 +59,6 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		for v in variants.alts:
 			variant = v.txt
 			print '''************************************'''
-			# print '''> "%s"\n''' % str(variant)[:80]
 			rendered = "...%s%s%s..." % (pre, variant, post)
 			rendered = ws.sub(" ", rendered)
 			print rendered
