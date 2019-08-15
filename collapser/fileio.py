@@ -31,3 +31,10 @@ def loadManifest(path, manifest):
 
 def getFileId(fn):
 	return "\n\n%% file %s\n\n" % fn
+
+
+def confirmKey(key):
+	pass
+
+def isKeyConfirmed(key):
+	return False

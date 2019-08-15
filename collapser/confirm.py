@@ -6,6 +6,8 @@ import re
 import getch
 import sys
 
+import fileio
+
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
 	index = 0
@@ -44,34 +46,36 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
 	post = post.replace("\n", "\\")
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
-	key = "%s%s%s" % (pre, originalCtrlSeq, post)
 	filename = result.find_filename(sourceText, ctrlStartPos)
-	lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)
-	lineColumn = result.find_column(sourceText, ctrlStartPos)
-	print "\n\n"
-	print "##################################################"
-	print "VARIANT FOUND IN %s LINE %d COL %d: '%s'" % (filename, lineNumber, lineColumn, originalCtrlSeq)
-	# print "KEY: '%s'" % key
-	for v in variants.alts:
-		variant = v.txt
-		print '''************************************'''
-		# print '''> "%s"\n''' % str(variant)[:80]
-		rendered = "...%s%s%s..." % (pre, variant, post)
-		rendered = ws.sub(" ", rendered)
-		print rendered
-		if len(str(variant)) < maxCaretLen:
-			print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
-	print "************************************"
+	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
+	if fileio.isKeyConfirmed(key) == False:
+		lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)
+		lineColumn = result.find_column(sourceText, ctrlStartPos)
+		print "\n\n"
+		print "##################################################"
+		print "VARIANT FOUND IN %s LINE %d COL %d: '%s'" % (filename, lineNumber, lineColumn, originalCtrlSeq)
+		# print "KEY: '%s'" % key
+		for v in variants.alts:
+			variant = v.txt
+			print '''************************************'''
+			# print '''> "%s"\n''' % str(variant)[:80]
+			rendered = "...%s%s%s..." % (pre, variant, post)
+			rendered = ws.sub(" ", rendered)
+			print rendered
+			if len(str(variant)) < maxCaretLen:
+				print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
+		print "************************************"
 
-	sys.stdout.write("1) Confirm, 2) Skip, 3) Stop > ")
-	choice = getch.getch()
-	print choice + "\n"
-	if choice == "1":
-		print " >>> Confirmed."
-	elif choice == "2":
-		print " >>> Skipping."
-	elif choice == "3":
-		print " >>> Halting."
-		sys.exit(0)
+		sys.stdout.write("1) Confirm, 2) Skip, 3) Stop > ")
+		choice = getch.getch()
+		print choice + "\n"
+		if choice == "1":
+			print " >>> Confirmed."
+			fileio.confirmKey(key)
+		elif choice == "2":
+			print " >>> Skipping."
+		elif choice == "3":
+			print " >>> Halting."
+			sys.exit(0)
 
 
