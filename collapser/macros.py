@@ -94,9 +94,10 @@ def expand(text, params):
 	mEnd = '''}'''
 	MAX_MACRO_DEPTH = 6
 	global __m
-	if text.find(mStart + mEnd) != -1:
+	emptyPos = text.find(mStart + mEnd)
+	if emptyPos != -1:
 		badResult = result.Result(result.PARSE_RESULT)
-		badResult.flagBad("Can't have empty macro sequence {}", str(altBits), 0)
+		badResult.flagBad("Can't have empty macro sequence {}", text, emptyPos)
 		raise result.ParseException(badResult)
 	startPos = text.find(mStart)
 	renderHadMoreMacrosCtr = 0
@@ -110,7 +111,7 @@ def expand(text, params):
 				startPos = text.find(mStart, startPos+1)
 				continue
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Unrecognized macro {%s}" % key, key, 0)
+			badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
 			raise result.ParseException(badResult)
 		if rendered.find(mStart) >= 0:
 			renderHadMoreMacrosCtr += 1
@@ -118,7 +119,7 @@ def expand(text, params):
 			renderHadMoreMacrosCtr = 0
 		if renderHadMoreMacrosCtr > MAX_MACRO_DEPTH:
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Possibly recursive macro loop near here", text[startPos:startPos+20], 0)
+			badResult.flagBad("Possibly recursive macro loop near here", text[startPos:startPos+20], startPos)
 			raise result.ParseException(badResult)
 		text = text[:startPos] + rendered + text[endPos+1:]
 		oldStartPos = startPos
