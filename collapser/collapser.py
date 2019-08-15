@@ -13,6 +13,7 @@ import latexifier
 import quantlex
 import quantparse
 import chooser
+import result
 
 
 
@@ -43,7 +44,7 @@ def postConversionSanityCheck(text):
 	# Look for unexpected characters etc. here
 	pos = text.find('_')
 	if pos is not -1:
-		raise ValueError("Found invalid underscore '_' character on line %d:\n%s" % (quantlex.find_line_number(text, pos), quantlex.find_line_text(text, pos)) )
+		raise ValueError("Found invalid underscore '_' character on line %d:\n%s" % (result.find_line_number(text, pos), result.find_line_text(text, pos)) )
 	
 	# pos = text.find('''"''')
 	# if pos is not -1:
