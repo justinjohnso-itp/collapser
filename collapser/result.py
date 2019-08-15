@@ -11,13 +11,15 @@ class Result:
 		self.errorColumn = -1
 		self.errorLineText = ""
 		self.errorMessage = ""
+		self.filename = ""
 
 	def flagBad(self, msg, text, startPos):
 		self.isValid = False
 		self.errorMessage = msg
-		self.errorLineNumber = find_line_number(text, startPos)
+		self.errorLineNumber = find_line_number_for_file(text, startPos)
 		self.errorColumn = find_column(text, startPos)
 		self.errorLineText = find_line_text(text, startPos)
+		self.filename = find_filename(text, startPos)
 
 	def showError(self):
 		# Only show one line's worth of line
@@ -33,7 +35,7 @@ class Result:
 
 		caret = (" " * (col-1+2)) + "^"
 		typeName = self.getPrintedTypeName().capitalize()
-		return "******************************************************\n %s found a problem on line %d column %d:\n ** %s\n\n> %s\n%s" % (typeName, self.errorLineNumber, self.errorColumn, self.errorMessage, lineText, caret)
+		return "******************************************************\n %s found a problem in %s line %d column %d:\n ** %s\n\n> %s\n%s" % (typeName, self.filename, self.errorLineNumber, self.errorColumn, self.errorMessage, lineText, caret)
 
 	def getPrintedTypeName(self):
 		if self.resultType == LEX_RESULT:
