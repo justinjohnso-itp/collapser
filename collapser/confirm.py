@@ -11,6 +11,7 @@ import fileio
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
 	index = 0
+	fileio.startConfirmKeys()
 	while index < len(tokens):
 		token = tokens[index]
 		if token.type == "CTRLBEGIN":
@@ -25,7 +26,7 @@ def process(tokens, sourceText, parseParams):
 			confirmCtrlSeq(ctrl_contents, sourceText, parseParams, token.lexpos)
 
 		index += 1
-
+	fileio.finishConfirmKeys()
 
 def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
@@ -48,13 +49,13 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	filename = result.find_filename(sourceText, ctrlStartPos)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
+	key = re.sub(r'[\W_]', '', key)
 	if fileio.isKeyConfirmed(key) == False:
 		lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)
 		lineColumn = result.find_column(sourceText, ctrlStartPos)
 		print "\n\n"
 		print "##################################################"
 		print "VARIANT FOUND IN %s LINE %d COL %d: '%s'" % (filename, lineNumber, lineColumn, originalCtrlSeq)
-		# print "KEY: '%s'" % key
 		for v in variants.alts:
 			variant = v.txt
 			print '''************************************'''
@@ -76,6 +77,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 			print " >>> Skipping."
 		elif choice == "3":
 			print " >>> Halting."
+			fileio.finishConfirmKeys()
 			sys.exit(0)
 
 
