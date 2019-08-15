@@ -43,11 +43,12 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 	post = post.replace("\n", "\\")
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	key = "%s%s%s" % (pre, originalCtrlSeq, post)
+	filename = result.find_filename(sourceText, ctrlStartPos)
 	lineNumber = result.find_line_number(sourceText, ctrlStartPos)
 	lineColumn = result.find_column(sourceText, ctrlStartPos)
 	print "\n\n"
 	print "##################################################"
-	print "VARIANT FOUND AT LINE %d COL %d: '%s'" % (lineNumber, lineColumn, originalCtrlSeq)
+	print "VARIANT FOUND IN %s LINE %d COL %d: '%s'" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 	# print "KEY: '%s'" % key
 	for v in variants.alts:
 		variant = v.txt

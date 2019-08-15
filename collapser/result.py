@@ -68,6 +68,12 @@ def find_line_text(input, pos):
 	line_end = input.find('\n', line_start)
 	return input[line_start:line_end]
 
+def find_filename(input, pos):
+	mask = '% file '
+	fn_start = find_previous(input, mask, pos)
+	fn_end = input.find('\n', fn_start)
+	print "fn_start: %d, fn_end: %d" % (fn_start, fn_end)
+	return input[fn_start+(len(mask)-1):fn_end]
 
 class ParseException(Exception):
 	def __init__(self, result):

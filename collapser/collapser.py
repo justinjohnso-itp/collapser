@@ -163,7 +163,8 @@ def main():
 		files = fileio.loadManifest(path, inputText)
 	else:
 		print "Reading file '%s'" % inputFile
-		files = [inputText]
+		fileHeader = fileio.getFileId(inputFile)
+		files = [fileHeader + inputText]
 
 	fileTexts = []
 	for file in files:

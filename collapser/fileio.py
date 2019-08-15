@@ -26,5 +26,8 @@ def loadManifest(path, manifest):
 			continue
 		print " > Reading '%s'" % line
 		file = readInputFile(path + line)
-		contents.append(file)
+		contents.append(getFileId(line) + file)
 	return contents
+
+def getFileId(fn):
+	return "\n\n%% file %s\n\n" % fn
