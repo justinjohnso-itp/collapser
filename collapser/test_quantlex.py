@@ -280,6 +280,11 @@ def test_define_with_probabilities():
 	assert toks[8].value == "taciturn"
 	assert toks[9].type == "CTRLEND"
 
+def test_define_with_even_probabilities():
+	text = "Text [DEFINE @wordy|@average|@taciturn] end."
+	result = quantlex.lex(text)
+	assert result.isValid == True
+
 def test_bad_define_with_probabilities():
 	text = "[DEFINE 80>|20>@test]"
 	result = quantlex.lex(text)

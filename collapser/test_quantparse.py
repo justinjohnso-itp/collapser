@@ -259,6 +259,10 @@ def test_defines_with_probabilities_must_sum_to_100():
 	with pytest.raises(Exception) as e_info:
 		parse(text)
 
+def test_equal_distribution_defines():
+	text = "[DEFINE @wordy|@average|@taciturn]I am a [@wordy>rather wordy|@average>normal|@taciturn>quiet] person."
+	verifyEachIsFound(["I am a rather wordy person.", "I am a normal person.", "I am a quiet person."], text)
+
 def test_multiple_defines_is_bad():
 	text = "[DEFINE @alpha] Some text. [@alpha>Yes.] Some more. [DEFINE 80>@beta|20>@alpha]. Some final text."
 	with pytest.raises(Exception) as e_info:
