@@ -85,8 +85,6 @@ def test_prevent_nesting():
 	text = "[don't allow [nested] sequences]"
 	result = quantlex.lex(text)
 	assert result.isValid == False
-	assert result.errorLineNumber == 1
-	assert result.errorColumn == 14
 
 def test_multiline_sequences():
 	text = """
@@ -108,8 +106,6 @@ we should do something about
 that really."""
 	result = quantlex.lex(text)
 	assert result.isValid == False
-	assert result.errorLineNumber == 2
-	assert result.errorColumn == 15
 
 def test_extra_end_ctrl():
 	text = """
@@ -119,15 +115,11 @@ we've got an extra here] which
 really shouldn't be there."""
 	result = quantlex.lex(text)
 	assert result.isValid == False
-	assert result.errorLineNumber == 4
-	assert result.errorColumn == 24
 
 def test_bad_divider_pos():
 	text = "A divider | can't be outside a [sequence]."
 	result = quantlex.lex(text)
 	assert result.isValid == False
-	assert result.errorLineNumber == 1
-	assert result.errorColumn == 11
 
 def test_bad_empty_control_seq():
 	text = "Can't [have] [] empty control sequence."
