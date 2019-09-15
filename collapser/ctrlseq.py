@@ -13,6 +13,8 @@ class Alts:
 		self.probabilityTotal = 0
 
 	def add(self, txt, prob=None):
+		if prob == 0:
+			return
 		self.alts.append(Item(txt, prob, False))
 		if prob is not None:
 			self.probabilityTotal += prob

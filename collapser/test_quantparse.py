@@ -482,6 +482,13 @@ def test_longest_enum_defines():
 	for i in range(10):
 		assert parse(text, params) == "This is not much, and that is ."
 
+def test_zeros_never_appear():
+	text = '''Alpha [0>never print this ]beta.'''
+	for i in range(1000):
+		assert parse(text) == "Alpha beta."
+	text = '''Alpha [50>acceptable |50>also acceptable |0>never okay ]beta.'''
+	for i in range(1000):
+		assert parse(text) != "Alpha never okay beta."
 
 
 
