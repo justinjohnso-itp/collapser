@@ -1,3 +1,4 @@
+# coding=utf-8
 
 # This handles converting a collapsed text into a properly formated Latex file.
 
@@ -158,6 +159,7 @@ def specialFixes(text):
 
 	# Use proper latex elipses
 	text = re.sub(r"\.\.\. ", r"\ldots\ ", text)
+	text = re.sub(r"… ", r"\ldots\ ", text)
 
 
 	return text
