@@ -90,6 +90,10 @@ class Variables:
 
 __v = Variables()
 
+def showAllVars():
+	global __v
+	return __v.variables.keys()
+
 def showVars():
 	global __v
 	return {k for k, v in __v.variables.items() if v == True}

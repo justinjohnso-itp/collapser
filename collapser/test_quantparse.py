@@ -279,7 +279,7 @@ def test_okay_to_define_after_using():
 def test_vars_collected_and_stripped():
 	text = "[DEFINE @alpha][DEFINE 50>@beta|50>@gamma]Hello, friends![DEFINE @omega]"
 	result = parse(text)
-	keys = quantparse.variables.showVars()
+	keys = quantparse.variables.showAllVars()
 	assert len(keys) == 4
 	assert "alpha" in keys
 	assert "beta" in keys
