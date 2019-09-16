@@ -5,13 +5,14 @@ import chooser
 
 def getDiscoursePreferredVersion(alts, vars):
 	# For each discourse variable set, rank each alt for desireability. Return something weighted for the highest-ranked options.
-	# TODO only within quoted dialogue.
+	# TODO only outside quoted dialogue.
+	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	dpQuality = []
 	print alts
 	for pos, item in enumerate(alts.alts):
 		dpQuality.append(0)
 
-	print "in getDiscoursePreferredVersion: vars = %s" % vars.showVars()
+	print "******** in getDiscoursePreferredVersion: vars = %s" % vars.showVars()
 
 	for pos, item in enumerate(alts.alts):
 		if vars.check("avoidbe"):

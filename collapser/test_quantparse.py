@@ -510,6 +510,13 @@ def test_zeros_never_appear():
 	for i in range(1000):
 		assert parse(text) != "Alpha never okay beta."
 
+def test_tobe_discourse_var():
+	text = '''[DEFINE @avoidbe][I could be really wordy|No], [not really|yes I am going to].'''
+	params = quantparse.ParseParams(setDefines=["avoidbe"], discourseVarChance=100, preferenceForAuthorsVersion=0)
+	for i in range(10):
+		assert parse(text, params) == "No, not really."
+
+
 
 
 
