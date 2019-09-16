@@ -30,10 +30,10 @@ class Alts:
 		return self.alts[self.authorPreferredPos].txt
 
 	def getRandom(self):
-		if self.probabilityTotal == 0:
-			return chooser.oneOf(self.alts).txt
-		else:
+		if self.hasProbabilities():
 			return chooser.distributedPick(self.alts)
+		else:
+			return chooser.oneOf(self.alts).txt
 
 	def getSortedAlts(self):
 		return sorted(self.alts, key = lambda a: len(a.txt))
@@ -44,6 +44,9 @@ class Alts:
 
 	def getShortest(self):
 		return self.getSortedAlts()[0].txt
+
+	def hasProbabilities(self):
+		return self.probabilityTotal != 0
 
 	def __len__(self):
 		return len(self.alts)
