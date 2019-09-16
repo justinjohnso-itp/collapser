@@ -7,17 +7,28 @@ def getDiscoursePreferredVersion(alts, vars):
 	# For each discourse variable set, rank each alt for desireability. Return something weighted for the highest-ranked options.
 	# TODO only within quoted dialogue.
 	dpQuality = []
-	for pos, item in enumerate(alts):
-		dpQuality[pos] = 0
+	print alts
+	for pos, item in enumerate(alts.alts):
+		dpQuality.append(0)
 
-	for pos, item in enumerate(alts):
+	print "in getDiscoursePreferredVersion: vars = %s" % vars.showVars()
+
+	for pos, item in enumerate(alts.alts):
 		if vars.check("avoidbe"):
-			dpQuality[pos] -= getNumBeVerbsInText(item)
+			numBeVerbs = getNumBeVerbsInText(item.txt)
+			if numBeVerbs > 0:
+				print "(Penalizing '%s' b/c @avoidbe and found %d be verbs)" % (item.txt, numBeVerbs)
+				dpQuality[pos] -= numBeVerbs
 
+	print "Final rankings:"
+	for pos, item in enumerate(alts.alts):
+		print "%d: '%s'" % (dpQuality[pos], item.txt)
 	bestRankedPositions = getHighestPositions(dpQuality)
+	print "Best positions: %s" % bestRankedPositions
 	selectedPos = chooser.oneOf(bestRankedPositions)
+	print "Picked '%s'" % alts.alts[selectedPos].txt
 
-	return alts.alts[selectedPos]
+	return alts.alts[selectedPos].txt
 
 
 

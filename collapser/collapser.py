@@ -91,6 +91,7 @@ Arguments:
   		"longest"
   		"shortest"
   --set=x,y,z	 A list of variables to set true for this run.
+  --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
 """
 
 
@@ -109,8 +110,9 @@ def main():
 	doConfirm = True
 	pdfOutputDir = "output/"
 	setDefines = []
+	discourseVarChance = 80
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "noconfirm", "front", "set="])
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "noconfirm", "front", "set=", "discourseVarChance="])
 	print opts
 	print args
 	if len(args) > 0:
@@ -143,6 +145,12 @@ def main():
 			doFront = True
 		elif opt == "--set":
 			setDefines = arg.split(',')
+		elif opt == "--discourseVarChance":
+			try:
+				discourseVarChance = int(arg)
+			except:
+				print "Invalid --discourseVarChance parameter '%s': not an integer." % arg
+				sys.exit()
 
 	if inputFile == "" or outputFile == "":
 		print "Missing input or output file."
@@ -171,7 +179,7 @@ def main():
 	for file in files:
 		fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)
-	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = 20, setDefines = setDefines, doConfirm = doConfirm)
+	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = 20, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance)
 	collapsedText = collapse.go(joinedFileTexts, params)
 	if collapsedText == "":
 		sys.exit()

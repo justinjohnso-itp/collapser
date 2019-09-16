@@ -2,6 +2,7 @@
 import chooser
 import variables
 import result
+import discourseVars
 
 # Create a class to store possible text alternatives we might print, and handle choosing an appropriate one.
 
@@ -146,6 +147,8 @@ def render(tokens, params):
 		return alts.getShortest()
 	elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 		result = alts.getAuthorPreferred()
+	elif not alts.hasProbabilities() and chooser.percent(params.discourseVarChance):
+		result = discourseVars.getDiscoursePreferredVersion(alts, variables)
 	else:
 		result = alts.getRandom()
 
