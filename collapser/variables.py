@@ -40,7 +40,7 @@ class Variables:
 		posOfFreeText = -1
 		while pos < len(tokens):
 			if tokens[pos].type == "VARIABLE":
-				varName = tokens[pos].value
+				varName = tokens[pos].value.lower()
 				thisCtrlGroup = self.getGroupFromVar(varName)
 				if varCtrlGroup == "":
 					varCtrlGroup = thisCtrlGroup
@@ -70,7 +70,7 @@ class Variables:
 
 			#Otherwise, we must be at a variable.
 			assert tokens[pos].type == "VARIABLE"
-			varName = tokens[pos].value
+			varName = tokens[pos].value.lower()
 			pos += 1
 
 			# A variable can be followed by either text, or a divider or end of the stream. If text, return the text if that variable is true.
@@ -122,10 +122,10 @@ def renderAll(tokens):
 			pos += 1
 			continue
 		assert tokens[pos].type == "VARIABLE"
-		varName = tokens[pos].value
+		varName = tokens[pos].value.lower()
 		pos += 1
 		if tokens[pos].type == "TEXT":
-			alts.add(tokens[pos].value)
+			alts.add(varName)
 		elif tokens[pos].type == "DIVIDER":
 			alts.add("")
 		pos += 1
@@ -171,15 +171,16 @@ def handleDefs(tokens, params):
 				token = tokens[index]
 			item = ctrlseq.parseItem(ctrl_contents)
 			assert tokens[index-1].type == "VARIABLE"
-			if item.txt in __v.variables:
+			varname = item.txt.lower()
+			if varname in __v.variables:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Variable '@%s' is defined twice." % item.txt, item.txt, 0)
+				badResult.flagBad("Variable '@%s' is defined twice." % varname, varname, 0)
 				raise result.ParseException(badResult)
-			if item.txt in params.setDefines:
-				__v.set(groupName, item.txt)
+			if varname in params.setDefines:
+				__v.set(groupName, varname)
 				foundSetDefine = True
-			elif "!" + item.txt in params.setDefines:
-				__v.set(groupName, item.txt, False)
+			elif "!" + varname in params.setDefines:
+				__v.set(groupName, varname, False)
 				foundSetDefine = True
 			else:
 				if item.authorPreferred:
@@ -187,7 +188,7 @@ def handleDefs(tokens, params):
 					alts.setAuthorPreferred()
 				if item.prob:
 					probTotal += item.prob
-				alts.add(item.txt, item.prob)
+				alts.add(varname, item.prob)
 				__v.set(groupName, item.txt, False)
 
 			if token.type == "DIVIDER":

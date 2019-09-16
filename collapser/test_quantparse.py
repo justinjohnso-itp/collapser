@@ -454,6 +454,13 @@ def test_negated_set_defines():
 	for i in range(10):
 		assert parse(text, params) == "This is null. This is D text. "
 
+def test_no_case_sensitivity_in_variables():
+	text = '''[DEFINE @ALPHA][DEFINE @alpha]'''
+	with pytest.raises(Exception) as e_info:
+		result = parse(text)
+	# check that using one works across cases
+	# check that set_defines works across cases
+
 def test_longest():
 	text = '''This is [so very super long|short] and that is [quick|such a laborious process].'''
 	params = quantparse.ParseParams(chooseStrategy="longest")

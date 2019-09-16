@@ -166,6 +166,8 @@ def parseItem(altBits, variablesAllowed=True):
 			raise result.ParseException(badResult)
 		if token.type in ("TEXT", "VARIABLE"):
 			text = token.value
+			if token.type == "VARIABLE":
+				text = text.lower()
 		elif token.type == "AUTHOR":
 			ap = True
 		elif token.type == "NUMBER":
