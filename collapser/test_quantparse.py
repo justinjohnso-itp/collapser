@@ -458,6 +458,19 @@ def test_no_case_sensitivity_in_variables():
 	text = '''[DEFINE @ALPHA][DEFINE @alpha]'''
 	with pytest.raises(Exception) as e_info:
 		result = parse(text)
+	text = '''[DEFINE @Alpha|@Beta]Bob [@alpha>A.|@beta>B.] Smith'''
+	for i in range(10):
+		assert parse(text) in ["Bob A. Smith", "Bob B. Smith"]
+	text = '''[DEFINE @alpha|@beta]Bob [@ALPHa>A.|@bETA>B.] Smith'''
+	for i in range(10):
+		assert parse(text) in ["Bob A. Smith", "Bob B. Smith"]
+	params = quantparse.ParseParams(setDefines=["ALPHA"])
+	for i in range(10):
+		assert parse(text, params) == "Bob A. Smith"
+	params = quantparse.ParseParams(setDefines=["bEtA"])
+	for i in range(10):
+		assert parse(text, params) == "Bob B. Smith"
+	
 	# check that using one works across cases
 	# check that set_defines works across cases
 

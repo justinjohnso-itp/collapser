@@ -143,6 +143,7 @@ def handleDefs(tokens, params):
 	output = []
 	index = 0
 	global __v
+	params.setDefines = map(lambda x: x.lower(), params.setDefines)
 	while index < len(tokens):
 		foundAuthorPreferred = False
 		token = tokens[index]
