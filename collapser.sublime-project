@@ -2,7 +2,8 @@
 	"folders":
 	[
 		{
-			"path": "."
+			"path": ".",
+			"binary_file_patterns": ["chapters/*", "collapser/origply/*", "collapser/ply/*", "collapser/output/*"]
 		}
-	]
+	],
 }
