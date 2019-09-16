@@ -19,6 +19,17 @@ def getDiscoursePreferredVersion(alts, vars):
 				print "(Penalizing '%s' b/c @avoidbe and found %d be verbs)" % (item.txt, numBeVerbs)
 				dpQuality[pos] -= numBeVerbs
 
+		if vars.check("wordy"):
+			if len(item.txt) == len(alts.getLongest()):
+				print "(Rewarding '%s' b/c @wordy and this is longest)" % item.txt
+				dpQuality[pos] += 1
+
+		if vars.check("succinct"):
+			if len(item.txt) == len(alts.getShortest()):
+				print "(Rewarding '%s' b/c @succinct and this is shortest)" % item.txt
+				dpQuality[pos] += 1
+
+
 	print "Final rankings:"
 	for pos, item in enumerate(alts.alts):
 		print "%d: '%s'" % (dpQuality[pos], item.txt)
