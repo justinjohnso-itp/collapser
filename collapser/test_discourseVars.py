@@ -20,3 +20,15 @@ def test_getNumBeVerbsInText():
 	assert discourseVars.getNumBeVerbsInText(text) == 4
 	text = '''Punctuation:be?Was:were,isn't.'''
 	assert discourseVars.getNumBeVerbsInText(text) == 4
+
+
+def test_getHighestPosition():
+	assert discourseVars.getHighestPosition([]) == -1
+	assert discourseVars.getHighestPosition([1]) == 0
+	assert discourseVars.getHighestPosition([10, 9, 8]) == 0
+	assert discourseVars.getHighestPosition([9, 10, 8]) == 1
+	assert discourseVars.getHighestPosition([8, 9, 10]) == 2
+	assert discourseVars.getHighestPosition([8, 9, 10, 10, 10]) == 2
+	assert discourseVars.getHighestPosition([8, 9, 10, 11, 12, 10]) == 4
+	assert discourseVars.getHighestPosition([-500, 500, -500]) == 1
+
