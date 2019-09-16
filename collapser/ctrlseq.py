@@ -147,7 +147,7 @@ def render(tokens, params):
 		return alts.getShortest()
 	elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 		result = alts.getAuthorPreferred()
-	elif not alts.hasProbabilities() and chooser.percent(params.discourseVarChance):
+	elif len(alts.getLongest()) < 160 and not alts.hasProbabilities() and chooser.percent(params.discourseVarChance):
 		result = discourseVars.getDiscoursePreferredVersion(alts, variables)
 	else:
 		result = alts.getRandom()

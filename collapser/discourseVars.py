@@ -8,11 +8,9 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO only outside quoted dialogue.
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	dpQuality = []
-	print alts
+	print "******** %s" % alts
 	for pos, item in enumerate(alts.alts):
 		dpQuality.append(0)
-
-	print "******** in getDiscoursePreferredVersion: vars = %s" % vars.showVars()
 
 	for pos, item in enumerate(alts.alts):
 		if vars.check("avoidbe"):
