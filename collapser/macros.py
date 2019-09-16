@@ -22,12 +22,12 @@ class Macros:
 			return self.sticky_macro_rendered[key]
 		elif key in self.sticky_macro_originals:
 			thingToRender = self.sticky_macro_originals[key]
-			result = ctrlseq.render(thingToRender, params)
+			result = ctrlseq.render(thingToRender, params, inMacro=True)
 			self.sticky_macro_rendered[key] = result
 			return result
 		elif key in self.macros:
 			thingToRender = self.macros[key]
-			result = ctrlseq.render(thingToRender, params)
+			result = ctrlseq.render(thingToRender, params, inMacro=True)
 			return result
 		else:		
 			return None

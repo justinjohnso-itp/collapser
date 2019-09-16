@@ -135,19 +135,18 @@ def renderAll(tokens, params, showAllVars=False):
 
 # We have a series of tokens for a control sequence, everything between (and excluding) the square brackets. Each token has .type and .value.
 
-def render(tokens, params):
+def render(tokens, params, inMacro=False):
 
 	alts = renderAll(tokens, params)
 	if len(alts) == 0:
 		return ""
-
 	if params.chooseStrategy == "longest":
 		return alts.getLongest()
 	elif params.chooseStrategy == "shortest":
 		return alts.getShortest()
 	elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
 		result = alts.getAuthorPreferred()
-	elif len(alts.getLongest()) < 160 and not alts.hasProbabilities() and chooser.percent(params.discourseVarChance):
+	elif not inMacro and len(alts.getLongest()) < 160 and not alts.hasProbabilities() and chooser.percent(params.discourseVarChance):
 		result = discourseVars.getDiscoursePreferredVersion(alts, variables)
 	else:
 		result = alts.getRandom()
