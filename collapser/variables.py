@@ -92,7 +92,7 @@ __v = Variables()
 
 def showVars():
 	global __v
-	return __v.variables.keys()
+	return {k for k, v in __v.variables.items() if v == True}
 
 def showGroups():
 	global __v
