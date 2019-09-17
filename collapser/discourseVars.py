@@ -2,12 +2,13 @@
 
 import re
 import chooser
+from textblob import TextBlob
 
 dpStats = {}
 
 def resetStats():
 	global dpStats
-	dpStats = {"avoidbe": 0, "wordy": 0, "succinct": 0, "avoidfiller": 0}
+	dpStats = {"avoidbe": 0, "wordy": 0, "succinct": 0, "avoidfiller": 0, "depressive": 0}
 
 def showStats():
 	global dpStats
@@ -28,13 +29,15 @@ def getDiscoursePreferredVersion(alts, vars):
 	for pos, item in enumerate(alts.alts):
 		dpQuality.append(0)
 
+	# TODO: should these be scaled so they all have equal importance? If so how?
+
 	for pos, item in enumerate(alts.alts):
 		if vars.check("avoidbe"):
 			numBeVerbs = getNumBeVerbsInText(item.txt)
 			if numBeVerbs > 0:
 				print "(Penalizing '%s' b/c @avoidbe and found %d be verbs)" % (item.txt, numBeVerbs)
 				dpStats["avoidbe"] += 1
-				dpQuality[pos] -= numBeVerbs
+				dpQuality[pos] -= 1
 
 		if vars.check("wordy"):
 			if len(item.txt) == len(alts.getLongest()):
@@ -53,7 +56,18 @@ def getDiscoursePreferredVersion(alts, vars):
 			if numArticles > 0:
 				print "(Penalizing '%s' b/c @avoidfiller and found %d weak words)" % (item.txt, numArticles)
 				dpStats["avoidfiller"] += 1
-				dpQuality[pos] -= numArticles
+				dpQuality[pos] -= 1
+
+		if vars.check("depressive"):
+			safetxt = unicode(item.txt, "utf-8").encode('ascii', 'replace')
+			tb = TextBlob(safetxt)
+			polarity = tb.sentiment.polarity
+			subjectivity = tb.sentiment.subjectivity
+			if polarity <= -0.5:
+				print "Rewarding '%s' b/c @depressive and low polarity %f" % (item.txt, polarity)
+				dpStats["depressive"] += 1
+				dpQuality[pos] += 1
+
 
 
 	print "Final rankings:"
