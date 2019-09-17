@@ -172,25 +172,8 @@ def main():
 		print "Seed (requested): %d" % seed
 	chooser.setSeed(seed)
 
-	files = []
-	inputText = fileio.readInputFile(inputFile)
-	if inputFile[-12:] == "manifest.txt":
-		path = inputFile[:-12]
-		print "Reading manifest '%s'" % inputFile
-		files = fileio.loadManifest(path, inputText)
-	else:
-		print "Reading file '%s'" % inputFile
-		fileHeader = fileio.getFileId(inputFile)
-		files = [fileHeader + inputText]
-
-	fileTexts = []
-	for file in files:
-		fileTexts.append(file)
-	joinedFileTexts = ''.join(fileTexts)
 	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance)
-	collapsedText = collapse.go(joinedFileTexts, params)
-	if collapsedText == "":
-		sys.exit()
+	collapsedText = getCollapsedTextFromFile(inputFile, params)
 
 	fileio.writeOutputFile("output/raw_out.txt", collapsedText)
 
@@ -221,6 +204,30 @@ def main():
 			# raise RuntimeError("command '{}' return with error (code {})".format(e.cmd, e.returncode))
 	else:
 		print "Skipping PDF."
+
+
+def getCollapsedTextFromFile(inputFile, params):
+	files = []
+	inputText = fileio.readInputFile(inputFile)
+	if inputFile[-12:] == "manifest.txt":
+		path = inputFile[:-12]
+		print "Reading manifest '%s'" % inputFile
+		files = fileio.loadManifest(path, inputText)
+	else:
+		print "Reading file '%s'" % inputFile
+		fileHeader = fileio.getFileId(inputFile)
+		files = [fileHeader + inputText]
+
+	fileTexts = []
+	for file in files:
+		fileTexts.append(file)
+	joinedFileTexts = ''.join(fileTexts)
+	collapsedText = collapse.go(joinedFileTexts, params)
+	if collapsedText == "":
+		sys.exit()
+
+	return collapsedText
+
 
 
 main()
