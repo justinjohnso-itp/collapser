@@ -175,35 +175,14 @@ def main():
 	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance)
 	collapsedText = getCollapsedTextFromFile(inputFile, params)
 
-	fileio.writeOutputFile("output/raw_out.txt", collapsedText)
-
-	outputText = latexifier.go(collapsedText)
-
-	postConversionSanityCheck(outputText)
-
-	outputText = latexWrapper(outputText, includeFrontMatter=doFront)	
-
-	fileio.writeOutputFile(outputFile, outputText)
+	makeOutputFile(collapsedText, outputFile, doFront)
 
 	if doPDF:
 		print "Running lualatex..."
-		cmdParams = '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (pdfOutputDir, outputFile)
-		cmdArray = shlex.split(cmdParams)
-		cmdArray.insert(0, "lualatex")
-
-		try:
-			output = subprocess.check_output(cmdArray,stderr=subprocess.STDOUT)
-		except subprocess.CalledProcessError as e:
-			# For some reason this is failing with error code 1 even when it successfully works, so we need to do our own post-processing.
-			latexlog = e.output
-			result = postLatexSanityCheck(latexlog)
-			if result is False:
-				print "*** Generation failed. Check .log file in output folder."
-			else:
-				print "Success! Generated %d page PDF." % result
-			# raise RuntimeError("command '{}' return with error (code {})".format(e.cmd, e.returncode))
+		outputPDF(outputFile, pdfOutputDir)
 	else:
 		print "Skipping PDF."
+
 
 
 def getCollapsedTextFromFile(inputFile, params):
@@ -228,6 +207,30 @@ def getCollapsedTextFromFile(inputFile, params):
 
 	return collapsedText
 
+def makeOutputFile(collapsedText, outputFile, doFront):
+	
+	fileio.writeOutputFile("output/raw_out.txt", collapsedText)
+	outputText = latexifier.go(collapsedText)
+	postConversionSanityCheck(outputText)
+	outputText = latexWrapper(outputText, includeFrontMatter=doFront)	
+	fileio.writeOutputFile(outputFile, outputText)
+
+def outputPDF(outputFile, pdfOutputDir):
+	cmdParams = '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (pdfOutputDir, outputFile)
+	cmdArray = shlex.split(cmdParams)
+	cmdArray.insert(0, "lualatex")
+
+	try:
+		output = subprocess.check_output(cmdArray,stderr=subprocess.STDOUT)
+	except subprocess.CalledProcessError as e:
+		# For some reason this is failing with error code 1 even when it successfully works, so we need to do our own post-processing.
+		latexlog = e.output
+		result = postLatexSanityCheck(latexlog)
+		if result is False:
+			print "*** Generation failed. Check .log file in output folder."
+		else:
+			print "Success! Generated %d page PDF." % result
+		# raise RuntimeError("command '{}' return with error (code {})".format(e.cmd, e.returncode))	
 
 
 main()
