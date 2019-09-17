@@ -10,11 +10,14 @@ def resetStats():
 	global dpStats
 	dpStats = {"avoidbe": 0, "wordy": 0, "succinct": 0, "avoidfiller": 0, "depressive": 0, "subjective": 0, "objective": 0}
 
-def showStats():
+def showStats(vars):
 	global dpStats
 	print "*******************************************************"
-	print "How many times discourse variables changed text weight:"
-	print dpStats
+	print "How many times set discourse variables changed text weight:"
+	# print dpStats
+	# filteredStats = {k, v for k, v in dpStats.items() if vars.check(k) }
+	filtered = dict(filter(lambda i: vars.check(i[0]), dpStats.items()))
+	print filtered
 	print "*******************************************************"
 
 def getDiscoursePreferredVersion(alts, vars):

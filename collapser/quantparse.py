@@ -144,7 +144,7 @@ def process(tokens, parseParams):
 		
 		index += 1
 
-	discourseVars.showStats()
+	discourseVars.showStats(variables)
 	return output
 
 
