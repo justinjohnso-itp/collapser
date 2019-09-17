@@ -5,6 +5,7 @@ import chooser
 from textblob import TextBlob
 
 dpStats = {}
+showTrace = False
 
 def resetStats():
 	global dpStats
@@ -20,15 +21,19 @@ def showStats(vars):
 	print filtered
 	print "*******************************************************"
 
+def trace(txt):
+	if showTrace:
+		print txt
+
 def getDiscoursePreferredVersion(alts, vars):
 	# For each discourse variable set, rank each alt for desireability. Return something weighted for the highest-ranked options.
 	# TODO only outside quoted dialogue.
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	global dpStats
 	dpQuality = []
-	print "******** %s" % alts
+	trace("******** %s" % alts)
 	if len(alts.alts) == 1:
-		print "/// YES OR NO ///"
+		trace("/// YES OR NO ///")
 	for pos, item in enumerate(alts.alts):
 		dpQuality.append(0)
 
@@ -38,26 +43,26 @@ def getDiscoursePreferredVersion(alts, vars):
 		if vars.check("avoidbe"):
 			numBeVerbs = getNumBeVerbsInText(item.txt)
 			if numBeVerbs > 0:
-				print "(Penalizing '%s' b/c @avoidbe and found %d be verbs)" % (item.txt, numBeVerbs)
+				trace("(Penalizing '%s' b/c @avoidbe and found %d be verbs)" % (item.txt, numBeVerbs))
 				dpStats["avoidbe"] += 1
 				dpQuality[pos] -= 1
 
 		if vars.check("wordy"):
 			if len(item.txt) == len(alts.getLongest()):
-				print "(Rewarding '%s' b/c @wordy and this is longest)" % item.txt
+				trace("(Rewarding '%s' b/c @wordy and this is longest)" % item.txt)
 				dpStats["wordy"] += 1
 				dpQuality[pos] += 1
 
 		if vars.check("succinct"):
 			if len(item.txt) == len(alts.getShortest()):
-				print "(Rewarding '%s' b/c @succinct and this is shortest)" % item.txt
+				trace("(Rewarding '%s' b/c @succinct and this is shortest)" % item.txt)
 				dpStats["succinct"] += 1
 				dpQuality[pos] += 1
 
 		if vars.check("avoidfiller"):
 			numArticles = getNumBoringWordsInText(item.txt)
 			if numArticles > 0:
-				print "(Penalizing '%s' b/c @avoidfiller and found %d weak words)" % (item.txt, numArticles)
+				trace("(Penalizing '%s' b/c @avoidfiller and found %d weak words)" % (item.txt, numArticles))
 				dpStats["avoidfiller"] += 1
 				dpQuality[pos] -= 1
 
@@ -67,27 +72,27 @@ def getDiscoursePreferredVersion(alts, vars):
 			polarity = tb.sentiment.polarity
 			subjectivity = tb.sentiment.subjectivity
 			if polarity <= -0.5 and vars.check("depressive"):
-				print "Rewarding '%s' b/c @depressive and low polarity %f" % (item.txt, polarity)
+				trace("(Rewarding '%s' b/c @depressive and low polarity %f)" % (item.txt, polarity))
 				dpStats["depressive"] += 1
 				dpQuality[pos] += 1
 			if subjectivity > 0.3 and vars.check("subjective"):
-				print "Rewarding '%s' b/c @subjective and subjectivity %f" % (item.txt, subjectivity)
+				trace("(Rewarding '%s' b/c @subjective and subjectivity %f)" % (item.txt, subjectivity))
 				dpStats["subjective"] += 1
 				dpQuality[pos] += 1
 			if subjectivity > 0.3 and vars.check("objective"):
-				print "Penalizing '%s' b/c @objective and subjectivity %f" % (item.txt, subjectivity)
+				trace("(Penalizing '%s' b/c @objective and subjectivity %f)" % (item.txt, subjectivity))
 				dpStats["objective"] += 1
 				dpQuality[pos] -= 1
 
 
 	# TODO improve stats so if everything ranked the same, it doesn't count as a hit.
-	print "Final rankings:"
+	trace("Final rankings:")
 	for pos, item in enumerate(alts.alts):
-		print "%d: '%s'" % (dpQuality[pos], item.txt)
+		trace("%d: '%s'" % (dpQuality[pos], item.txt))
 	bestRankedPositions = getHighestPositions(dpQuality)
-	print "Best positions: %s" % bestRankedPositions
+	trace("Best positions: %s" % bestRankedPositions)
 	selectedPos = chooser.oneOf(bestRankedPositions)
-	print "Picked '%s'" % alts.alts[selectedPos].txt
+	trace("Picked '%s'" % alts.alts[selectedPos].txt)
 
 	return alts.alts[selectedPos].txt
 
