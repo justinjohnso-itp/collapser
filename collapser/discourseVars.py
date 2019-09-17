@@ -114,7 +114,7 @@ def getNumBeVerbsInText(txt):
 	txt = txt.replace("’", "'")
 	return len(re.findall(beVerbsRegex, txt))
 
-boringRegex = re.compile(r"\b(the|a|an|i|you|he|she|it|we|they|me|him|her|us|them|my|your|his|its|our|their|hers|ours|yours|theirs|well|something|thing|things|stuff|okay|ok|able)\b", re.IGNORECASE)
+boringRegex = re.compile(r"\b(the|a|an|i|you|he|she|it|we|they|me|him|her|us|them|my|your|his|its|our|their|hers|ours|yours|theirs|well|something|thing|things|stuff|okay|ok|able|maybe|could|possibly|might)\b", re.IGNORECASE)
 
 def getNumBoringWordsInText(txt):
 	return len(re.findall(boringRegex, txt))
