@@ -8,7 +8,7 @@ dpStats = {}
 
 def resetStats():
 	global dpStats
-	dpStats = {"avoidbe": 0, "wordy": 0, "succinct": 0, "avoidfiller": 0, "depressive": 0}
+	dpStats = {"avoidbe": 0, "wordy": 0, "succinct": 0, "avoidfiller": 0, "depressive": 0, "subjective": 0, "objective": 0}
 
 def showStats():
 	global dpStats
@@ -58,18 +58,26 @@ def getDiscoursePreferredVersion(alts, vars):
 				dpStats["avoidfiller"] += 1
 				dpQuality[pos] -= 1
 
-		if vars.check("depressive"):
+		if vars.check("depressive") or vars.check("subjective") or vars.check("objective"):
 			safetxt = unicode(item.txt, "utf-8").encode('ascii', 'replace')
 			tb = TextBlob(safetxt)
 			polarity = tb.sentiment.polarity
 			subjectivity = tb.sentiment.subjectivity
-			if polarity <= -0.5:
+			if polarity <= -0.5 and vars.check("depressive"):
 				print "Rewarding '%s' b/c @depressive and low polarity %f" % (item.txt, polarity)
 				dpStats["depressive"] += 1
 				dpQuality[pos] += 1
+			if subjectivity > 0.3 and vars.check("subjective"):
+				print "Rewarding '%s' b/c @subjective and subjectivity %f" % (item.txt, subjectivity)
+				dpStats["subjective"] += 1
+				dpQuality[pos] += 1
+			if subjectivity > 0.3 and vars.check("objective"):
+				print "Penalizing '%s' b/c @objective and subjectivity %f" % (item.txt, subjectivity)
+				dpStats["objective"] += 1
+				dpQuality[pos] -= 1
 
 
-
+	# TODO improve stats so if everything ranked the same, it doesn't count as a hit.
 	print "Final rankings:"
 	for pos, item in enumerate(alts.alts):
 		print "%d: '%s'" % (dpQuality[pos], item.txt)
