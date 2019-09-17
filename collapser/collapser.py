@@ -14,7 +14,7 @@ import quantlex
 import quantparse
 import chooser
 import result
-
+import differ
 
 
 latexBegin = "fragments/begin.tex"
@@ -176,18 +176,19 @@ def main():
 
 	if strategy == "pair":
 		texts = []
-		tries = 10
+		tries = 20
+		outputFile2 = "alternate.tex"
 		for x in range(tries):
 			seed = chooser.randomSeed()
-			texts[x] = getCollapsedTextFromFile(inputFile, params)
+			texts.append(getCollapsedTextFromFile(inputFile, params))
 		maximallyDifferentTexts = differ.getTwoLeastSimilar(texts)
 		makeOutputFile(maximallyDifferentTexts[0], outputFile, doFront)
-		print "Running lualatex (text 1)..."
-		outputPDF(outputFile)
-		outputFile = "alternate"
-		makeOutputFile(maximallyDifferentTexts[1], outputFile, doFront)
-		print "Running lualatex (text 2)..."
-		outputPDF(outputFile)
+		makeOutputFile(maximallyDifferentTexts[1], outputFile2, doFront)
+		if doPDF:
+			print "Running lualatex (text 1)..."
+			outputPDF(outputFile)
+			print "Running lualatex (text 2)..."
+			outputPDF(outputFile2)
 
 	else:
 		collapsedText = getCollapsedTextFromFile(inputFile, params)
