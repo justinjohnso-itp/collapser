@@ -7,7 +7,7 @@ dpStats = {}
 
 def resetStats():
 	global dpStats
-	dpStats = {"avoidbe": 0, "wordy": 0, "succinct": 0}
+	dpStats = {"avoidbe": 0, "wordy": 0, "succinct": 0, "avoidfiller": 0}
 
 def showStats():
 	global dpStats
@@ -48,6 +48,13 @@ def getDiscoursePreferredVersion(alts, vars):
 				dpStats["succinct"] += 1
 				dpQuality[pos] += 1
 
+		if vars.check("avoidfiller"):
+			numArticles = getNumBoringWordsInText(item.txt)
+			if numArticles > 0:
+				print "(Penalizing '%s' b/c @avoidfiller and found %d weak words)" % (item.txt, numArticles)
+				dpStats["avoidfiller"] += 1
+				dpQuality[pos] -= numArticles
+
 
 	print "Final rankings:"
 	for pos, item in enumerate(alts.alts):
@@ -81,3 +88,10 @@ def getNumBeVerbsInText(txt):
 	txt = txt.replace("‘", "'")
 	txt = txt.replace("’", "'")
 	return len(re.findall(beVerbsRegex, txt))
+
+boringRegex = re.compile(r"\b(the|a|an|i|you|he|she|it|we|they|me|him|her|us|them|my|your|his|its|our|their|hers|ours|yours|theirs|well|something|thing|things|stuff|okay|ok|able)\b", re.IGNORECASE)
+
+def getNumBoringWordsInText(txt):
+	return len(re.findall(boringRegex, txt))
+
+
