@@ -9,6 +9,7 @@ import ctrlseq
 import chooser
 import result
 import confirm
+import discourseVars
 
 import sys
 
@@ -123,6 +124,7 @@ def handleParsing(tokens, params):
 def process(tokens, parseParams):
 	output = []
 	index = 0
+	discourseVars.resetStats()
 	while index < len(tokens):
 		token = tokens[index]
 		rendered = ""
@@ -142,6 +144,7 @@ def process(tokens, parseParams):
 		
 		index += 1
 
+	discourseVars.showStats()
 	return output
 
 

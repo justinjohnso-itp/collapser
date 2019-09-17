@@ -3,12 +3,28 @@
 import re
 import chooser
 
+dpStats = {}
+
+def resetStats():
+	global dpStats
+	dpStats = {"avoidbe": 0, "wordy": 0, "succinct": 0}
+
+def showStats():
+	global dpStats
+	print "*******************************************************"
+	print "How many times discourse variables changed text weight:"
+	print dpStats
+	print "*******************************************************"
+
 def getDiscoursePreferredVersion(alts, vars):
 	# For each discourse variable set, rank each alt for desireability. Return something weighted for the highest-ranked options.
 	# TODO only outside quoted dialogue.
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
+	global dpStats
 	dpQuality = []
 	print "******** %s" % alts
+	if len(alts.alts) == 1:
+		print "/// YES OR NO ///"
 	for pos, item in enumerate(alts.alts):
 		dpQuality.append(0)
 
@@ -17,16 +33,19 @@ def getDiscoursePreferredVersion(alts, vars):
 			numBeVerbs = getNumBeVerbsInText(item.txt)
 			if numBeVerbs > 0:
 				print "(Penalizing '%s' b/c @avoidbe and found %d be verbs)" % (item.txt, numBeVerbs)
+				dpStats["avoidbe"] += 1
 				dpQuality[pos] -= numBeVerbs
 
 		if vars.check("wordy"):
 			if len(item.txt) == len(alts.getLongest()):
 				print "(Rewarding '%s' b/c @wordy and this is longest)" % item.txt
+				dpStats["wordy"] += 1
 				dpQuality[pos] += 1
 
 		if vars.check("succinct"):
 			if len(item.txt) == len(alts.getShortest()):
 				print "(Rewarding '%s' b/c @succinct and this is shortest)" % item.txt
+				dpStats["succinct"] += 1
 				dpQuality[pos] += 1
 
 
