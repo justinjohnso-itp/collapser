@@ -109,7 +109,6 @@ def main():
 	doPDF = True
 	doFront = False
 	doConfirm = True
-	pdfOutputDir = "output/"
 	setDefines = []
 	discourseVarChance = 80
 	preferenceForAuthorsVersion = 20
@@ -179,7 +178,7 @@ def main():
 
 	if doPDF:
 		print "Running lualatex..."
-		outputPDF(outputFile, pdfOutputDir)
+		outputPDF(outputFile)
 	else:
 		print "Skipping PDF."
 
@@ -208,14 +207,14 @@ def getCollapsedTextFromFile(inputFile, params):
 	return collapsedText
 
 def makeOutputFile(collapsedText, outputFile, doFront):
-	
 	fileio.writeOutputFile("output/raw_out.txt", collapsedText)
 	outputText = latexifier.go(collapsedText)
 	postConversionSanityCheck(outputText)
 	outputText = latexWrapper(outputText, includeFrontMatter=doFront)	
 	fileio.writeOutputFile(outputFile, outputText)
 
-def outputPDF(outputFile, pdfOutputDir):
+def outputPDF(outputFile):
+	pdfOutputDir = "output/"
 	cmdParams = '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (pdfOutputDir, outputFile)
 	cmdArray = shlex.split(cmdParams)
 	cmdArray.insert(0, "lualatex")
