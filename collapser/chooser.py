@@ -22,6 +22,11 @@ def percent(odds):
 def setSeed(num):
 	random.seed(num)
 
+def randomSeed():
+	rSeed = number(10000000)
+	random.seed(rSeed)
+	return rSeed
+
 def unSeed():
 	random.seed()
 

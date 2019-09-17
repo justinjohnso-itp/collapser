@@ -88,6 +88,7 @@ Arguments:
   --strategy=x   Selection strategy.
   		"random": default
   		"author": Author's preferred
+  		"pair": Two versions optimizing for difference
   		"longest"
   		"shortest"
   --set=x,y,z	 A list of variables to set true for this run.
@@ -165,22 +166,37 @@ def main():
 		sys.exit()
 
 	if seed is -1:
-		seed = chooser.number(10000000)
+		seed = chooser.randomSeed()
 		print "Seed (random): %d" % seed
 	else:
+		chooser.setSeed(seed)
 		print "Seed (requested): %d" % seed
-	chooser.setSeed(seed)
 
 	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance)
-	collapsedText = getCollapsedTextFromFile(inputFile, params)
 
-	makeOutputFile(collapsedText, outputFile, doFront)
-
-	if doPDF:
-		print "Running lualatex..."
+	if strategy == "pair":
+		texts = []
+		tries = 10
+		for x in range(tries):
+			seed = chooser.randomSeed()
+			texts[x] = getCollapsedTextFromFile(inputFile, params)
+		maximallyDifferentTexts = differ.getTwoLeastSimilar(texts)
+		makeOutputFile(maximallyDifferentTexts[0], outputFile, doFront)
+		print "Running lualatex (text 1)..."
 		outputPDF(outputFile)
+		outputFile = "alternate"
+		makeOutputFile(maximallyDifferentTexts[1], outputFile, doFront)
+		print "Running lualatex (text 2)..."
+		outputPDF(outputFile)
+
 	else:
-		print "Skipping PDF."
+		collapsedText = getCollapsedTextFromFile(inputFile, params)
+		makeOutputFile(collapsedText, outputFile, doFront)
+		if doPDF:
+			print "Running lualatex..."
+			outputPDF(outputFile)
+		else:
+			print "Skipping PDF."
 
 
 

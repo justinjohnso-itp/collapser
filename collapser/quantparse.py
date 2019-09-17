@@ -16,7 +16,7 @@ import sys
 
 class ParseParams:
 
-	VALID_STRATEGIES = ["random", "author", "longest", "shortest"]
+	VALID_STRATEGIES = ["random", "author", "longest", "shortest", "pair"]
 
 	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=False, discourseVarChance=80):
 		if chooseStrategy not in self.VALID_STRATEGIES:
@@ -96,6 +96,7 @@ def parse(tokens, sourceText, parseParams):
 	try:
 		tokens = variables.handleDefs(tokens, parseParams)
 		tokens = macros.handleDefs(tokens, parseParams)
+		print "vars: %s" % variables.showVars()
 		strippedText = sourceText
 		# TODO: for the above to work, we'd need to be stripping out the DEFINE and MACRO tags from sourceText also as we went.
 		if parseParams.doConfirm:
