@@ -17,27 +17,6 @@ import result
 import differ
 
 
-latexBegin = "fragments/begin.tex"
-latexEnd = "fragments/end.tex"
-latexFrontMatter = "fragments/frontmatter.tex"
-latexPostFrontMatter = "fragments/postfrontmatter.tex"
-
-
-
-def latexWrapper(text, includeFrontMatter=True):
-	begin = fileio.readInputFile(latexBegin)
-	end = fileio.readInputFile(latexEnd)
-	frontMatter = fileio.readInputFile(latexFrontMatter)
-	postFrontMatter = fileio.readInputFile(latexPostFrontMatter)
-	output = begin
-	if includeFrontMatter:
-		output += frontMatter
-	output += postFrontMatter
-	output += text
-	output += end
-	return output
-
-
 
 # Pre-latexifier.
 def postConversionSanityCheck(text):
@@ -227,7 +206,7 @@ def makeOutputFile(collapsedText, outputFile, doFront):
 	fileio.writeOutputFile("output/raw_out.txt", collapsedText)
 	outputText = latexifier.go(collapsedText)
 	postConversionSanityCheck(outputText)
-	outputText = latexWrapper(outputText, includeFrontMatter=doFront)	
+	outputText = latexifier.latexWrapper(outputText, includeFrontMatter=doFront)	
 	fileio.writeOutputFile(outputFile, outputText)
 
 def outputPDF(outputFile):

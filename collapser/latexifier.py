@@ -5,7 +5,7 @@
 # We're looking for curly-brace things like {chapter|2} and replacing them with the appropriate latex. Also more basic things like *bold*.
 
 import re
-
+import fileio
 
 # Main entry point.
 def go(sourceText):
@@ -83,6 +83,29 @@ template_vspace = ['''
 
 '''] 
 
+latexBegin = "fragments/begin.tex"
+latexEnd = "fragments/end.tex"
+latexFrontMatter = "fragments/frontmatter.tex"
+latexPostFrontMatter = "fragments/postfrontmatter.tex"
+
+
+
+def latexWrapper(text, includeFrontMatter=True):
+	begin = fileio.readInputFile(latexBegin)
+	end = fileio.readInputFile(latexEnd)
+	frontMatter = fileio.readInputFile(latexFrontMatter)
+	postFrontMatter = fileio.readInputFile(latexPostFrontMatter)
+	output = begin
+	if includeFrontMatter:
+		output += frontMatter
+	output += postFrontMatter
+	output += text
+	output += end
+	return output
+
+
+
+
 def renderControlSeqs(sourceText):
 	rendered = []
 	pos = 0
@@ -144,7 +167,7 @@ def renderControlSeqs(sourceText):
 
 
 def specialFixes(text):
-	# Strip file identifiers.
+	# Strip file identifiers (used by the lexer and parser to know what source file a given line comes from, so useful error messages can be printed).
 	text = re.sub(r"\% file (.*)\n", "", text)
 
 	# Ensure verses don't break across pages.
