@@ -21,7 +21,9 @@ latexBegin = "fragments/begin.tex"
 latexEnd = "fragments/end.tex"
 latexFrontMatter = "fragments/frontmatter.tex"
 latexPostFrontMatter = "fragments/postfrontmatter.tex"
-
+manifestFile = "manifest.txt"
+alternateOutputFile = "output/alternate.tex"
+rawOutputFile = "output/raw_out.txt"
 
 def postLatexSanityCheck(latexLog):
 	numPages = 0
@@ -148,18 +150,17 @@ def main():
 	if strategy == "pair":
 		texts = []
 		tries = 20
-		outputFile2 = "alternate.tex"
 		for x in range(tries):
 			seed = chooser.randomSeed()
 			texts.append(getCollapsedTextFromFile(inputFile, params))
 		maximallyDifferentTexts = differ.getTwoLeastSimilar(texts)
 		makeOutputFile(maximallyDifferentTexts[0], outputFile, doFront)
-		makeOutputFile(maximallyDifferentTexts[1], outputFile2, doFront)
+		makeOutputFile(maximallyDifferentTexts[1], alternateOutputFile, doFront)
 		if doPDF:
 			print "Running lualatex (text 1)..."
 			outputPDF(outputFile)
 			print "Running lualatex (text 2)..."
-			outputPDF(outputFile2)
+			outputPDF(alternateOutputFile)
 
 	else:
 		collapsedText = getCollapsedTextFromFile(inputFile, params)
@@ -175,7 +176,7 @@ def main():
 def getCollapsedTextFromFile(inputFile, params):
 	files = []
 	inputText = fileio.readInputFile(inputFile)
-	if inputFile[-12:] == "manifest.txt":
+	if inputFile[-12:] == manifestFile:
 		path = inputFile[:-12]
 		print "Reading manifest '%s'" % inputFile
 		files = fileio.loadManifest(path, inputText)
@@ -195,7 +196,7 @@ def getCollapsedTextFromFile(inputFile, params):
 	return collapsedText
 
 def makeOutputFile(collapsedText, outputFile, doFront):
-	fileio.writeOutputFile("output/raw_out.txt", collapsedText)
+	fileio.writeOutputFile(rawOutputFile, collapsedText)
 
 	latexTemplateFiles = {
 		"begin": fileio.readInputFile(latexBegin),
