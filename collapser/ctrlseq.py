@@ -19,10 +19,6 @@ class Alts:
 		self.alts.append(Item(txt, prob, False))
 		if prob is not None:
 			self.probabilityTotal += prob
-			if self.probabilityTotal > 100:
-				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Probabilities in ctrl sequence add up to %d which is > 100" % self.probabilityTotal, str(self), -1)
-				raise result.ParseException(badResult)
 
 	def setAuthorPreferred(self):
 		self.authorPreferredPos = len(self.alts)
@@ -130,6 +126,12 @@ def renderAll(tokens, params, showAllVars=False):
 
 		if token.type == "DIVIDER":
 			alts.add("")
+
+		if alts.probabilityTotal != 0 and alts.probabilityTotal > 100:
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Probabilities in a group can't exceed 100: found %d instead." % alts.probabilityTotal, params.originalText, tokens[0].lexpos)
+			raise result.ParseException(badResult)
+
 
 	return alts
 
