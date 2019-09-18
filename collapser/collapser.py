@@ -18,18 +18,6 @@ import differ
 
 
 
-# Pre-latexifier.
-def postConversionSanityCheck(text):
-	# Look for unexpected characters etc. here
-	pos = text.find('_')
-	if pos is not -1:
-		raise ValueError("Found invalid underscore '_' character on line %d:\n%s" % (result.find_line_number(text, pos), result.find_line_text(text, pos)) )
-	
-	# pos = text.find('''"''')
-	# if pos is not -1:
-	# 	raise ValueError("Found dumb quote character on line %d; use “ ” \n%s" % (quantlex.find_line_number(text, pos), quantlex.find_line_text(text, pos)) )
-
-	return
 
 def postLatexSanityCheck(latexLog):
 	numPages = 0
@@ -204,9 +192,7 @@ def getCollapsedTextFromFile(inputFile, params):
 
 def makeOutputFile(collapsedText, outputFile, doFront):
 	fileio.writeOutputFile("output/raw_out.txt", collapsedText)
-	outputText = latexifier.go(collapsedText)
-	postConversionSanityCheck(outputText)
-	outputText = latexifier.latexWrapper(outputText, includeFrontMatter=doFront)	
+	outputText = latexifier.go(collapsedText, doFront)
 	fileio.writeOutputFile(outputFile, outputText)
 
 def outputPDF(outputFile):
