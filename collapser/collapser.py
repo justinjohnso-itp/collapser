@@ -72,7 +72,7 @@ Arguments:
 
 def main():
 
-	print """Collapser 0.1"""
+	print """Collapser 0.1\n"""
 
 	inputFile = ""
 	outputFile = ""
@@ -88,8 +88,6 @@ def main():
 	preferenceForAuthorsVersion = 20
 
 	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance="])
-	print opts
-	print args
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -134,8 +132,16 @@ def main():
 				sys.exit()
 
 	if inputFile == "" or outputFile == "":
-		print "Missing input or output file."
+		print "*** Missing input or output file. ***\n"
 		showUsage()
+		sys.exit()
+
+	if seed is not -1 and strategy is not "random":
+		print "*** You set seed to %d but strategy to '%s'; a seed can only be used when strategy is 'random' ***\n" % (seed, strategy)
+		sys.exit()
+
+	if seed is not -1 and len(setDefines) is not 0:
+		print "*** You set seed to %d but also set variables %s; you need to do one or the other ***\n" % (seed, setDefines)
 		sys.exit()
 
 	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance)
@@ -163,7 +169,9 @@ def main():
 			outputPDF(alternateOutputFile)
 
 	else:
-		if seed is -1:
+		if strategy != "random":
+			print "Ignoring seed (b/c strategy = %s)" % strategy
+		elif seed is -1:
 			seed = chooser.nextSeed()
 			print "Seed (next): %d" % seed
 		else:
