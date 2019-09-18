@@ -149,14 +149,19 @@ def main():
 
 	if strategy == "pair":
 		texts = []
-		tries = 20
+		tries = 10
+		seeds = []
 		for x in range(tries):
 			seed = chooser.randomSeed()
+			seeds.append(seed)
 			texts.append(getCollapsedTextFromFile(inputFile, params))
-		maximallyDifferentTexts = differ.getTwoLeastSimilar(texts)
-		# TODO the seeds here are wrong.
-		makeOutputFile(maximallyDifferentTexts[0], outputFile, seed, doFront)
-		makeOutputFile(maximallyDifferentTexts[1], alternateOutputFile, seed, doFront)
+		leastSimilarPair = differ.getTwoLeastSimilar(texts)
+		text0 = texts[leastSimilarPair[0]]
+		seed0 = seeds[leastSimilarPair[0]]
+		text1 = texts[leastSimilarPair[1]]
+		seed1 = seeds[leastSimilarPair[1]]
+		makeOutputFile(text0, outputFile, seed0, doFront)
+		makeOutputFile(text1, alternateOutputFile, seed1, doFront)
 		if doPDF:
 			print "Running lualatex (text 1)..."
 			outputPDF(outputFile)

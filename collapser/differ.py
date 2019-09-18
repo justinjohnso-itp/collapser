@@ -32,8 +32,6 @@ def getTwoLeastSimilar(texts):
 		sys.exit()
 
 	print "Best match was pair %s with similarity %f" % (leastSimilarPair, round(lowestSimilarityScore, 3))
-	result1 = texts[leastSimilarPair[0]]
-	result2 = texts[leastSimilarPair[1]]
 
-	return [result1, result2]
+	return leastSimilarPair
 
