@@ -135,7 +135,6 @@ def renderAll(tokens):
 			continue
 		assert tokens[pos].type == "VARIABLE"
 		varName = tokens[pos].value.lower()
-		assert __v.exists(varName)
 		pos += 1
 		if tokens[pos].type == "TEXT":
 			alts.add(varName)
