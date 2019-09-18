@@ -62,7 +62,7 @@ def parse(tokens, sourceText, parseParams):
 
 			# If just one option, we want to try it as True and False.
 			if len(optsToTry) is 1:
-				optsToTry.append("!" + optsToTry[0])
+				optsToTry.append("^" + optsToTry[0])
 
 			bestPos = -1
 			bestLen = -1
@@ -71,7 +71,7 @@ def parse(tokens, sourceText, parseParams):
 			for pos, key in enumerate(optsToTry):
 				variables.setAllTo(False)
 
-				if key[0] != "!":
+				if key[0] != "^":
 					variables.__v.variables[key] = True
 
 				thisLen = len(handleParsing(tempTokens, parseParamsCopy))

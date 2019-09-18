@@ -192,7 +192,7 @@ def handleDefs(tokens, params):
 			if varname in params.setDefines:
 				__v.set(groupName, varname)
 				foundSetDefine = True
-			elif "!" + varname in params.setDefines:
+			elif "^" + varname in params.setDefines:
 				__v.set(groupName, varname, False)
 				foundSetDefine = True
 			else:

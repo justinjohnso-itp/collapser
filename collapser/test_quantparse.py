@@ -461,7 +461,7 @@ def test_set_defines():
 
 def test_negated_set_defines():
 	text = '''[DEFINE @alpha][@alpha>This is A text. |This is null. ][DEFINE 34>@gamma|33>@omega|33>@delta][@omega>This is O text. ][@delta>This is D text. ]'''
-	params = quantparse.ParseParams(setDefines=["!alpha", "!omega", "delta"])
+	params = quantparse.ParseParams(setDefines=["^alpha", "^omega", "delta"])
 	for i in range(10):
 		assert parse(text, params) == "This is null. This is D text. "
 

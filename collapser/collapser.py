@@ -65,6 +65,7 @@ Arguments:
   		"longest"
   		"shortest"
   --set=x,y,z	 A list of variables to set true for this run.
+                 Preface with ^ to negate
   --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
   --pickAuthorChance=x		Likelihood to pick author-preferred at random
 """
