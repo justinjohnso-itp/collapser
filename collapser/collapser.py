@@ -40,7 +40,7 @@ def postLatexSanityCheck(latexLog):
 		if numPages < 5 or numPages > 300:
 			print "Unexpected page length (%d); halting." % numPages
 			return False
-		if numBytes < 100000 or numBytes > 1000000:
+		if numBytes < 100000 or numBytes > 3000000:
 			print "Unexpected size (%d kb); halting." % (numBytes / 1000)
 			return False
 	else:
