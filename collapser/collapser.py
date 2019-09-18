@@ -154,8 +154,9 @@ def main():
 			seed = chooser.randomSeed()
 			texts.append(getCollapsedTextFromFile(inputFile, params))
 		maximallyDifferentTexts = differ.getTwoLeastSimilar(texts)
-		makeOutputFile(maximallyDifferentTexts[0], outputFile, doFront)
-		makeOutputFile(maximallyDifferentTexts[1], alternateOutputFile, doFront)
+		# TODO the seeds here are wrong.
+		makeOutputFile(maximallyDifferentTexts[0], outputFile, seed, doFront)
+		makeOutputFile(maximallyDifferentTexts[1], alternateOutputFile, seed, doFront)
 		if doPDF:
 			print "Running lualatex (text 1)..."
 			outputPDF(outputFile)
@@ -164,7 +165,7 @@ def main():
 
 	else:
 		collapsedText = getCollapsedTextFromFile(inputFile, params)
-		makeOutputFile(collapsedText, outputFile, doFront)
+		makeOutputFile(collapsedText, outputFile, seed, doFront)
 		if doPDF:
 			print "Running lualatex..."
 			outputPDF(outputFile)
@@ -195,7 +196,7 @@ def getCollapsedTextFromFile(inputFile, params):
 
 	return collapsedText
 
-def makeOutputFile(collapsedText, outputFile, doFront):
+def makeOutputFile(collapsedText, outputFile, seed, doFront):
 	fileio.writeOutputFile(rawOutputFile, collapsedText)
 
 	latexTemplateFiles = {
@@ -205,7 +206,7 @@ def makeOutputFile(collapsedText, outputFile, doFront):
 		"postFrontMatter": fileio.readInputFile(latexPostFrontMatter)
 	}
 
-	outputText = latexifier.go(collapsedText, latexTemplateFiles, doFront)
+	outputText = latexifier.go(collapsedText, latexTemplateFiles, seed, doFront)
 	fileio.writeOutputFile(outputFile, outputText)
 
 def outputPDF(outputFile):

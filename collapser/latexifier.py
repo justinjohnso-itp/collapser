@@ -7,11 +7,11 @@
 import re
 
 # Main entry point.
-def go(sourceText, templates, doFront):
+def go(sourceText, templates, seed, doFront):
 	workFile = specialFixes(sourceText)
 	workFile = renderControlSeqs(workFile)
 	postConversionSanityCheck(workFile)
-	output = latexWrapper(workFile, templates, doFront)	
+	output = latexWrapper(workFile, templates, seed, doFront)	
 	return output
 
 
@@ -111,13 +111,17 @@ def postConversionSanityCheck(text):
 
 
 # Wrap the converted latex in appropriate header/footers.
-def latexWrapper(text, templates, includeFrontMatter):
+def latexWrapper(text, templates, seed, includeFrontMatter):
 	output = templates["begin"]
 	if includeFrontMatter:
 		output += templates["frontMatter"]
 	output += templates["postFrontMatter"]
 	output += text
 	output += templates["end"]
+
+	# Insert the seed number where it appeared in front matter.
+	output = output.replace("SEED_NUMBER", "%d" % seed)
+
 	return output
 
 
