@@ -117,7 +117,7 @@ def renderAll(tokens, params, showAllVars=False):
 					thisAltBits.append(token)
 					index += 1
 
-			item = parseItem(thisAltBits, variablesAllowed=False)
+			item = parseItem(thisAltBits, params, variablesAllowed=False)
 			if item.authorPreferred:
 				alts.setAuthorPreferred()
 			alts.add(item.txt, item.prob)
@@ -160,7 +160,7 @@ def render(tokens, params):
 		
 
 # A chunk will be one alternative and metadata: "alpha", "80>alpha", "45>^", "". This is always in a context where we have multiple possibilities.
-def parseItem(altBits, variablesAllowed=True):
+def parseItem(altBits, params, variablesAllowed=True):
 	index = 0
 	text = ""
 	ap = False
@@ -169,7 +169,7 @@ def parseItem(altBits, variablesAllowed=True):
 		token = altBits[index]
 		if variablesAllowed == False and token.type == "VARIABLE":
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Found unexpected variable '%s'" % token.value, str(altBits), -1)
+			badResult.flagBad("Found unexpected variable '%s'" % token.value, params.originalText, token.lexpos)
 			raise result.ParseException(badResult)
 		if token.type in ("TEXT", "VARIABLE"):
 			text = token.value
@@ -181,7 +181,7 @@ def parseItem(altBits, variablesAllowed=True):
 			prob = token.value
 		else:
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Unhandled token %s: '%s'" % (token.type, token.value), str(altBits), -1)
+			badResult.flagBad("Unhandled token %s: '%s'" % (token.type, token.value), params.originalText, token.lexpos)
 			raise result.ParseException(badResult)
 		index += 1
 

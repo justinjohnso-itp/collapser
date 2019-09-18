@@ -18,7 +18,7 @@ class ParseParams:
 
 	VALID_STRATEGIES = ["random", "author", "longest", "shortest", "pair"]
 
-	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=False, discourseVarChance=80):
+	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=False, discourseVarChance=80, originalText=""):
 		if chooseStrategy not in self.VALID_STRATEGIES:
 			raise ValueError("Unrecognized choose strategy '%s'" % chooseStrategy)
 		self.chooseStrategy = chooseStrategy
@@ -26,12 +26,13 @@ class ParseParams:
 		self.setDefines = setDefines
 		self.doConfirm = doConfirm
 		self.discourseVarChance = discourseVarChance
+		self.originalText = ""
 
 	def __str__(self):
 		return "chooseStrategy: %s, preferenceForAuthorsVersion: %s, setDefines: %s, discourseVarChance: %d" % (self.chooseStrategy, self.preferenceForAuthorsVersion, self.setDefines, self.discourseVarChance)
 
 	def copy(self):
-		return ParseParams(chooseStrategy=self.chooseStrategy, preferenceForAuthorsVersion=self.preferenceForAuthorsVersion, setDefines=list(self.setDefines), discourseVarChance=self.discourseVarChance)
+		return ParseParams(chooseStrategy=self.chooseStrategy, preferenceForAuthorsVersion=self.preferenceForAuthorsVersion, setDefines=list(self.setDefines), discourseVarChance=self.discourseVarChance, originalText=self.originalText)
 
 
 # Call with an object of type ParseParams.
@@ -94,6 +95,7 @@ def parse(tokens, sourceText, parseParams):
 	macros.reset()
 	output = result.Result(result.PARSE_RESULT)
 	try:
+		parseParams.originalText = sourceText
 		tokens = variables.handleDefs(tokens, parseParams)
 		tokens = macros.handleDefs(tokens, parseParams)
 		print "vars: %s" % variables.showVars()

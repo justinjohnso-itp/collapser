@@ -46,14 +46,14 @@ class Variables:
 				varName = tokens[pos].value.lower()
 				if not self.exists(varName):
 					badResult = result.Result(result.PARSE_RESULT)
-					badResult.flagBad("Text conditional on variable '%s' which has not been defined." % varName, str(tokens), -1)
+					badResult.flagBad("Text conditional on variable '%s' which has not been defined." % varName, params.originalText, tokens[pos].lexpos)
 					raise result.ParseException(badResult)
 				thisCtrlGroup = self.getGroupFromVar(varName)
 				if varCtrlGroup == "":
 					varCtrlGroup = thisCtrlGroup
 				elif varCtrlGroup != thisCtrlGroup:
 					badResult = result.Result(result.PARSE_RESULT)
-					badResult.flagBad("Found variables from different groups", str(tokens), -1)
+					badResult.flagBad("Found variables from different groups", params.originalText, tokens[pos].lexpos)
 					raise result.ParseException(badResult)
 			elif tokens[pos].type == "TEXT" and pos > 0 and tokens[pos-1].type != "VARIABLE":
 				posOfFreeText = pos
@@ -61,7 +61,7 @@ class Variables:
 
 		if posOfFreeText >= 0 and posOfFreeText != len(tokens) - 1:
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Found unexpected variable at pos %d" % posOfFreeText, str(tokens), -1)
+			badResult.flagBad("Found unexpected variable at pos %d" % posOfFreeText, params.originalText, tokens[0].lexpos)
 			raise result.ParseException(badResult)
 
 		# Now figure out how to render.
@@ -182,12 +182,12 @@ def handleDefs(tokens, params):
 				ctrl_contents.append(token)
 				index += 1
 				token = tokens[index]
-			item = ctrlseq.parseItem(ctrl_contents)
+			item = ctrlseq.parseItem(ctrl_contents, params)
 			assert tokens[index-1].type == "VARIABLE"
 			varname = item.txt.lower()
 			if varname in __v.variables:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Variable '@%s' is defined twice." % varname, varname, -1)
+				badResult.flagBad("Variable '@%s' is defined twice." % varname, params.originalText, tokens[index-1].lexpos)
 				raise result.ParseException(badResult)
 			if varname in params.setDefines:
 				__v.set(groupName, varname)
@@ -202,6 +202,7 @@ def handleDefs(tokens, params):
 				if item.prob:
 					probTotal += item.prob
 				alts.add(varname, item.prob)
+
 				__v.set(groupName, item.txt, False)
 
 			if token.type == "DIVIDER":
@@ -211,7 +212,7 @@ def handleDefs(tokens, params):
 		if not foundSetDefine:
 			if probTotal != 0 and probTotal != 100:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Probabilities in a DEFINE must sum to 100: found %d instead." % probTotal, str(alts), -1)
+				badResult.flagBad("Probabilities in a DEFINE must sum to 100: found %d instead." % probTotal, params.originalText, tokens[index-1].lexpos)
 				raise result.ParseException(badResult)
 			if params.chooseStrategy == "author" and len(alts) == 1 and not foundAuthorPreferred:
 				varPicked = alts.getAuthorPreferred()
