@@ -14,6 +14,9 @@ class Variables:
 			return self.variables[key]
 		return False
 
+	def exists(self, key):
+		return key in self.variables
+
 	def set(self, groupname, key, val = True):
 		self.variables[key] = val
 		if groupname not in self.varGroups:
@@ -41,12 +44,16 @@ class Variables:
 		while pos < len(tokens):
 			if tokens[pos].type == "VARIABLE":
 				varName = tokens[pos].value.lower()
+				if not self.exists(varName):
+					badResult = result.Result(result.PARSE_RESULT)
+					badResult.flagBad("Text conditional on variable '%s' which has not been defined." % varName, str(tokens), -1)
+					raise result.ParseException(badResult)
 				thisCtrlGroup = self.getGroupFromVar(varName)
 				if varCtrlGroup == "":
 					varCtrlGroup = thisCtrlGroup
 				elif varCtrlGroup != thisCtrlGroup:
 					badResult = result.Result(result.PARSE_RESULT)
-					badResult.flagBad("Found variables from different groups", str(tokens), 0)
+					badResult.flagBad("Found variables from different groups", str(tokens), -1)
 					raise result.ParseException(badResult)
 			elif tokens[pos].type == "TEXT" and pos > 0 and tokens[pos-1].type != "VARIABLE":
 				posOfFreeText = pos
@@ -116,6 +123,7 @@ def render(tokens, params):
 	return __v.render(tokens, params)
 
 def renderAll(tokens):
+	global __v
 	pos = 0
 	alts = ctrlseq.Alts()
 	while pos < len(tokens):
@@ -127,6 +135,7 @@ def renderAll(tokens):
 			continue
 		assert tokens[pos].type == "VARIABLE"
 		varName = tokens[pos].value.lower()
+		assert __v.exists(varName)
 		pos += 1
 		if tokens[pos].type == "TEXT":
 			alts.add(varName)

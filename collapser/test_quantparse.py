@@ -297,6 +297,17 @@ def test_variable_refs():
 	result = parse(text, params)
 	assert result == "Huzzah!"
 
+def test_undefined_vars_invalid():
+	text = "[DEFINE @alphabet]This is a [@alphabe>test]."
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+	text = "[DEFINE @alphabet]This is a [@alphabej>test]."
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+	text = "[DEFINE @alphabet]This is a [@alphabeta>test]."
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
 def test_parse_variable_with_else():
 	text = "A [DEFINE @test][@test>if text|else text] C"
 	params = quantparse.ParseParams(chooseStrategy="author")
