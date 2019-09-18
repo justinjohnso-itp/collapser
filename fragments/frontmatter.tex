@@ -1,6 +1,11 @@
 \thispagestyle{empty}
 % Half-Title Page.
-SUBCUTANEAN
+
+\NewFontFamily\mont{Mont}
+\vspace*{6\nbs}
+\begin{center}
+{\mont \charscale[2]{SUBCUTANEAN}}
+\end{center}
 \clearpage
 
 \thispagestyle{empty}
@@ -11,34 +16,60 @@ SUBCUTANEAN
 \thispagestyle{empty}
 % Title Page.
 % Use different font
-Subcutanean
+\vspace*{6\nbs}
+\begin{center}
+{\mont \charscale[2]{SUBCUTANEAN}}
 
-by Aaron A. Reed
+\vspace*{3\nbs}
+
+{\mont \charscale[1.25]{by Aaron A. Reed}}
+
+\vfill
+Printed in the United States of America by TheBookPatch.com
+
+\end{center}
 \clearpage
 
 \thispagestyle{empty}
 % Copyright Page.
 \null\vfill
 % legalese environment?
-Seed SEED_NUMBER \\
+
+\begin{legalese}
+Typeset in LaTeX using the \textit{novel} class by Robert Allgeyer. (Fonts?) \\
+\vspace{1\nbs}
+First Editions, 2019 \\
+(Seed numbers beginning with 1) \\
+This copy was generated from seed #SEED_NUMBER and is the only copy generated from that seed. \\
 Copyright 2019 Aaron A. Reed.
+\end{legalese}
 \clearpage
 
 \thispagestyle{empty}
 % Dedication or Epigraph or TOC or Acknowledgements or Author's Note or Map.
 % Alternatively, repeat the Half-Title.
-SUBCUTANEAN
-\clearpage
-\cleartorecto
 
-\thispagestyle{empty}
-%\null % Necessary for blank page.
-% Alternatively, Epigraph if it does not detract from facing page.
 \vspace*{10\nbs}
-\begin{adjustwidth}{7em}{7em}
-Cowards die many times before their deaths;\\
-The valiant never taste of death but once.\par
-\stake\hfill---Shakespeare\par
+
+\begin{adjustwidth}{4em}{4em}
+\begin{parascale}[0.88]
+The book you're holding is unique. There is no other exactly like it.
+
+Each printing of \textsc{Subcutanean} is different. This is the one and only version generated from seed SEED_NUMBER. Words, sentences, or whole scenes may appear in this printing but not in others, or vice versa. No two copies are alike.
+
+But all of them are the same story, more or less. Don't worry about what's in the other versions. It doesn't matter. This is the one that's happening to you.
+
+This is the one you have.  
+\end{parascale}
 \end{adjustwidth}
+
+\vspace*{2\nbs}
+
+\begin{center}
+\textsc{subcutanean.textories.com}
+\end{center}
+
 \clearpage
+% \cleartorecto
+
 

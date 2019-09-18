@@ -8,6 +8,8 @@ import sys
 
 import fileio
 
+# TODO isn't stripping variable names when printing those
+
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
 	index = 0
