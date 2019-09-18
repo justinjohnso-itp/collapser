@@ -138,23 +138,17 @@ def main():
 		showUsage()
 		sys.exit()
 
-	if seed is -1:
-		seed = chooser.randomSeed()
-		print "Seed (random): %d" % seed
-	else:
-		chooser.setSeed(seed)
-		print "Seed (requested): %d" % seed
-
 	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance)
 
 	if strategy == "pair":
 		texts = []
 		tries = 10
 		seeds = []
+		seed = chooser.nextSeed()
 		for x in range(tries):
-			seed = chooser.randomSeed()
 			seeds.append(seed)
 			texts.append(getCollapsedTextFromFile(inputFile, params))
+			seed = chooser.nextSeed()
 		leastSimilarPair = differ.getTwoLeastSimilar(texts)
 		text0 = texts[leastSimilarPair[0]]
 		seed0 = seeds[leastSimilarPair[0]]
@@ -169,6 +163,12 @@ def main():
 			outputPDF(alternateOutputFile)
 
 	else:
+		if seed is -1:
+			seed = chooser.nextSeed()
+			print "Seed (next): %d" % seed
+		else:
+			chooser.setSeed(seed)
+			print "Seed (requested): %d" % seed
 		collapsedText = getCollapsedTextFromFile(inputFile, params)
 		makeOutputFile(collapsedText, outputFile, seed, doFront)
 		if doPDF:

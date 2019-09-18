@@ -27,6 +27,10 @@ def randomSeed():
 	random.seed(rSeed)
 	return rSeed
 
+def nextSeed():
+	# Eventually, replace this with a file-based iterator.
+	return randomSeed()
+
 def unSeed():
 	random.seed()
 
