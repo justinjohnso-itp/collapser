@@ -61,7 +61,7 @@ class Variables:
 
 		if posOfFreeText >= 0 and posOfFreeText != len(tokens) - 1:
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Found unexpected variable at pos %d" % posOfFreeText, str(tokens), 0)
+			badResult.flagBad("Found unexpected variable at pos %d" % posOfFreeText, str(tokens), -1)
 			raise result.ParseException(badResult)
 
 		# Now figure out how to render.
@@ -188,7 +188,7 @@ def handleDefs(tokens, params):
 			varname = item.txt.lower()
 			if varname in __v.variables:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Variable '@%s' is defined twice." % varname, varname, 0)
+				badResult.flagBad("Variable '@%s' is defined twice." % varname, varname, -1)
 				raise result.ParseException(badResult)
 			if varname in params.setDefines:
 				__v.set(groupName, varname)
@@ -212,7 +212,7 @@ def handleDefs(tokens, params):
 		if not foundSetDefine:
 			if probTotal != 0 and probTotal != 100:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Probabilities in a DEFINE must sum to 100: found %d instead." % probTotal, str(alts), 0)
+				badResult.flagBad("Probabilities in a DEFINE must sum to 100: found %d instead." % probTotal, str(alts), -1)
 				raise result.ParseException(badResult)
 			if params.chooseStrategy == "author" and len(alts) == 1 and not foundAuthorPreferred:
 				varPicked = alts.getAuthorPreferred()

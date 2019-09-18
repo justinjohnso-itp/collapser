@@ -2,6 +2,8 @@
 import ctrlseq
 import result
 
+# TODO: Doesn't seem to be checking that StickyMacro, maybe macro also, aren't defined twice?
+
 class Macros:
 	def __init__(self):
 		self.macros = {}
@@ -67,12 +69,12 @@ def handleDefs(tokens, params):
 		assert token.type == "TEXT"
 		if __m.isMacro(token.value):
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Macro '@%s' is defined twice." % token.value, token.value, 0)
+			badResult.flagBad("Macro '@%s' is defined twice." % token.value, token.value, -1)
 			raise result.ParseException(badResult)
 		macroKey = token.value
 		if index+3 > len(tokens) or tokens[index+1].type != "CTRLEND" or tokens[index+2].type != "CTRLBEGIN":
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Macro '@%s' must be immediately followed by a control sequence." % macroKey, macroKey, 0)
+			badResult.flagBad("Macro '@%s' must be immediately followed by a control sequence." % macroKey, macroKey, -1)
 			raise result.ParseException(badResult)
 		index += 3
 		token = tokens[index]

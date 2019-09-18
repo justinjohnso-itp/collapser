@@ -19,7 +19,7 @@ class Result:
 		self.errorLineNumber = find_line_number_for_file(text, startPos)
 		self.errorColumn = find_column(text, startPos)
 		self.errorLineText = find_line_text(text, startPos)
-		self.filename = find_filename(text, startPos)
+		self.filename = find_filename(text, startPos) if startPos != -1 else "unknown file"
 
 	def showError(self):
 		# Only show one line's worth of line

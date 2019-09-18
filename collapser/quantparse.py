@@ -110,9 +110,6 @@ def parse(tokens, sourceText, parseParams):
 
 
 def handleParsing(tokens, params):
-	# badResult = result.Result(result.PARSE_RESULT)
-	# badResult.flagBad("Test Bad Result", "line text", 0)
-	# raise result.ParseException(badResult)
 	renderedChunks = process(tokens, params)
 	renderedString = ''.join(renderedChunks)
 	renderedString = macros.expand(renderedString, params)

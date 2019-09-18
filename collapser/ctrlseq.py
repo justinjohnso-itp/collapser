@@ -21,7 +21,7 @@ class Alts:
 			self.probabilityTotal += prob
 			if self.probabilityTotal > 100:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Probabilities in ctrl sequence add up to %d which is > 100" % self.probabilityTotal, str(self), 0)
+				badResult.flagBad("Probabilities in ctrl sequence add up to %d which is > 100" % self.probabilityTotal, str(self), -1)
 				raise result.ParseException(badResult)
 
 	def setAuthorPreferred(self):
@@ -167,7 +167,7 @@ def parseItem(altBits, variablesAllowed=True):
 		token = altBits[index]
 		if variablesAllowed == False and token.type == "VARIABLE":
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Found unexpected variable '%s'" % token.value, str(altBits), 0)
+			badResult.flagBad("Found unexpected variable '%s'" % token.value, str(altBits), -1)
 			raise result.ParseException(badResult)
 		if token.type in ("TEXT", "VARIABLE"):
 			text = token.value
@@ -179,7 +179,7 @@ def parseItem(altBits, variablesAllowed=True):
 			prob = token.value
 		else:
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Unhandled token %s: '%s'" % (token.type, token.value), str(altBits), 0)
+			badResult.flagBad("Unhandled token %s: '%s'" % (token.type, token.value), str(altBits), -1)
 			raise result.ParseException(badResult)
 		index += 1
 
