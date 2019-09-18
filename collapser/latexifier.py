@@ -5,14 +5,13 @@
 # We're looking for curly-brace things like {chapter|2} and replacing them with the appropriate latex. Also more basic things like *bold*.
 
 import re
-import fileio
 
 # Main entry point.
-def go(sourceText, doFront):
+def go(sourceText, templates, doFront):
 	output = specialFixes(sourceText)
 	output = renderControlSeqs(output)
 	postConversionSanityCheck(output)
-	output = latexWrapper(output, includeFrontMatter=doFront)	
+	output = latexWrapper(output, templates, includeFrontMatter=doFront)	
 	return output
 
 
@@ -85,24 +84,16 @@ template_vspace = ['''
 
 '''] 
 
-latexBegin = "fragments/begin.tex"
-latexEnd = "fragments/end.tex"
-latexFrontMatter = "fragments/frontmatter.tex"
-latexPostFrontMatter = "fragments/postfrontmatter.tex"
 
 
 
-def latexWrapper(text, includeFrontMatter=True):
-	begin = fileio.readInputFile(latexBegin)
-	end = fileio.readInputFile(latexEnd)
-	frontMatter = fileio.readInputFile(latexFrontMatter)
-	postFrontMatter = fileio.readInputFile(latexPostFrontMatter)
-	output = begin
+def latexWrapper(text, templates, includeFrontMatter=True):
+	output = templates["begin"]
 	if includeFrontMatter:
-		output += frontMatter
-	output += postFrontMatter
+		output += templates["frontMatter"]
+	output += templates["postFrontMatter"]
 	output += text
-	output += end
+	output += templates["end"]
 	return output
 
 

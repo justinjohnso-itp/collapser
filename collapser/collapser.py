@@ -17,6 +17,10 @@ import result
 import differ
 
 
+latexBegin = "fragments/begin.tex"
+latexEnd = "fragments/end.tex"
+latexFrontMatter = "fragments/frontmatter.tex"
+latexPostFrontMatter = "fragments/postfrontmatter.tex"
 
 
 def postLatexSanityCheck(latexLog):
@@ -192,7 +196,15 @@ def getCollapsedTextFromFile(inputFile, params):
 
 def makeOutputFile(collapsedText, outputFile, doFront):
 	fileio.writeOutputFile("output/raw_out.txt", collapsedText)
-	outputText = latexifier.go(collapsedText, doFront)
+
+	latexTemplateFiles = {
+		"begin": fileio.readInputFile(latexBegin),
+		"end": fileio.readInputFile(latexEnd),
+		"frontMatter": fileio.readInputFile(latexFrontMatter),
+		"postFrontMatter": fileio.readInputFile(latexPostFrontMatter)
+	}
+
+	outputText = latexifier.go(collapsedText, latexTemplateFiles, doFront)
 	fileio.writeOutputFile(outputFile, outputText)
 
 def outputPDF(outputFile):
