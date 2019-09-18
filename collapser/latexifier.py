@@ -8,13 +8,14 @@ import re
 
 # Main entry point.
 def go(sourceText, templates, doFront):
-	output = specialFixes(sourceText)
-	output = renderControlSeqs(output)
-	postConversionSanityCheck(output)
-	output = latexWrapper(output, templates, includeFrontMatter=doFront)	
+	workFile = specialFixes(sourceText)
+	workFile = renderControlSeqs(workFile)
+	postConversionSanityCheck(workFile)
+	output = latexWrapper(workFile, templates, doFront)	
 	return output
 
 
+# Handle any tweaks to the rendered text before we begin the latex conversion.
 def specialFixes(text):
 	# Strip file identifiers (used by the lexer and parser to know what source file a given line comes from, so useful error messages can be printed).
 	text = re.sub(r"\% file (.*)\n", "", text)
@@ -33,14 +34,13 @@ def specialFixes(text):
 	text = re.sub(r"\.\.\. ", r"\ldots\ ", text)
 	text = re.sub(r"… ", r"\ldots\ ", text)
 
-
 	return text
 
 
+# Render all control sequences in appropriate latex
 def renderControlSeqs(sourceText):
 	rendered = []
 	pos = 0
-
 
 	formatStartPos = sourceText.find("{", pos)
 	while formatStartPos is not -1:
@@ -96,6 +96,7 @@ def renderControlSeqs(sourceText):
 	return ''.join(rendered)	
 
 
+# Raise errors if anything unexpected is found in the converted output.
 def postConversionSanityCheck(text):
 	# Look for unexpected characters etc. here
 	pos = text.find('_')
@@ -109,7 +110,8 @@ def postConversionSanityCheck(text):
 	return
 
 
-def latexWrapper(text, templates, includeFrontMatter=True):
+# Wrap the converted latex in appropriate header/footers.
+def latexWrapper(text, templates, includeFrontMatter):
 	output = templates["begin"]
 	if includeFrontMatter:
 		output += templates["frontMatter"]
