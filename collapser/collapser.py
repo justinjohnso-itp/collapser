@@ -259,12 +259,7 @@ def addPadding(outputFile, reportedPages):
 	# If equal, no action needed. Otherwise, add padding to the desired number of pages, which must remain constant in print on demand so the cover art doesn't need to be resized.
 
 	if numPDFPages < desiredPageCount:
-		numPaddingPagesNeeded = desiredPageCount - numPDFPages
-		result = terminal.runCommand("pdftk", "A=output/combined.pdf B=extras/blankpages.pdf cat A B1-%s output output/combined-padded.pdf" % numPaddingPagesNeeded)
-		if not result["success"]:
-			print "*** Couldn't generate padded PDF. %s" % result["output"]
-			sys.exit()
-
+		terminal.addBlankPages("output/combined.pdf", "output/combined-padded.pdf", desiredPageCount - numPDFPages)
 		numCombinedPages = terminal.countPages("output/combined-padded.pdf")
 		if numCombinedPages != desiredPageCount:
 			print "*** Tried to pad output PDF to %d pages but result was %d pages instead." % (desiredPageCount, numPDFPages)

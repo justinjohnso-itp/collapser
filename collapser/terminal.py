@@ -37,3 +37,12 @@ def countPages(pdfPath):
 	pagesResult = re.search(r"NumberOfPages: ([0-9]+)", result["output"])
 	numPDFPages = int(pagesResult.groups()[0])
 	return numPDFPages
+
+
+# This also required pdftk, plus a blankpages.pdf with a large number of empty pages of the same size as the rest of the book.
+def addBlankPages(inputPDF, outputPDF, numBlankPages):
+	result = runCommand("pdftk", "A=%s B=extras/blankpages.pdf cat A B1-%s output %s" % (inputPDF, numBlankPages, outputPDF))
+	if not result["success"]:
+		print "*** Couldn't generate padded PDF. %s" % result["output"]
+		sys.exit()
+
