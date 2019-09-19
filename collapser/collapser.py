@@ -243,22 +243,13 @@ def getStats(latexLog):
 	return data
 
 
-# Note: This requires pdftk, and specifically the version here updated for newer MacOS: https://stackoverflow.com/questions/39750883/pdftk-hanging-on-macos-sierra
 
 def addPadding(outputFile, reportedPages):
 	desiredPageCount = 240
 
-	# Verify number of pages is actually what was reported.
-	result = terminal.runCommand("pdftk", "output/combined.pdf dump_data | grep NumberOfPages", shell=True)
-	if not result["success"]:
-		print "*** Couldn't get stats on output PDF; aborting."
-		sys.exit()
-	# == "NumberOfPages: 18"
-	print result
-	pagesResult = re.search(r"NumberOfPages: ([0-9]+)", result["output"])
-	numPDFPages = int(pagesResult.groups()[0])
+	numPDFPages = terminal.countPages("output/combined.pdf")
 	if numPDFPages != reportedPages:
-		print "*** Latex reported generating %d page PDF, but pdftk reported the output was %d pages instead. Aborting."
+		print "*** Latex reported generating %d page PDF, but pdftk reported the output was %d pages instead. Aborting." % (reportedPages, numPDFPages)
 		sys.exit()
 
 	if numPDFPages > desiredPageCount:
@@ -274,11 +265,10 @@ def addPadding(outputFile, reportedPages):
 			print "*** Couldn't generate padded PDF. %s" % result["output"]
 			sys.exit()
 
-		result = terminal.runCommand("pdftk", "output/combined-padded.pdf dump_data | grep NumberOfPages", shell=True)
-		pagesResult = re.search(r"NumberOfPages: ([0-9]+)", result["output"])
-		numPDFPages = int(pagesResult.groups()[0])
-		if numPDFPages != desiredPageCount:
+		numCombinedPages = terminal.countPages("output/combined-padded.pdf")
+		if numCombinedPages != desiredPageCount:
 			print "*** Tried to pad output PDF to %d pages but result was %d pages instead." % (desiredPageCount, numPDFPages)
+			sys.exit()
 
 
 
