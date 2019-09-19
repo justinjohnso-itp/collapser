@@ -3,8 +3,6 @@
 
 import sys
 import getopt
-import subprocess
-import shlex
 import re
 
 import fileio
@@ -15,15 +13,17 @@ import quantparse
 import chooser
 import result
 import differ
-
+import terminal
 
 latexBegin = "fragments/begin.tex"
 latexEnd = "fragments/end.tex"
 latexFrontMatter = "fragments/frontmatter.tex"
 latexPostFrontMatter = "fragments/postfrontmatter.tex"
 manifestFile = "manifest.txt"
-alternateOutputFile = "output/alternate.tex"
-rawOutputFile = "output/raw_out.txt"
+pdfOutputDir = "output/"
+alternateOutputFile = pdfOutputDir + "alternate.tex"
+rawOutputFile = pdfOutputDir + "raw_out.txt"
+blankPDF = "extras/blankpages.pdf"
 
 def postLatexSanityCheck(latexLog):
 	numPages = 0
@@ -224,22 +224,16 @@ def makeOutputFile(collapsedText, outputFile, seed, doFront):
 	fileio.writeOutputFile(outputFile, outputText)
 
 def outputPDF(outputFile):
-	pdfOutputDir = "output/"
-	cmdParams = '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (pdfOutputDir, outputFile)
-	cmdArray = shlex.split(cmdParams)
-	cmdArray.insert(0, "lualatex")
+	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (pdfOutputDir, outputFile))
+	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
+	latexLooksGood = postLatexSanityCheck(result["output"])
+	if not latexLooksGood:
+		print "*** Generation failed. Check .log file in output folder."
+		sys.exit()
+	else:
+		print "Success! Generated %d page PDF." % latexLooksGood
+		# addPadding(outputFile)
 
-	try:
-		output = subprocess.check_output(cmdArray,stderr=subprocess.STDOUT)
-	except subprocess.CalledProcessError as e:
-		# For some reason this is failing with error code 1 even when it successfully works, so we need to do our own post-processing.
-		latexlog = e.output
-		result = postLatexSanityCheck(latexlog)
-		if result is False:
-			print "*** Generation failed. Check .log file in output folder."
-		else:
-			print "Success! Generated %d page PDF." % result
-		# raise RuntimeError("command '{}' return with error (code {})".format(e.cmd, e.returncode))	
 
 
 main()
