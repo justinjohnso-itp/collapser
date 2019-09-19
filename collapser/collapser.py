@@ -25,29 +25,6 @@ alternateOutputFile = pdfOutputDir + "alternate.tex"
 rawOutputFile = pdfOutputDir + "raw_out.txt"
 blankPDF = "extras/blankpages.pdf"
 
-def postLatexSanityCheck(latexLog):
-	numPages = 0
-
-	overfulls = len(re.findall(r"\nOverfull \\hbox", latexLog))
-	if overfulls > 500:
-		print "Too many overfulls (found %d); halting." % overfulls
-		return False
-
-	status = re.search(r"Output written on .*\.pdf \(([0-9]+) pages, ([0-9]+) bytes", latexLog)
-	if status:
-		numPages = int(status.groups()[0])
-		numBytes = int(status.groups()[1])
-		if numPages < 5 or numPages > 300:
-			print "Unexpected page length (%d); halting." % numPages
-			return False
-		if numBytes < 100000 or numBytes > 3000000:
-			print "Unexpected size (%d kb); halting." % (numBytes / 1000)
-			return False
-	else:
-		print "Couldn't find output line; halting."
-		return False
-
-	return numPages
 
 
 def showUsage():
@@ -231,8 +208,41 @@ def outputPDF(outputFile):
 		print "*** Generation failed. Check .log file in output folder."
 		sys.exit()
 	else:
-		print "Success! Generated %d page PDF." % latexLooksGood
+		stats = getStats(result["output"])
+		print "Success! Generated %d page PDF." % stats["numPages"]
 		# addPadding(outputFile)
+
+
+
+def postLatexSanityCheck(latexLog):
+	numPages = 0
+
+	overfulls = len(re.findall(r"\nOverfull \\hbox", latexLog))
+	if overfulls > 500:
+		print "Too many overfulls (found %d); halting." % overfulls
+		return False
+
+	result = getStats(latexLog)
+	if result["numPages"] == -1:
+		print "Couldn't find output line; halting."
+		return False
+
+	if result["numPages"] < 5 or result["numPages"] > 300:
+		print "Unexpected page length (%d); halting." % result["numPages"]
+		return False
+	if result["numBytes"] < 100000 or result["numBytes"] > 3000000:
+		print "Unexpected size (%d kb); halting." % (result["numBytes"] / 1000)
+		return False
+
+	return True
+
+def getStats(latexLog):
+	data = { "numPages": -1, "numBytes": -1 }
+	result = re.search(r"Output written on .*\.pdf \(([0-9]+) pages, ([0-9]+) bytes", latexLog)
+	if result:
+		data["numPages"] = int(result.groups()[0])
+		data["numBytes"] = int(result.groups()[1])
+	return data
 
 
 
