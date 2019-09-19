@@ -210,9 +210,7 @@ def outputPDF(outputFile):
 	else:
 		stats = getStats(result["output"])
 		print "Success! Generated %d page PDF." % stats["numPages"]
-		# addPadding(outputFile)
-
-
+		addPadding(outputFile, stats["numPages"])
 
 def postLatexSanityCheck(latexLog):
 	numPages = 0
@@ -243,6 +241,45 @@ def getStats(latexLog):
 		data["numPages"] = int(result.groups()[0])
 		data["numBytes"] = int(result.groups()[1])
 	return data
+
+
+# Note: This requires pdftk, and specifically the version here updated for newer MacOS: https://stackoverflow.com/questions/39750883/pdftk-hanging-on-macos-sierra
+
+def addPadding(outputFile, reportedPages):
+	desiredPageCount = 240
+
+	# Verify number of pages is actually what was reported.
+	result = terminal.runCommand("pdftk", "output/combined.pdf dump_data | grep NumberOfPages", shell=True)
+	if not result["success"]:
+		print "*** Couldn't get stats on output PDF; aborting."
+		sys.exit()
+	# == "NumberOfPages: 18"
+	print result
+	pagesResult = re.search(r"NumberOfPages: ([0-9]+)", result["output"])
+	numPDFPages = int(pagesResult.groups()[0])
+	if numPDFPages != reportedPages:
+		print "*** Latex reported generating %d page PDF, but pdftk reported the output was %d pages instead. Aborting."
+		sys.exit()
+
+	if numPDFPages > desiredPageCount:
+		print "*** Generation exceeded maximum length of 240 page: was %d pages." % numPDFPages
+		sys.exit()
+
+	# If equal, no action needed. Otherwise, add padding to the desired number of pages, which must remain constant in print on demand so the cover art doesn't need to be resized.
+
+	if numPDFPages < desiredPageCount:
+		numPaddingPagesNeeded = desiredPageCount - numPDFPages
+		result = terminal.runCommand("pdftk", "A=output/combined.pdf B=extras/blankpages.pdf cat A B1-%s output output/combined-padded.pdf" % numPaddingPagesNeeded)
+		if not result["success"]:
+			print "*** Couldn't generate padded PDF. %s" % result["output"]
+			sys.exit()
+
+		result = terminal.runCommand("pdftk", "output/combined-padded.pdf dump_data | grep NumberOfPages", shell=True)
+		pagesResult = re.search(r"NumberOfPages: ([0-9]+)", result["output"])
+		numPDFPages = int(pagesResult.groups()[0])
+		if numPDFPages != desiredPageCount:
+			print "*** Tried to pad output PDF to %d pages but result was %d pages instead." % (desiredPageCount, numPDFPages)
+
 
 
 
