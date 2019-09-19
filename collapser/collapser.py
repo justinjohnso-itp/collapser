@@ -45,6 +45,7 @@ Arguments:
                  Preface with ^ to negate
   --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
   --pickAuthorChance=x		Likelihood to pick author-preferred at random
+  --padding=x		Pad the output PDF to the given number of pages
 """
 
 
@@ -64,8 +65,9 @@ def main():
 	setDefines = []
 	discourseVarChance = 80
 	preferenceForAuthorsVersion = 20
+	padding = -1
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance="])
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "padding="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -108,6 +110,12 @@ def main():
 			except:
 				print "Invalid --pickAuthorChance parameter '%s': not an integer." % arg
 				sys.exit()
+		elif opt == "--padding":
+			try:
+				padding = int(arg)
+			except:
+				print "Invalid --padding parameter '%s': not an integer." % arg
+				sys.exit()
 
 	if inputFile == "" or outputFile == "":
 		print "*** Missing input or output file. ***\n"
@@ -142,9 +150,9 @@ def main():
 		makeOutputFile(text1, alternateOutputFile, seed1, doFront)
 		if doPDF:
 			print "Running lualatex (text 1)..."
-			outputPDF(outputFile)
+			outputPDF(outputFile, padding)
 			print "Running lualatex (text 2)..."
-			outputPDF(alternateOutputFile)
+			outputPDF(alternateOutputFile, padding)
 
 	else:
 		if strategy != "random":
@@ -159,7 +167,7 @@ def main():
 		makeOutputFile(collapsedText, outputFile, seed, doFront)
 		if doPDF:
 			print "Running lualatex..."
-			outputPDF(outputFile)
+			outputPDF(outputFile, padding)
 		else:
 			print "Skipping PDF."
 
@@ -200,7 +208,7 @@ def makeOutputFile(collapsedText, outputFile, seed, doFront):
 	outputText = latexifier.go(collapsedText, latexTemplateFiles, seed, doFront)
 	fileio.writeOutputFile(outputFile, outputText)
 
-def outputPDF(outputFile):
+def outputPDF(outputFile, padding):
 	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (pdfOutputDir, outputFile))
 	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
 	latexLooksGood = postLatexSanityCheck(result["output"])
@@ -210,7 +218,8 @@ def outputPDF(outputFile):
 	else:
 		stats = getStats(result["output"])
 		print "Success! Generated %d page PDF." % stats["numPages"]
-		addPadding(outputFile, stats["numPages"])
+		if padding is not -1:
+			addPadding(outputFile, stats["numPages"], padding)
 
 def postLatexSanityCheck(latexLog):
 	numPages = 0
@@ -244,8 +253,7 @@ def getStats(latexLog):
 
 
 
-def addPadding(outputFile, reportedPages):
-	desiredPageCount = 240
+def addPadding(outputFile, reportedPages, desiredPageCount):
 
 	numPDFPages = terminal.countPages("output/combined.pdf")
 	if numPDFPages != reportedPages:
@@ -253,7 +261,7 @@ def addPadding(outputFile, reportedPages):
 		sys.exit()
 
 	if numPDFPages > desiredPageCount:
-		print "*** Generation exceeded maximum length of 240 page: was %d pages." % numPDFPages
+		print "*** Generation exceeded maximum length of %d page: was %d pages." % (desiredPageCount, numPDFPages)
 		sys.exit()
 
 	# If equal, no action needed. Otherwise, add padding to the desired number of pages, which must remain constant in print on demand so the cover art doesn't need to be resized.
