@@ -84,23 +84,59 @@ def showVariant(variant, pre, post, preLen, postLen):
 	truncEnd = "..."
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
-	wrappedLines = wrap(rendered)
+	wrapped = wrap(rendered)
 
 	# Figure out what line the variant starts on.
-	varLine = result.find_line_number(pre, len(pre)) - 1
-	posOfVarLineStart = result.find_previous(pre + variant, "\n", len(pre))
-	varCol = len(pre) - posOfVarLineStart
-	print "posOfVarLineStart: %d, varCol: %d" % (posOfVarLineStart, varCol)
-	padding = " " * varCol
-	wrappedLines.insert(varLine, padding + "v")
-	print '\n'.join(wrappedLines)
-	if len(str(variant)) < maxLineLength:
-		print (" " * (preLen+len(truncStart)-1)) + ">" + (" " * (len(str(variant)))) + "<"
+	# What the position in wrapped of the previous newline?
+	prevNL = result.find_previous(wrapped, "\n", len(truncStart + pre))
+	# How many spaces from that point does the variant start?
+	numSpaces = len(truncStart + pre) - prevNL
+	spaces = " " * numSpaces
+	# Insert spaces right before that.
+	wrapped = wrapped[:prevNL-1] + spaces + "v" + wrapped[prevNL-1:]
+
+	# What's the position in wrapped of the end of the variant?
+	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
+	print "endVariantPos: %d, '%s'" % (endVariantPos, wrapped[endVariantPos-3:endVariantPos+3])
+	# What's the position of the new line before that?
+	lastNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)
+	# What about the next new line?
+	nextNewLinePos = wrapped.find("\n", endVariantPos)
+	print "last, next: %d, %d" % (lastNewLinePos, nextNewLinePos)
+	if lastNewLinePos == prevNL:
+		print "On the same line"
+	else:
+		numSpaces = endVariantPos - lastNewLinePos - 2
+		print "numSpaces: %d" % numSpaces
+		spaces = " " * numSpaces
+		print "spaces: '%s'" % spaces
+		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]
+
+	print wrapped
+
+
+	# varLine = result.find_line_number(pre, len(pre)) - 1
+	# print "varLine: %d" % varLine
+	# charsInLine = result.find_previous(pre, "\n", len(pre))
+	# wrapped = wrapped[0:len(pre)-charsInLine] + "\n" + (" " * charsInLine) + "v" + wrapped[len(pre)-charsInLine:]
+	# # wrappedLines.insert(varLine, padding + "v")
+
+	# # Figure out what line the variant ends on.
+	# endLine = result.find_line_number(rendered, len(pre) + len(variant))
+	# print "endLine: %d" % endLine
+	# posOfEndLineStart = result.find_previous(rendered, "\n", len(pre) + len(variant))
+	# endCol = len(pre) + len(variant) - posOfEndLineStart
+	# endPadding = " " * endCol
+	# # wrappedLines.insert(endLine, padding + "^")
+
+	# print wrapped
+	# if len(str(variant)) < maxLineLength:
+	# 	print (" " * (preLen+len(truncStart)-1)) + ">" + (" " * (len(str(variant)))) + "<"
 
 
 def cleanContext(text):
 	# Strip comments.
-	text = re.sub(r"\#.*\n", "\n", text)
+	text = re.sub(r"[#%].*\n", "\n", text)
 
 	# Remove extra blank lines
 	text = re.sub(r"\n{3,}", "\n\n", text) 
@@ -116,10 +152,7 @@ def cleanFinal(text):
 
 
 def wrap(text):
-	output = []
+	output = ""
 	for line in text.split('\n'):
-		if line.strip() == '':
-			output.append("")
-		else:
-			output.extend(textwrap.wrap(line, maxLineLength))
+		output += textwrap.fill(line, maxLineLength) + "\n"
 	return output
