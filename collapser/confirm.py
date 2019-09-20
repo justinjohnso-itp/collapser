@@ -64,17 +64,22 @@ def preprocessTokens(tokens):
 		index += 1
 
 
+def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos):
+	pre = getPre(sourceText, ctrlStartPos, ctrlEndPos)
+	post = origGetPost(sourceText, ctrlEndPos)
+	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
+	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
+	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
+	return key
+
+
 def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
 	maxLineLength = 80
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 	ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)
-	pre = getPre(sourceText, ctrlStartPos, ctrlEndPos)
-	post = origGetPost(sourceText, ctrlEndPos)
-	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	filename = result.find_filename(sourceText, ctrlStartPos)
-	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
-	key = re.sub(r'[\W_]', '', key)
+	key = makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos)
 	truncStart = "..."
 	truncEnd = "..."
 	if fileio.isKeyConfirmed(key) == False:
