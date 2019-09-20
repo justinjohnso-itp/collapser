@@ -79,11 +79,12 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
 	wrapped = wrap(rendered, maxLineLength)
-
+	print "pre: '%s'" % pre
 	# Figure out what line the variant starts on.
 	prevNL = result.find_previous(wrapped, "\n", len(truncStart + pre))
 	print "prevNL: %d" % prevNL
 	numSpaces = len(truncStart + pre) - prevNL
+	print "numSpaces: %d" % numSpaces
 	spaces = " " * numSpaces
 	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
 	nextNewLinePos = wrapped.find("\n", len(truncStart + pre + variant))
@@ -98,7 +99,10 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
 		wrapped = wrapped + spaces + "^" + spacesBetween + "^\n"
 	else:
 		print "!! MULTI Line"
-		wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
+		if prevNL == 0:
+			wrapped = spaces + "v\n" + wrapped
+		else:
+			wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
 		endVariantPos = len(wrapped) - len(post) - len(truncEnd)
 		nextNewLinePos = wrapped.find("\n", endVariantPos)
 		lastNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)

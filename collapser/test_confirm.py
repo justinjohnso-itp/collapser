@@ -97,6 +97,16 @@ We're so happy to see you.
          ^   ^
 """
 
+def test_without_leading_newlines():
+	text = """
+So I inserted a lot of stuff here because what I was most interested in was the situation where [this happened and I regretted so much all the things I'd said, the people I'd hurt,|the other thing took place despite all the best laid plans of mice and men to prevent it] and it was hard to watch without knowing the way the story was going to end."""
+	rendered = confirmRenderVariant(text, 0, "...", 80)
+	assert rendered == """                                                               v
+...cause what I was most interested in was the situation where this happened and
+I regretted so much all the things I'd said, the people I'd hurt, and it was
+                                                                ^
+hard to watch without knowing the way the story...
+"""
 
 
 
