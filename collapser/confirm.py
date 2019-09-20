@@ -64,10 +64,9 @@ def preprocessTokens(tokens):
 		index += 1
 
 
-def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos):
+def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	pre = getPre(sourceText, ctrlStartPos, ctrlEndPos)
 	post = origGetPost(sourceText, ctrlEndPos)
-	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
 	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
 	return key
@@ -79,7 +78,8 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 	ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)
 	filename = result.find_filename(sourceText, ctrlStartPos)
-	key = makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos)
+	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
+	key = makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq)
 	truncStart = "..."
 	truncEnd = "..."
 	if fileio.isKeyConfirmed(key) == False:
@@ -90,7 +90,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
 			print '''************************************'''
-			rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd, maxLineLength, sourceText, parseParams, ctrlEndPos)
+			rendered = renderVariant(truncStart, v.txt, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos)
 			print rendered
 		print "************************************"
 
@@ -111,7 +111,9 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				sys.exit(0)
 
 
-def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength, sourceText, parseParams, ctrlEndPos):
+def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos):
+	pre = getPre(sourceText, ctrlStartPos, ctrlEndPos)
+	post = origGetPost(sourceText, ctrlEndPos)
 	post = getPost(post, parseParams, ctrlEndPos)
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
@@ -148,6 +150,7 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength, sourc
 		spaces = " " * numSpaces
 		# print "spaces: '%s'" % spaces
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
+	print "wrapped: '%s'" % wrapped
 	return wrapped
 
 
