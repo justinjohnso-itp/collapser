@@ -5,8 +5,15 @@ import random
 def number(highest):
 	return random.randint(1,highest)
 
-def oneOf(item):
-	return random.choice(item)
+def oneOf(item, pure=False):
+	if pure:
+		saved_rng_state = random.getstate()
+		unSeed()
+		randomSeed()
+	result = random.choice(item)
+	if pure:
+		random.setstate(saved_rng_state)
+	return result
 
 __iterators = {}
 def iter(key):
