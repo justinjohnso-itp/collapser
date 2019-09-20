@@ -83,6 +83,9 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 			sys.exit(0)
 
 def cleanContext(text):
+	# Strip comments.
+	text = re.sub(r"\#.*\n", "\n", text)
+
 	# Remove extra blank lines
 	text = re.sub(r"\n{3,}", "\n\n", text) 
 
