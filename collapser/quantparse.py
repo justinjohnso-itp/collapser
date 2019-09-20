@@ -91,10 +91,9 @@ def parse(tokens, sourceText, parseParams):
 		parseParams.setDefines = bestDefines
 
 	# Handle the rendering.
-	variables.reset()
-	macros.reset()
-	output = result.Result(result.PARSE_RESULT)
 	try:
+		variables.reset()
+		macros.reset()
 		parseParams.originalText = sourceText
 		tokens = variables.handleDefs(tokens, parseParams)
 		tokens = macros.handleDefs(tokens, parseParams)
@@ -107,6 +106,7 @@ def parse(tokens, sourceText, parseParams):
 	except result.ParseException, e:
 		print e
 		return e.result
+	output = result.Result(result.PARSE_RESULT)
 	output.package = renderedString
 	return output
 
