@@ -142,7 +142,19 @@ Fine then. Here goes. You ready?
 This is what happened.
 """
 
-def test_post_expansions():
+def test_post_expansions_single_line():
+	text = """
+This is our story. Our [real|fake] story. [And how|Yep]. Great."""
+	rendered = confirmRenderVariant(text, 0, "", 70)
+	assert rendered in ["""
+This is our story. Our real story. And how. Great.
+                       ^  ^
+""", """
+This is our story. Our real story. Yep. Great.
+                       ^  ^
+"""]
+
+def test_post_expansions_multi_line():
 	text = """
 This is our story. Our [real|amazingly true] story. [And no one can ever tell us that we didn't really believe in what happened.|But it'll never be the same again after the things that occured to us, now will it bucko? No I absolutely don't think it will.]"""
 	rendered = confirmRenderVariant(text, 0, "", 70)

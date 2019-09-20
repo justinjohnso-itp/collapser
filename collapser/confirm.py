@@ -179,7 +179,7 @@ def getPost(post, parseParams, ctrlEndPos):
 			if endSeqPos == -1:
 				endSeqPos = len(post)
 			print "post was: '%s'" % post
-			post = post[:newCtrlSeqPos] + variantTxt + post[endSeqPos:]
+			post = post[:newCtrlSeqPos] + variantTxt + post[endSeqPos+1:]
 			print "post now: '%s'" % post
 			# truncate again
 			postBufferLen = 60
