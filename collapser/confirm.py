@@ -80,11 +80,13 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
 def showVariant(variant, pre, post, preLen, postLen):
 	print '''************************************'''
-	rendered = "...%s%s%s..." % (pre, variant, post)
+	truncStart = "..."
+	truncEnd = "..."
+	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
 	print wrap(rendered)
 	if len(str(variant)) < maxLineLength:
-		print (" " * (preLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
+		print (" " * (preLen+len(truncStart)-1)) + ">" + (" " * (len(str(variant)))) + "<"
 
 
 def cleanContext(text):
