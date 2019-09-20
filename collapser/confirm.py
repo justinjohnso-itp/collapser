@@ -17,7 +17,7 @@ import fileio
 ctrlSeqsFound = []
 ctrlSeqPos = -1
 
-def getPreviousCtrlSeq():
+def getRawPreviousCtrlSeq():
 	global ctrlSeqsFound
 	global ctrlSeqPos
 	if ctrlSeqPos <= 0:
@@ -65,8 +65,8 @@ def preprocessTokens(tokens):
 
 
 def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
-	pre = getPre(sourceText, ctrlStartPos, ctrlEndPos)
-	post = origGetPost(sourceText, ctrlEndPos)
+	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
+	post = getRawPost(sourceText, ctrlEndPos)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
 	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
 	return key
@@ -112,9 +112,9 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
 
 def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos):
-	pre = getPre(sourceText, ctrlStartPos, ctrlEndPos)
-	post = origGetPost(sourceText, ctrlEndPos)
-	post = getPost(post, parseParams, ctrlEndPos)
+	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
+	post = getRawPost(sourceText, ctrlEndPos)
+	post = getRenderedPost(post, parseParams, ctrlEndPos)
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
 	wrapped = wrap(rendered, maxLineLength)
@@ -154,7 +154,7 @@ def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, pars
 	return wrapped
 
 
-def getPre(sourceText, ctrlStartPos, ctrlEndPos):
+def getRawPre(sourceText, ctrlStartPos, ctrlEndPos):
 	preBufferLen = 60
 	if ctrlStartPos < preBufferLen:
 		preBufferLen = ctrlStartPos
@@ -162,7 +162,7 @@ def getPre(sourceText, ctrlStartPos, ctrlEndPos):
 	pre = cleanContext(pre)
 	return pre
 
-def origGetPost(sourceText, ctrlEndPos):
+def getRawPost(sourceText, ctrlEndPos):
 	postBufferLen = 60
 	if ctrlEndPos + postBufferLen > len(sourceText):
 		postBufferLen = len(sourceText) - ctrlEndPos
@@ -170,7 +170,7 @@ def origGetPost(sourceText, ctrlEndPos):
 	post = cleanContext(post)
 	return post
 
-def getPost(post, parseParams, ctrlEndPos):
+def getRenderedPost(post, parseParams, ctrlEndPos):
 	print "ctrlEndPos: %d" % ctrlEndPos
 	print "post: '%s'" % post
 	newCtrlSeqPos = post.find("[")

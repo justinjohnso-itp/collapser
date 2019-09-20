@@ -47,7 +47,7 @@ def confirmRenderVariant(text, variantPos, trunc, maxWidth):
 	variants = ctrlseq.renderAll(ctrlcontents[0], parseParams, showAllVars=True)
 	ctrlEndPos = ctrlcontents[1]
 	ctrlStartPos = text.rfind("[", 0, ctrlEndPos)
-	pre = confirm.getPre(text, ctrlStartPos, ctrlEndPos)
+	pre = confirm.getRawPre(text, ctrlStartPos, ctrlEndPos)
 	post = confirm.origGetPost(text, ctrlEndPos)
 	firstVariant = variants.alts[variantPos].txt
 	result = confirm.renderVariant(trunc, firstVariant, trunc, maxWidth, text, parseParams, ctrlStartPos, ctrlEndPos)
