@@ -64,8 +64,8 @@ class Item:
 		self.prob = prob
 		self.authorPreferred = authorPreferred
 
-	def __str__(self):
-		base = "%s%s" % ("^" if self.authorPreferred else "", self.txt)
+	def __repr__(self):
+		base = "Item: %s%s" % ("^" if self.authorPreferred else "", self.txt)
 		if self.prob is not None:
 			return "%s>%s" % (self.prob, base)
 		return base
