@@ -209,7 +209,7 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
 			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
 			print "newVariants.alts: '%s'" % newVariants.alts
 			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
-			startSeqPos = pre.rfind("[", 0, newCtrlSeqPos)
+			startSeqPos = pre.rfind("[")
 			if startSeqPos == -1:
 				startSeqPos = 0
 			print "pre was: '%s'" % pre
