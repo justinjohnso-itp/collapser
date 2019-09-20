@@ -2,7 +2,8 @@
 import variables
 import quantlex
 import quantparse
-
+import ctrlseq
+import confirm
 
 def parseResult(text, params = None):
 	lexed = quantlex.lex(text)
@@ -27,14 +28,14 @@ def getFirstCtrlSeq(tokens):
 				ctrl_contents.append(token)
 				index += 1
 				token = tokens[index]
-			return ctrl_contents
+			return [ctrl_contents, token.lexpos]
 		index += 1
 	return []
 
 def parseAndGetAlts(text):
 	tokens = parseResult(text)
-	ctrlseq = getFirstCtrlSeq(tokens)
-	return variables.renderAll(ctrlseq)
+	ctrlcontents = getFirstCtrlSeq(tokens)
+	return variables.renderAll(ctrlcontents[0])
 
 def test_renderAllVariables():
 	text = "[DEFINE @alpha1]This is some text. [@alpha1>Variant the first|Version the second]. And some final text."
@@ -52,6 +53,30 @@ def test_renderAllVariables():
 	assert alts[0].txt == "Gamma forever"
 	assert alts[1].txt == "This is delta"
 	assert alts[2].txt == "Or not"
+
+def test_carets_basic():
+	text = """
+So there were tapes where [this happened and I regretted so much all the things I'd said, the people I'd hurt,|the other thing took place despite all the best laid plans of mice and men to prevent it] and it was hard to watch."""
+	tokens = parseResult(text)
+	ctrlcontents = getFirstCtrlSeq(tokens)
+	parseParams = quantparse.ParseParams()
+	variants = ctrlseq.renderAll(ctrlcontents[0], parseParams, showAllVars=True)
+	ctrlEndPos = ctrlcontents[1]
+	ctrlStartPos = text.rfind("[", 0, ctrlEndPos)
+	pre = confirm.getPre(text, ctrlStartPos, ctrlEndPos)
+	post = confirm.getPost(text, ctrlEndPos)
+	truncStart = "..."
+	truncEnd = "..."
+	firstVariant = variants.alts[0].txt
+	result = confirm.renderVariant(truncStart, pre, firstVariant, post, truncEnd, 70)
+	print result
+	assert result == """...
+                          v
+So there were tapes where this happened and I regretted so much all
+the things I'd said, the people I'd hurt, and it was hard to watch....
+                                        ^
+"""
+
 
 
 

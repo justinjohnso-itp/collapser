@@ -32,10 +32,10 @@ def process(tokens, sourceText, parseParams):
 		index += 1
 	fileio.finishConfirmKeys()
 
-maxLineLength = 80
 
 def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
+	maxLineLength = 80
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 	ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)
 	pre = getPre(sourceText, ctrlStartPos, ctrlEndPos)
@@ -54,7 +54,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
 			print '''************************************'''
-			rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd)
+			rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd, maxLineLength)
 			print rendered
 		print "************************************"
 
@@ -73,19 +73,21 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				sys.exit(0)
 
 
-def renderVariant(truncStart, pre, variant, post, truncEnd):
+def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
-	wrapped = wrap(rendered)
+	wrapped = wrap(rendered, maxLineLength)
 
 	# Figure out what line the variant starts on.
 	# What the position in wrapped of the previous newline?
 	prevNL = result.find_previous(wrapped, "\n", len(truncStart + pre))
+	print "prevNL: %d" % prevNL
 	# How many spaces from that point does the variant start?
 	numSpaces = len(truncStart + pre) - prevNL
+	print "numSpaces: %d" % numSpaces
 	spaces = " " * numSpaces
 	# Insert spaces right before that.
-	wrapped = wrapped[:prevNL-1] + spaces + "v" + wrapped[prevNL-1:]
+	wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
 
 	# What's the position in wrapped of the end of the variant?
 	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
@@ -158,7 +160,7 @@ def cleanFinal(text):
 	return text
 
 
-def wrap(text):
+def wrap(text, maxLineLength):
 	output = ""
 	for line in text.split('\n'):
 		output += textwrap.fill(line, maxLineLength) + "\n"
