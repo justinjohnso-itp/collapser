@@ -33,11 +33,11 @@ def process(tokens, sourceText, parseParams):
 	fileio.finishConfirmKeys()
 
 maxLineLength = 80
+
 def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
 	preBufferLen = 60
 	postBufferLen = 60
-	maxCaretLen = maxLineLength
 
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 
@@ -61,13 +61,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		print "##################################################"
 		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
-			variant = v.txt
-			print '''************************************'''
-			rendered = "...%s%s%s..." % (pre, variant, post)
-			rendered = cleanFinal(rendered)
-			print wrap(rendered)
-			if len(str(variant)) < maxCaretLen:
-				print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
+			showVariant(v.txt, pre, post, preBufferLen, postBufferLen)
 		print "************************************"
 
 		choice = -1
@@ -83,6 +77,15 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				print "3\n >>> Halting."
 				fileio.finishConfirmKeys()
 				sys.exit(0)
+
+def showVariant(variant, pre, post, preLen, postLen):
+	print '''************************************'''
+	rendered = "...%s%s%s..." % (pre, variant, post)
+	rendered = cleanFinal(rendered)
+	print wrap(rendered)
+	if len(str(variant)) < maxLineLength:
+		print (" " * (preLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
+
 
 def cleanContext(text):
 	# Strip comments.
