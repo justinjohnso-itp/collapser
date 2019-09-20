@@ -8,7 +8,8 @@ import sys
 
 import fileio
 
-# TODO isn't stripping variable names when printing those
+# TODO Wordwrap.
+# TODO Macros?
 
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
@@ -45,9 +46,9 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 	if ctrlEndPos + postBufferLen > len(sourceText):
 		postBufferLen = len(sourceText) - ctrlEndPos
 	pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
-	pre = re.sub(r"\n{3,}", "\n\n", pre) # Remove extra blank lines
+	pre = cleanContext(pre)
 	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
-	post = re.sub(r"\n{3,}", "\n\n", post)
+	post = cleanContext(post)
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	filename = result.find_filename(sourceText, ctrlStartPos)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
@@ -81,4 +82,9 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 			fileio.finishConfirmKeys()
 			sys.exit(0)
 
+def cleanContext(text):
+	# Remove extra blank lines
+	text = re.sub(r"\n{3,}", "\n\n", text) 
+
+	return text
 
