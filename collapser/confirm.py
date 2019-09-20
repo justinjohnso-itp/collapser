@@ -5,6 +5,7 @@ import result
 import re
 import getch
 import sys
+import textwrap
 
 import fileio
 
@@ -31,11 +32,12 @@ def process(tokens, sourceText, parseParams):
 		index += 1
 	fileio.finishConfirmKeys()
 
+maxLineLength = 80
 def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
 	preBufferLen = 60
 	postBufferLen = 60
-	maxCaretLen = 80
+	maxCaretLen = maxLineLength
 
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 
@@ -63,7 +65,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 			print '''************************************'''
 			rendered = "...%s%s%s..." % (pre, variant, post)
 			rendered = cleanFinal(rendered)
-			print rendered
+			print wrap(rendered)
 			if len(str(variant)) < maxCaretLen:
 				print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
 		print "************************************"
@@ -97,3 +99,10 @@ def cleanFinal(text):
 	text = re.sub(r"  +", " ", text)
 
 	return text
+
+
+def wrap(text):
+	output = ""
+	for line in text.split('\n'):
+		output += textwrap.fill(line, maxLineLength) + "\n"
+	return output
