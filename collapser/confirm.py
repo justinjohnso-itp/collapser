@@ -65,8 +65,10 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 			if choice == "1":
 				print "1\n >>> Confirmed."
 				fileio.confirmKey(key)
+				return
 			elif choice == "2":
 				print "2\n >>> Skipping."
+				return
 			elif choice == "3":
 				print "3\n >>> Halting."
 				fileio.finishConfirmKeys()
