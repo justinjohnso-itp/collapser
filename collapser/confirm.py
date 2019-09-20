@@ -7,16 +7,49 @@ import re
 import getch
 import sys
 import textwrap
+import chooser
 
 import fileio
 
 # TODO Macros?
 # TODO: Don't add truncs if there's actually nothing to trunc (i.e. we're at the start/end of the sequence)
 
+ctrlSeqsFound = []
+ctrlSeqPos = -1
+
+def getPreviousCtrlSeq():
+	global ctrlSeqsFound
+	global ctrlSeqPos
+	if ctrlSeqPos <= 0:
+		return None
+	return ctrlSeqsFound[ctrlSeqPos-1]
+
+def getNextCtrlSeq():
+	global ctrlSeqsFound
+	global ctrlSeqPos
+	if ctrlSeqPos >= len(ctrlSeqsFound) - 1:
+		return None
+	return ctrlSeqsFound[ctrlSeqPos+1]
+
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
-	index = 0
+	global ctrlSeqsFound
+	global ctrlSeqPos
+	
+	preprocessTokens(tokens)
+
+	ctrlSeqPos = 0
 	fileio.startConfirmKeys()
+	for seq, endPos in ctrlSeqsFound:
+		confirmCtrlSeq(seq, sourceText, parseParams, endPos)
+		ctrlSeqPos += 1
+
+	fileio.finishConfirmKeys()
+
+def preprocessTokens(tokens):
+	global ctrlSeqsFound
+	index = 0
+	ctrlSeqsFound = []
 	while index < len(tokens):
 		token = tokens[index]
 		if token.type == "CTRLBEGIN":
@@ -27,11 +60,8 @@ def process(tokens, sourceText, parseParams):
 				ctrl_contents.append(token)
 				index += 1
 				token = tokens[index]
-			
-			confirmCtrlSeq(ctrl_contents, sourceText, parseParams, token.lexpos)
-
+			ctrlSeqsFound.append([ctrl_contents, token.lexpos])
 		index += 1
-	fileio.finishConfirmKeys()
 
 
 def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
@@ -40,7 +70,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 	ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)
 	pre = getPre(sourceText, ctrlStartPos, ctrlEndPos)
-	post = getPost(sourceText, ctrlEndPos)
+	post = origGetPost(sourceText, ctrlEndPos)
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	filename = result.find_filename(sourceText, ctrlStartPos)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
@@ -55,7 +85,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
 			print '''************************************'''
-			rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd, maxLineLength)
+			rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd, maxLineLength, sourceText, parseParams, ctrlEndPos)
 			print rendered
 		print "************************************"
 
@@ -76,7 +106,8 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				sys.exit(0)
 
 
-def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
+def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength, sourceText, parseParams, ctrlEndPos):
+	post = getPost(post, parseParams, ctrlEndPos)
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
 	wrapped = wrap(rendered, maxLineLength)
@@ -123,11 +154,36 @@ def getPre(sourceText, ctrlStartPos, ctrlEndPos):
 	pre = cleanContext(pre)
 	return pre
 
-def getPost(sourceText, ctrlEndPos):
+def origGetPost(sourceText, ctrlEndPos):
 	postBufferLen = 60
 	if ctrlEndPos + postBufferLen > len(sourceText):
 		postBufferLen = len(sourceText) - ctrlEndPos
 	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
+	post = cleanContext(post)
+	return post
+
+def getPost(post, parseParams, ctrlEndPos):
+	print "ctrlEndPos: %d" % ctrlEndPos
+	print "post: '%s'" % post
+	newCtrlSeqPos = post.find("[")
+	print "A"
+	if newCtrlSeqPos >= 0:
+		print "B"
+		newCtrlSeq = getNextCtrlSeq()
+		if newCtrlSeq is not None:
+			print "C"
+			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
+			print "newVariants.alts: '%s'" % newVariants.alts
+			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
+			endSeqPos = post.find("]", newCtrlSeqPos)
+			if endSeqPos == -1:
+				endSeqPos = len(post)
+			print "post was: '%s'" % post
+			post = post[:newCtrlSeqPos] + variantTxt + post[endSeqPos:]
+			print "post now: '%s'" % post
+			# truncate again
+			postBufferLen = 60
+			post = post[:postBufferLen]
 	post = cleanContext(post)
 	return post
 
