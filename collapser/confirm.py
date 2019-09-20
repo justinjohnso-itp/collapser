@@ -157,7 +157,7 @@ def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, pars
 
 
 def getRawPre(sourceText, ctrlStartPos, ctrlEndPos):
-	preBufferLen = 240
+	preBufferLen = 850
 	if ctrlStartPos < preBufferLen:
 		preBufferLen = ctrlStartPos
 	pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
@@ -165,7 +165,7 @@ def getRawPre(sourceText, ctrlStartPos, ctrlEndPos):
 	return pre[-60:]
 
 def getRawPost(sourceText, ctrlEndPos):
-	postBufferLen = 240
+	postBufferLen = 850
 	if ctrlEndPos + postBufferLen > len(sourceText):
 		postBufferLen = len(sourceText) - ctrlEndPos
 	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
@@ -236,12 +236,22 @@ def cleanContext(text):
 
 	# remove macro definitions.
 	pos = text.find("[MACRO")
-	if pos is not -1:
+	while pos is not -1:
 		endDefPos = text.find("]", pos)
 		if endDefPos is not -1:
 			endBodyPos = text.find("]", endDefPos+1)
 			if endBodyPos is not -1:
 				text = text[:pos-1] + text[endBodyPos+1:]
+		pos = text.find("[MACRO", pos+1)
+
+
+	# remove DEFINEs.
+	pos = text.find("[DEFINE")
+	while pos is not -1:
+		endDefPos = text.find("]", pos)
+		if endDefPos is not -1:
+			text = text[:pos-1] + text[endDefPos+1:]
+		pos = text.find("[DEFINE", pos+1)
 
 	return text
 
