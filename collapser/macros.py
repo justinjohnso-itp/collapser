@@ -91,7 +91,7 @@ def handleDefs(tokens, params):
 
 formatting_codes = ["section_break", "chapter", "part", "verse", "verse_inline", "pp", "i", "vspace"]
 
-def expand(text, params):
+def expand(text, params, haltOnBadMacros=True):
 	mStart = '''{'''
 	mEnd = '''}'''
 	MAX_MACRO_DEPTH = 6
@@ -112,9 +112,11 @@ def expand(text, params):
 			if parts[0] in formatting_codes:
 				startPos = text.find(mStart, startPos+1)
 				continue
-			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
-			raise result.ParseException(badResult)
+			if haltOnBadMacros:
+				badResult = result.Result(result.PARSE_RESULT)
+				badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
+				raise result.ParseException(badResult)
+			continue
 		if rendered.find(mStart) >= 0:
 			renderHadMoreMacrosCtr += 1
 		else:
