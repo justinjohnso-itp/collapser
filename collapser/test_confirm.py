@@ -41,7 +41,8 @@ def parseAndGetAlts(text):
 def confirmRenderVariant(text, variantPos, trunc, maxWidth):
 	tokens = parseResult(text)
 	confirm.preprocessTokens(tokens)
-	ctrlcontents = getFirstCtrlSeq(tokens)
+	confirm.ctrlSeqPos = 0
+	ctrlcontents = confirm.ctrlSeqsFound[0]
 	parseParams = quantparse.ParseParams()
 	variants = ctrlseq.renderAll(ctrlcontents[0], parseParams, showAllVars=True)
 	ctrlEndPos = ctrlcontents[1]
@@ -140,4 +141,21 @@ Fine then. Here goes. You ready?
 
 This is what happened.
 """
+
+def test_post_expansions():
+	text = """
+This is our story. Our [real|amazingly true] story. [And no one can ever tell us that we didn't really believe in what happened.|But it'll never be the same again after the things that occured to us, now will it bucko? No I absolutely don't think it will.]"""
+	rendered = confirmRenderVariant(text, 0, "", 70)
+	assert rendered in ["""
+                       v
+This is our story. Our real story. And no one can ever tell us that we
+                          ^
+didn't really be
+""", """
+                       v
+This is our story. Our real story. But it'll never be the same again
+                          ^
+after the things t
+"""]
+
 
