@@ -232,6 +232,13 @@ def cleanContext(text):
 	text = re.sub(r"“", '"', text)
 	text = re.sub(r"”", '"', text)
 
+	# remove macro definitions.
+	pos = text.find("[MACRO")
+	if pos is not -1:
+		endDefPos = text.find("]", pos)
+		endBodyPos = text.find("]", endDefPos+1)
+		text = text[:pos-1] + text[endBodyPos+1:]
+
 	return text
 
 
