@@ -45,9 +45,9 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 	if ctrlEndPos + postBufferLen > len(sourceText):
 		postBufferLen = len(sourceText) - ctrlEndPos
 	pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
-	pre = pre.replace("\n", "\\")
+	pre = re.sub(r"\n{3,}", "\n\n", pre) # Remove extra blank lines
 	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
-	post = post.replace("\n", "\\")
+	post = re.sub(r"\n{3,}", "\n\n", post)
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	filename = result.find_filename(sourceText, ctrlStartPos)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
