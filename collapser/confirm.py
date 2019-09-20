@@ -51,7 +51,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)
 		lineColumn = result.find_column(sourceText, ctrlStartPos)
 		print "\n\n"
-		print "##################################################"
+		print "#################################################################"
 		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
 			print '''************************************'''
@@ -80,25 +80,25 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
 	wrapped = wrap(rendered, maxLineLength)
-	print "pre: '%s'" % pre
+	# print "pre: '%s'" % pre
 	# Figure out what line the variant starts on.
 	prevNL = result.find_previous(wrapped, "\n", len(truncStart + pre))
-	print "prevNL: %d" % prevNL
+	# print "prevNL: %d" % prevNL
 	numSpaces = len(truncStart + pre) - prevNL
-	print "numSpaces: %d" % numSpaces
+	# print "numSpaces: %d" % numSpaces
 	spaces = " " * numSpaces
 	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
 	nextNewLinePos = wrapped.find("\n", len(truncStart + pre + variant))
-	print "nextNewLinePos: %d" % nextNewLinePos
+	# print "nextNewLinePos: %d" % nextNewLinePos
 	if numSpaces + len(variant + post + truncEnd) < maxLineLength and post.find("\n") == -1:
-		print "!! Single line"
+		# print "!! Single line"
 		# Single line.
 		numSpacesBetween = len(variant) - 2
-		print "numSpacesBetween: %d" % numSpacesBetween
+		# print "numSpacesBetween: %d" % numSpacesBetween
 		spacesBetween = " " * numSpacesBetween
 		wrapped = wrapped + spaces + "^" + spacesBetween + "^\n"
 	else:
-		print "!! MULTI Line"
+		# print "!! MULTI Line"
 		if prevNL == 0:
 			wrapped = spaces + "v\n" + wrapped
 		else:
@@ -106,11 +106,11 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
 		endVariantPos = len(wrapped) - len(post) - len(truncEnd)
 		nextNewLinePos = wrapped.find("\n", endVariantPos)
 		lastNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)
-		print "last, next: %d, %d" % (lastNewLinePos, nextNewLinePos)
+		# print "last, next: %d, %d" % (lastNewLinePos, nextNewLinePos)
 		numSpaces = endVariantPos - lastNewLinePos - 2
-		print "numSpaces: %d" % numSpaces
+		# print "numSpaces: %d" % numSpaces
 		spaces = " " * numSpaces
-		print "spaces: '%s'" % spaces
+		# print "spaces: '%s'" % spaces
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
 	return wrapped
 
