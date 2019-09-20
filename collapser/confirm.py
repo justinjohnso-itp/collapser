@@ -236,8 +236,10 @@ def cleanContext(text):
 	pos = text.find("[MACRO")
 	if pos is not -1:
 		endDefPos = text.find("]", pos)
-		endBodyPos = text.find("]", endDefPos+1)
-		text = text[:pos-1] + text[endBodyPos+1:]
+		if endDefPos is not -1:
+			endBodyPos = text.find("]", endDefPos+1)
+			if endBodyPos is not -1:
+				text = text[:pos-1] + text[endBodyPos+1:]
 
 	return text
 
