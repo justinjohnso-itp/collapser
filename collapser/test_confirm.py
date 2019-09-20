@@ -38,6 +38,23 @@ def parseAndGetAlts(text):
 	ctrlcontents = getFirstCtrlSeq(tokens)
 	return variables.renderAll(ctrlcontents[0])
 
+def confirmRenderVariant(text, variantPos, trunc, maxWidth):
+	tokens = parseResult(text)
+	confirm.preprocessTokens(tokens)
+	ctrlcontents = getFirstCtrlSeq(tokens)
+	parseParams = quantparse.ParseParams()
+	variants = ctrlseq.renderAll(ctrlcontents[0], parseParams, showAllVars=True)
+	ctrlEndPos = ctrlcontents[1]
+	ctrlStartPos = text.rfind("[", 0, ctrlEndPos)
+	pre = confirm.getPre(text, ctrlStartPos, ctrlEndPos)
+	post = confirm.origGetPost(text, ctrlEndPos)
+	firstVariant = variants.alts[variantPos].txt
+	result = confirm.renderVariant(trunc, pre, firstVariant, post, trunc, maxWidth, text, parseParams, ctrlEndPos)
+	return result
+
+
+
+
 def test_renderAllVariables():
 	text = "[DEFINE @alpha1]This is some text. [@alpha1>Variant the first|Version the second]. And some final text."
 	alts = parseAndGetAlts(text)
@@ -54,20 +71,6 @@ def test_renderAllVariables():
 	assert alts[0].txt == "Gamma forever"
 	assert alts[1].txt == "This is delta"
 	assert alts[2].txt == "Or not"
-
-def confirmRenderVariant(text, variantPos, trunc, maxWidth):
-	tokens = parseResult(text)
-	ctrlcontents = getFirstCtrlSeq(tokens)
-	parseParams = quantparse.ParseParams()
-	variants = ctrlseq.renderAll(ctrlcontents[0], parseParams, showAllVars=True)
-	ctrlEndPos = ctrlcontents[1]
-	ctrlStartPos = text.rfind("[", 0, ctrlEndPos)
-	pre = confirm.getPre(text, ctrlStartPos, ctrlEndPos)
-	post = confirm.getPost(text, ctrlEndPos)
-	firstVariant = variants.alts[variantPos].txt
-	result = confirm.renderVariant(trunc, pre, firstVariant, post, trunc, maxWidth)
-	return result
-
 
 def test_carets_multiline():
 	text = """
