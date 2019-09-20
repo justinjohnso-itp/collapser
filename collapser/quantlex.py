@@ -77,6 +77,9 @@ def t_TEXT(t):
 
 def t_COMMENT(t):
 	r'\#.*\n?'
+	if __lexState["inCtrlSequence"]:
+		__lexState["flaggedBad"] = True
+		__lexState["errorMessage"] = "Comments not allowed within control sequences. Comment was: '%s'" % t.value
 	pass # No return value. Token discarded
 
 def t_EMPTY_CTRL_SEQ(t):
