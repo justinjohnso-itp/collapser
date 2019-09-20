@@ -38,6 +38,7 @@ class ParseParams:
 # Call with an object of type ParseParams.
 def parse(tokens, sourceText, parseParams):
 	print "** PARSING **"
+	parseParams.originalText = sourceText
 
 	# Calculate and pre-set variables for Longest/Shortest case.
 	if parseParams.chooseStrategy in ["longest", "shortest"]:
@@ -92,23 +93,25 @@ def parse(tokens, sourceText, parseParams):
 
 	# Handle the rendering.
 	try:
-		variables.reset()
-		macros.reset()
-		parseParams.originalText = sourceText
-		tokens = variables.handleDefs(tokens, parseParams)
-		tokens = macros.handleDefs(tokens, parseParams)
-		print "vars: %s" % variables.showVars()
-		strippedText = sourceText
+		preppedTokens = handleVariablesAndMacros(tokens, sourceText, parseParams)
 		# TODO: for the above to work, we'd need to be stripping out the DEFINE and MACRO tags from sourceText also as we went.
 		if parseParams.doConfirm:
-			confirm.process(tokens, strippedText, ParseParams())
-		renderedString = handleParsing(tokens, parseParams)
+			confirm.process(preppedTokens, sourceText, ParseParams())
+		renderedString = handleParsing(preppedTokens, parseParams)
 	except result.ParseException, e:
 		print e
 		return e.result
 	output = result.Result(result.PARSE_RESULT)
 	output.package = renderedString
 	return output
+
+def handleVariablesAndMacros(tokens, sourceText, parseParams):
+	variables.reset()
+	macros.reset()
+	tokens = variables.handleDefs(tokens, parseParams)
+	tokens = macros.handleDefs(tokens, parseParams)
+	print "vars: %s" % variables.showVars()
+	return tokens
 
 
 def handleParsing(tokens, params):
