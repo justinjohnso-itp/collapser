@@ -83,11 +83,20 @@ def test_carets_singleline():
 	text = """
 It was a very [wonderful|happy|great] day."""
 	rendered = confirmRenderVariant(text, 0, "...", 70)
-	print "R:\n%s" % rendered
 	assert rendered == """...
 It was a very wonderful day....
               ^       ^
 """
+
+def test_carets_without_trunc():
+	text = """
+We're so [happy|sad] to see you."""
+	rendered = confirmRenderVariant(text, 0, "", 70)
+	assert rendered == """
+We're so happy to see you.
+         ^   ^
+"""
+
 
 
 
