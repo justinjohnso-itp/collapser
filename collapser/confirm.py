@@ -44,6 +44,8 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 	filename = result.find_filename(sourceText, ctrlStartPos)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
 	key = re.sub(r'[\W_]', '', key)
+	truncStart = "..."
+	truncEnd = "..."
 	if fileio.isKeyConfirmed(key) == False:
 		lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)
 		lineColumn = result.find_column(sourceText, ctrlStartPos)
@@ -51,7 +53,9 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		print "##################################################"
 		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
-			showVariant(v.txt, pre, post)
+			print '''************************************'''
+			rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd)
+			print rendered
 		print "************************************"
 
 		choice = -1
@@ -68,15 +72,8 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				fileio.finishConfirmKeys()
 				sys.exit(0)
 
-def showVariant(variant, pre, post):
-	print '''************************************'''
-	truncStart = "..."
-	truncEnd = "..."
-	rendered = getRenderedVariant(truncStart, pre, variant, post, truncEnd)
-	print rendered
 
-
-def getRenderedVariant(truncStart, pre, variant, post, truncEnd):
+def renderVariant(truncStart, pre, variant, post, truncEnd):
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
 	wrapped = wrap(rendered)
