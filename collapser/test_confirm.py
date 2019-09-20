@@ -120,4 +120,21 @@ def test_unicode():
 couple more times, he said,
 """
 
+def test_new_lines_after_variant():
+	text = """
+Although our story really did happen.
+
+[Fine then. Here goes.|Okay, so. Here goes.|Fine. So.|Fine. Okay.] You ready?
+
+This is what happened."""
+	rendered = confirmRenderVariant(text, 0, "", 70)
+	assert rendered == """
+Although our story really did happen.
+
+v
+Fine then. Here goes. You ready?
+                    ^
+
+This is what happened.
+"""
 

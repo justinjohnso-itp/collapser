@@ -90,7 +90,7 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
 	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
 	nextNewLinePos = wrapped.find("\n", len(truncStart + pre + variant))
 	print "nextNewLinePos: %d" % nextNewLinePos
-	if numSpaces + len(variant + post + truncEnd) < maxLineLength:
+	if numSpaces + len(variant + post + truncEnd) < maxLineLength and post.find("\n") == -1:
 		print "!! Single line"
 		# Single line.
 		numSpacesBetween = len(variant) - 2
