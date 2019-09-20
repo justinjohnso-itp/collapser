@@ -36,20 +36,10 @@ maxLineLength = 80
 
 def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
-	preBufferLen = 60
-	postBufferLen = 60
-
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
-
 	ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)
-	if ctrlStartPos < preBufferLen:
-		preBufferLen = ctrlStartPos
-	if ctrlEndPos + postBufferLen > len(sourceText):
-		postBufferLen = len(sourceText) - ctrlEndPos
-	pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
-	pre = cleanContext(pre)
-	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
-	post = cleanContext(post)
+	pre = getPre(sourceText, ctrlStartPos, ctrlEndPos)
+	post = getPost(sourceText, ctrlEndPos)
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	filename = result.find_filename(sourceText, ctrlStartPos)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
@@ -137,6 +127,22 @@ def getRenderedVariant(truncStart, pre, variant, post, truncEnd):
 	# if len(str(variant)) < maxLineLength:
 	# 	print (" " * (preLen+len(truncStart)-1)) + ">" + (" " * (len(str(variant)))) + "<"
 
+
+def getPre(sourceText, ctrlStartPos, ctrlEndPos):
+	preBufferLen = 60
+	if ctrlStartPos < preBufferLen:
+		preBufferLen = ctrlStartPos
+	pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
+	pre = cleanContext(pre)
+	return pre
+
+def getPost(sourceText, ctrlEndPos):
+	postBufferLen = 60
+	if ctrlEndPos + postBufferLen > len(sourceText):
+		postBufferLen = len(sourceText) - ctrlEndPos
+	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
+	post = cleanContext(post)
+	return post
 
 def cleanContext(text):
 	# Strip comments.
