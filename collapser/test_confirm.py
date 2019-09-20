@@ -183,4 +183,14 @@ This is our story. Our real story. And how. Great.
                                    ^     ^
 """]
 
+def test_pre_expansions_multi_line():
+	text = """
+This is our story. [And no one can ever tell us that we didn't really believe in what happened.|But it'll never be the same again after the things that occured to us, now will it bucko? No I absolutely don't think it will.] But it's our [amazing|real] story."""
+	rendered = confirmRenderVariant(text, 1, 0, "", 80)
+	assert rendered in ["""hat we didn't really believe in what happened. But it's our amazing story.
+                                                            ^     ^
+""", """it bucko? No I absolutely don't think it will. But it's our amazing story.
+                                                            ^     ^
+"""]
+
 

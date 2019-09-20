@@ -217,7 +217,8 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
 			print "pre now: '%s'" % pre
 			# truncate again
 			preBufferLen = 60
-			pre = pre[:preBufferLen]
+			pre = pre[-1*preBufferLen:]
+			print "post trunc, pre now: '%s'" % pre
 	pre = cleanContext(pre)
 	return pre
 
