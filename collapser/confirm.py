@@ -96,7 +96,6 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
 		numSpacesBetween = len(variant) - 2
 		print "numSpacesBetween: %d" % numSpacesBetween
 		spacesBetween = " " * numSpacesBetween
-		# wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + spacesBetween + "v" + wrapped[prevNL-1:] # for v's above
 		wrapped = wrapped + spaces + "^" + spacesBetween + "^\n"
 	else:
 		print "!! MULTI Line"
