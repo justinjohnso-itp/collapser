@@ -8,6 +8,7 @@ import getch
 import sys
 import textwrap
 import chooser
+import macros
 
 import fileio
 
@@ -190,6 +191,7 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos):
 			postBufferLen = 60
 			post = post[:postBufferLen]
 	post = cleanContext(post)
+	post = macros.expand(post, parseParams)
 	return post
 
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
@@ -214,6 +216,7 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
 			pre = pre[-1*preBufferLen:]
 			# print "post trunc, pre now: '%s'" % pre
 	pre = cleanContext(pre)
+	pre = macros.expand(pre, parseParams)
 	return pre
 
 def cleanContext(text):
