@@ -33,7 +33,6 @@ def process(tokens, sourceText, parseParams):
 
 def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
-	ws = re.compile(r"  +")
 	preBufferLen = 60
 	postBufferLen = 60
 	maxCaretLen = 80
@@ -58,12 +57,12 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		lineColumn = result.find_column(sourceText, ctrlStartPos)
 		print "\n\n"
 		print "##################################################"
-		print "VARIANT FOUND IN %s LINE %d COL %d: '%s'" % (filename, lineNumber, lineColumn, originalCtrlSeq)
+		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
 			variant = v.txt
 			print '''************************************'''
 			rendered = "...%s%s%s..." % (pre, variant, post)
-			rendered = ws.sub(" ", rendered)
+			rendered = cleanFinal(rendered)
 			print rendered
 			if len(str(variant)) < maxCaretLen:
 				print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
@@ -91,3 +90,9 @@ def cleanContext(text):
 
 	return text
 
+
+def cleanFinal(text):
+	# Remove doubled spaces (which won't be visible post-Latex and are therefore just a distraction). 
+	text = re.sub(r"  +", " ", text)
+
+	return text
