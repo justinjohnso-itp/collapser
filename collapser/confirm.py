@@ -84,7 +84,16 @@ def showVariant(variant, pre, post, preLen, postLen):
 	truncEnd = "..."
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
-	print wrap(rendered)
+	wrappedLines = wrap(rendered)
+
+	# Figure out what line the variant starts on.
+	varLine = result.find_line_number(pre, len(pre)) - 1
+	posOfVarLineStart = result.find_previous(pre + variant, "\n", len(pre))
+	varCol = len(pre) - posOfVarLineStart
+	print "posOfVarLineStart: %d, varCol: %d" % (posOfVarLineStart, varCol)
+	padding = " " * varCol
+	wrappedLines.insert(varLine, padding + "v")
+	print '\n'.join(wrappedLines)
 	if len(str(variant)) < maxLineLength:
 		print (" " * (preLen+len(truncStart)-1)) + ">" + (" " * (len(str(variant)))) + "<"
 
@@ -107,7 +116,10 @@ def cleanFinal(text):
 
 
 def wrap(text):
-	output = ""
+	output = []
 	for line in text.split('\n'):
-		output += textwrap.fill(line, maxLineLength) + "\n"
+		if line.strip() == '':
+			output.append("")
+		else:
+			output.extend(textwrap.wrap(line, maxLineLength))
 	return output
