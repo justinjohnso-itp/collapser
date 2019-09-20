@@ -68,18 +68,19 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				print (" " * (preBufferLen+3-1)) + ">" + (" " * (len(str(variant)))) + "<"
 		print "************************************"
 
-		sys.stdout.write("1) Confirm, 2) Skip, 3) Stop > ")
-		choice = getch.getch()
-		print choice + "\n"
-		if choice == "1":
-			print " >>> Confirmed."
-			fileio.confirmKey(key)
-		elif choice == "2":
-			print " >>> Skipping."
-		elif choice == "3":
-			print " >>> Halting."
-			fileio.finishConfirmKeys()
-			sys.exit(0)
+		choice = -1
+		while choice is not "1" and choice is not "2" and choice is not "3":
+			sys.stdout.write("\n1) Confirm, 2) Skip, 3) Stop > ")
+			choice = getch.getch()
+			if choice == "1":
+				print "1\n >>> Confirmed."
+				fileio.confirmKey(key)
+			elif choice == "2":
+				print "2\n >>> Skipping."
+			elif choice == "3":
+				print "3\n >>> Halting."
+				fileio.finishConfirmKeys()
+				sys.exit(0)
 
 def cleanContext(text):
 	# Strip comments.
