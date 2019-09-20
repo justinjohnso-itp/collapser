@@ -116,7 +116,7 @@ def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, pars
 	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos)
 	post = getRenderedPost(sourceText, parseParams, ctrlEndPos)
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
-	rendered = cleanFinal(rendered)
+	rendered = cleanFinal(rendered, parseParams)
 	wrapped = wrap(rendered, maxLineLength)
 	# print "pre: '%s'" % pre
 	# Figure out what line the variant starts on.
@@ -235,9 +235,12 @@ def cleanContext(text):
 	return text
 
 
-def cleanFinal(text):
+def cleanFinal(text, parseParams):
 	# Remove doubled spaces (which won't be visible post-Latex and are therefore just a distraction). 
 	text = re.sub(r"  +", " ", text)
+
+	# Expand macros.
+	text = macros.expand(text, parseParams)
 
 	return text
 
