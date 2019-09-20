@@ -61,7 +61,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		print "##################################################"
 		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
-			showVariant(v.txt, pre, post, preBufferLen, postBufferLen)
+			showVariant(v.txt, pre, post)
 		print "************************************"
 
 		choice = -1
@@ -78,10 +78,15 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				fileio.finishConfirmKeys()
 				sys.exit(0)
 
-def showVariant(variant, pre, post, preLen, postLen):
+def showVariant(variant, pre, post):
 	print '''************************************'''
 	truncStart = "..."
 	truncEnd = "..."
+	rendered = getRenderedVariant(truncStart, pre, variant, post, truncEnd)
+	print rendered
+
+
+def getRenderedVariant(truncStart, pre, variant, post, truncEnd):
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
 	wrapped = wrap(rendered)
@@ -110,9 +115,8 @@ def showVariant(variant, pre, post, preLen, postLen):
 		print "numSpaces: %d" % numSpaces
 		spaces = " " * numSpaces
 		print "spaces: '%s'" % spaces
-		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]
-
-	print wrapped
+		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
+	return wrapped
 
 
 	# varLine = result.find_line_number(pre, len(pre)) - 1
