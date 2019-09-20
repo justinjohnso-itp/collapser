@@ -36,6 +36,8 @@ def getNextCtrlSeq():
 def process(tokens, sourceText, parseParams):
 	global ctrlSeqsFound
 	global ctrlSeqPos
+
+	parseParams.discourseVarChance = 0
 	
 	preprocessTokens(tokens)
 
