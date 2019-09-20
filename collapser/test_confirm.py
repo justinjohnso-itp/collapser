@@ -48,7 +48,7 @@ def confirmRenderVariant(text, variantPos, trunc, maxWidth):
 	ctrlEndPos = ctrlcontents[1]
 	ctrlStartPos = text.rfind("[", 0, ctrlEndPos)
 	pre = confirm.getRawPre(text, ctrlStartPos, ctrlEndPos)
-	post = confirm.origGetPost(text, ctrlEndPos)
+	post = confirm.getRenderedPost(text, parseParams, ctrlEndPos)
 	firstVariant = variants.alts[variantPos].txt
 	result = confirm.renderVariant(trunc, firstVariant, trunc, maxWidth, text, parseParams, ctrlStartPos, ctrlEndPos)
 	return result

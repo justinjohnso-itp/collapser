@@ -113,8 +113,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
 def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos):
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
-	post = getRawPost(sourceText, ctrlEndPos)
-	post = getRenderedPost(post, parseParams, ctrlEndPos)
+	post = getRenderedPost(sourceText, parseParams, ctrlEndPos)
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
 	wrapped = wrap(rendered, maxLineLength)
@@ -170,8 +169,9 @@ def getRawPost(sourceText, ctrlEndPos):
 	post = cleanContext(post)
 	return post
 
-def getRenderedPost(post, parseParams, ctrlEndPos):
+def getRenderedPost(sourceText, parseParams, ctrlEndPos):
 	print "ctrlEndPos: %d" % ctrlEndPos
+	post = getRawPost(sourceText, ctrlEndPos)
 	print "post: '%s'" % post
 	newCtrlSeqPos = post.find("[")
 	print "A"
