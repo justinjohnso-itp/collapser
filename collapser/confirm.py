@@ -1,3 +1,4 @@
+# coding=utf-8
 # Manually confirm each use of variants.
 
 import ctrlseq
@@ -9,8 +10,8 @@ import textwrap
 
 import fileio
 
-# TODO Wordwrap.
 # TODO Macros?
+# TODO: Don't add truncs if there's actually nothing to trunc (i.e. we're at the start/end of the sequence)
 
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
@@ -115,25 +116,6 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
 	return wrapped
 
 
-	# varLine = result.find_line_number(pre, len(pre)) - 1
-	# print "varLine: %d" % varLine
-	# charsInLine = result.find_previous(pre, "\n", len(pre))
-	# wrapped = wrapped[0:len(pre)-charsInLine] + "\n" + (" " * charsInLine) + "v" + wrapped[len(pre)-charsInLine:]
-	# # wrappedLines.insert(varLine, padding + "v")
-
-	# # Figure out what line the variant ends on.
-	# endLine = result.find_line_number(rendered, len(pre) + len(variant))
-	# print "endLine: %d" % endLine
-	# posOfEndLineStart = result.find_previous(rendered, "\n", len(pre) + len(variant))
-	# endCol = len(pre) + len(variant) - posOfEndLineStart
-	# endPadding = " " * endCol
-	# # wrappedLines.insert(endLine, padding + "^")
-
-	# print wrapped
-	# if len(str(variant)) < maxLineLength:
-	# 	print (" " * (preLen+len(truncStart)-1)) + ">" + (" " * (len(str(variant)))) + "<"
-
-
 def getPre(sourceText, ctrlStartPos, ctrlEndPos):
 	preBufferLen = 60
 	if ctrlStartPos < preBufferLen:
@@ -156,6 +138,12 @@ def cleanContext(text):
 
 	# Remove extra blank lines
 	text = re.sub(r"\n{3,}", "\n\n", text) 
+
+	# Replace common Unicode chars with ascii equivalents since wrap (for terminal) can't handle them.
+	text = re.sub(r"’", "'", text)
+	text = re.sub(r"‘", "'", text)
+	text = re.sub(r"“", '"', text)
+	text = re.sub(r"”", '"', text)
 
 	return text
 

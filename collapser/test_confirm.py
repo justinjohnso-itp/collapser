@@ -1,3 +1,4 @@
+# coding=utf-8
 
 import variables
 import quantlex
@@ -108,6 +109,15 @@ I regretted so much all the things I'd said, the people I'd hurt, and it was
 hard to watch without knowing the way the story...
 """
 
-
+def test_unicode():
+	text = """
+“Oh, shit.” Niko hadn’t found [the end of the hallway|my socks]. It had twisted a couple more times, he said,"""
+	rendered = confirmRenderVariant(text, 0, "", 70)
+	assert rendered == """
+                              v
+"Oh, shit." Niko hadn't found the end of the hallway. It had twisted a
+                                                   ^
+couple more times, he said,
+"""
 
 
