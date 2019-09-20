@@ -17,7 +17,7 @@ import fileio
 ctrlSeqsFound = []
 ctrlSeqPos = -1
 
-def getRawPreviousCtrlSeq():
+def getPreviousCtrlSeq():
 	global ctrlSeqsFound
 	global ctrlSeqPos
 	if ctrlSeqPos <= 0:
@@ -112,7 +112,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 
 
 def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos):
-	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
+	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos)
 	post = getRenderedPost(sourceText, parseParams, ctrlEndPos)
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered)
@@ -194,6 +194,32 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos):
 			post = post[:postBufferLen]
 	post = cleanContext(post)
 	return post
+
+def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
+	# print "ctrlEndPos: %d" % ctrlEndPos
+	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
+	print "pre: '%s'" % pre
+	newCtrlSeqPos = pre.find("]")
+	print "D"
+	if newCtrlSeqPos >= 0:
+		print "E"
+		newCtrlSeq = getPreviousCtrlSeq()
+		if newCtrlSeq is not None:
+			print "F"
+			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
+			print "newVariants.alts: '%s'" % newVariants.alts
+			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
+			startSeqPos = pre.rfind("[", 0, newCtrlSeqPos)
+			if startSeqPos == -1:
+				startSeqPos = 0
+			print "pre was: '%s'" % pre
+			pre = pre[:startSeqPos] + variantTxt + pre[newCtrlSeqPos+1:]
+			print "pre now: '%s'" % pre
+			# truncate again
+			preBufferLen = 60
+			pre = pre[:preBufferLen]
+	pre = cleanContext(pre)
+	return pre
 
 def cleanContext(text):
 	# Strip comments.
