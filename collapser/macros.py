@@ -116,6 +116,7 @@ def expand(text, params, haltOnBadMacros=True):
 				badResult = result.Result(result.PARSE_RESULT)
 				badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
 				raise result.ParseException(badResult)
+			startPos = text.find(mStart, startPos+1)
 			continue
 		if rendered.find(mStart) >= 0:
 			renderHadMoreMacrosCtr += 1
