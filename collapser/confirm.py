@@ -149,7 +149,7 @@ def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, pars
 		spaces = " " * numSpaces
 		# print "spaces: '%s'" % spaces
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
-	print "wrapped: '%s'" % wrapped
+	# print "wrapped: '%s'" % wrapped
 	return wrapped
 
 
@@ -170,25 +170,22 @@ def getRawPost(sourceText, ctrlEndPos):
 	return post
 
 def getRenderedPost(sourceText, parseParams, ctrlEndPos):
-	print "ctrlEndPos: %d" % ctrlEndPos
+	# print "ctrlEndPos: %d" % ctrlEndPos
 	post = getRawPost(sourceText, ctrlEndPos)
-	print "post: '%s'" % post
+	# print "post: '%s'" % post
 	newCtrlSeqPos = post.find("[")
-	print "A"
 	if newCtrlSeqPos >= 0:
-		print "B"
 		newCtrlSeq = getNextCtrlSeq()
 		if newCtrlSeq is not None:
-			print "C"
 			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
-			print "newVariants.alts: '%s'" % newVariants.alts
+			# print "newVariants.alts: '%s'" % newVariants.alts
 			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
 			endSeqPos = post.find("]", newCtrlSeqPos)
 			if endSeqPos == -1:
 				endSeqPos = len(post)
-			print "post was: '%s'" % post
+			# print "post was: '%s'" % post
 			post = post[:newCtrlSeqPos] + variantTxt + post[endSeqPos+1:]
-			print "post now: '%s'" % post
+			# print "post now: '%s'" % post
 			# truncate again
 			postBufferLen = 60
 			post = post[:postBufferLen]
@@ -198,27 +195,24 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos):
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
 	# print "ctrlEndPos: %d" % ctrlEndPos
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
-	print "pre: '%s'" % pre
-	newCtrlSeqPos = pre.find("]")
-	print "D"
+	# print "pre: '%s'" % pre
+	newCtrlSeqPos = pre.rfind("]")
 	if newCtrlSeqPos >= 0:
-		print "E"
 		newCtrlSeq = getPreviousCtrlSeq()
 		if newCtrlSeq is not None:
-			print "F"
 			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
-			print "newVariants.alts: '%s'" % newVariants.alts
+			# print "newVariants.alts: '%s'" % newVariants.alts
 			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
 			startSeqPos = pre.rfind("[")
 			if startSeqPos == -1:
 				startSeqPos = 0
-			print "pre was: '%s'" % pre
+			# print "pre was: '%s'" % pre
 			pre = pre[:startSeqPos] + variantTxt + pre[newCtrlSeqPos+1:]
-			print "pre now: '%s'" % pre
+			# print "pre now: '%s'" % pre
 			# truncate again
 			preBufferLen = 60
 			pre = pre[-1*preBufferLen:]
-			print "post trunc, pre now: '%s'" % pre
+			# print "post trunc, pre now: '%s'" % pre
 	pre = cleanContext(pre)
 	return pre
 
