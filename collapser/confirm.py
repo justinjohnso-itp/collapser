@@ -155,20 +155,20 @@ def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, pars
 
 
 def getRawPre(sourceText, ctrlStartPos, ctrlEndPos):
-	preBufferLen = 60
+	preBufferLen = 240
 	if ctrlStartPos < preBufferLen:
 		preBufferLen = ctrlStartPos
 	pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
 	pre = cleanContext(pre)
-	return pre
+	return pre[-60:]
 
 def getRawPost(sourceText, ctrlEndPos):
-	postBufferLen = 60
+	postBufferLen = 240
 	if ctrlEndPos + postBufferLen > len(sourceText):
 		postBufferLen = len(sourceText) - ctrlEndPos
 	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
 	post = cleanContext(post)
-	return post
+	return post[:60]
 
 def getRenderedPost(sourceText, parseParams, ctrlEndPos):
 	# print "ctrlEndPos: %d" % ctrlEndPos

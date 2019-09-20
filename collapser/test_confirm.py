@@ -110,7 +110,7 @@ So I inserted a lot of stuff here because what I was most interested in was the 
 ...cause what I was most interested in was the situation where this happened and
 I regretted so much all the things I'd said, the people I'd hurt, and it was
                                                                 ^
-hard to watch without knowing the way the story...
+hard to watch without knowing the way the story ...
 """
 
 def test_unicode():
