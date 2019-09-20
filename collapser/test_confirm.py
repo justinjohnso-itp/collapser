@@ -68,17 +68,26 @@ def confirmRenderVariant(text, variantPos, trunc, maxWidth):
 	return result
 
 
-def test_carets_basic():
+def test_carets_multiline():
 	text = """
 So there were tapes where [this happened and I regretted so much all the things I'd said, the people I'd hurt,|the other thing took place despite all the best laid plans of mice and men to prevent it] and it was hard to watch."""
-	renderedVariant = confirmRenderVariant(text, 0, "...", 70)
-	assert renderedVariant == """...
+	rendered = confirmRenderVariant(text, 0, "...", 70)
+	assert rendered == """...
                           v
 So there were tapes where this happened and I regretted so much all
 the things I'd said, the people I'd hurt, and it was hard to watch....
                                         ^
 """
 
+def test_carets_singleline():
+	text = """
+It was a very [wonderful|happy|great] day."""
+	rendered = confirmRenderVariant(text, 0, "...", 70)
+	print "R:\n%s" % rendered
+	assert rendered == """...
+It was a very wonderful day....
+              ^       ^
+"""
 
 
 

@@ -79,27 +79,28 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength):
 	wrapped = wrap(rendered, maxLineLength)
 
 	# Figure out what line the variant starts on.
-	# What the position in wrapped of the previous newline?
 	prevNL = result.find_previous(wrapped, "\n", len(truncStart + pre))
 	print "prevNL: %d" % prevNL
-	# How many spaces from that point does the variant start?
 	numSpaces = len(truncStart + pre) - prevNL
-	print "numSpaces: %d" % numSpaces
 	spaces = " " * numSpaces
-	# Insert spaces right before that.
-	wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
-
-	# What's the position in wrapped of the end of the variant?
 	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
-	print "endVariantPos: %d, '%s'" % (endVariantPos, wrapped[endVariantPos-3:endVariantPos+3])
-	# What's the position of the new line before that?
-	lastNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)
-	# What about the next new line?
-	nextNewLinePos = wrapped.find("\n", endVariantPos)
-	print "last, next: %d, %d" % (lastNewLinePos, nextNewLinePos)
-	if lastNewLinePos == prevNL:
-		print "On the same line"
+	nextNewLinePos = wrapped.find("\n", len(truncStart + pre + variant))
+	print "nextNewLinePos: %d" % nextNewLinePos
+	if numSpaces + len(variant + post + truncEnd) < maxLineLength:
+		print "!! Single line"
+		# Single line.
+		numSpacesBetween = len(variant) - 2
+		print "numSpacesBetween: %d" % numSpacesBetween
+		spacesBetween = " " * numSpacesBetween
+		# wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + spacesBetween + "v" + wrapped[prevNL-1:] # for v's above
+		wrapped = wrapped + spaces + "^" + spacesBetween + "^\n"
 	else:
+		print "!! MULTI Line"
+		wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
+		endVariantPos = len(wrapped) - len(post) - len(truncEnd)
+		nextNewLinePos = wrapped.find("\n", endVariantPos)
+		lastNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)
+		print "last, next: %d, %d" % (lastNewLinePos, nextNewLinePos)
 		numSpaces = endVariantPos - lastNewLinePos - 2
 		print "numSpaces: %d" % numSpaces
 		spaces = " " * numSpaces
