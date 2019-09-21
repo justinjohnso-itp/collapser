@@ -116,25 +116,29 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 
 
 def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  parseParams):
+
+	# Get the variant in context.
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered, parseParams)
 	wrapped = wrap(rendered, maxLineLength)
-	# Figure out what line the variant starts on.
+
+	# Draw the carets highlighting the variant's position.
 	prevNL = result.find_previous(wrapped, "\n", len(truncStart + pre))
 	numSpaces = len(truncStart + pre) - prevNL
 	spaces = " " * numSpaces
-	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
-	nextNewLinePos = wrapped.find("\n", len(truncStart + pre + variant))
 	if numSpaces + len(variant + post + truncEnd) < maxLineLength and post.find("\n") == -1:
 		# Single line.
 		numSpacesBetween = len(variant) - 2
 		spacesBetween = " " * numSpacesBetween
 		wrapped = wrapped + spaces + "^" + spacesBetween + "^\n"
 	else:
+		# Multi-line.
+		# Above
 		if prevNL == 0:
 			wrapped = spaces + "v\n" + wrapped
 		else:
 			wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
+		# Below
 		endVariantPos = len(wrapped) - len(post) - len(truncEnd)
 		nextNewLinePos = wrapped.find("\n", endVariantPos)
 		lastNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)
