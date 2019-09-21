@@ -41,8 +41,8 @@ def parseAndGetAlts(text):
 def confirmRenderVariant(text, ctrlSeqPos, variantPos, trunc, maxWidth):
 	tokens = parseResult(text)
 	sequence = confirm.CtrlSeqSet(tokens)
-	sequence.ctrlSeqPos = ctrlSeqPos
-	ctrlcontents = sequence.ctrlSeqsFound[ctrlSeqPos]
+	sequence.pos = ctrlSeqPos
+	ctrlcontents = sequence.sequences[ctrlSeqPos]
 	parseParams = quantparse.ParseParams()
 	variants = ctrlseq.renderAll(ctrlcontents[0], parseParams, showAllVars=True)
 	ctrlEndPos = ctrlcontents[1]

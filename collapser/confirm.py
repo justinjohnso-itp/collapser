@@ -24,31 +24,31 @@ def process(tokens, sourceText, parseParams):
 	sequence = CtrlSeqSet(tokens)
 
 	fileio.startConfirmKeys()
-	for seq, endPos in sequence.ctrlSeqsFound:
+	for seq, endPos in sequence.sequences:
 		confirmCtrlSeq(seq, sequence, sourceText, parseParams, endPos)
-		sequence.ctrlSeqPos += 1
+		sequence.pos += 1
 	fileio.finishConfirmKeys()
 
 class CtrlSeqSet:
 
 	def __init__(self, tokens):
-		self.ctrlSeqsFound = []
-		self.ctrlSeqPos = 0
+		self.sequences = []
+		self.pos = 0
 		self.preprocessTokens(tokens)
 
 	def getPreviousCtrlSeq(self):
-		if self.ctrlSeqPos <= 0:
+		if self.pos <= 0:
 			return None
-		return self.ctrlSeqsFound[self.ctrlSeqPos-1]
+		return self.sequences[self.pos-1]
 	
 	def getNextCtrlSeq(self):
-		if self.ctrlSeqPos >= len(self.ctrlSeqsFound) - 1:
+		if self.pos >= len(self.sequences) - 1:
 			return None
-		return self.ctrlSeqsFound[self.ctrlSeqPos+1]
+		return self.sequences[self.pos+1]
 
 	def preprocessTokens(self, tokens):
 		index = 0
-		self.ctrlSeqsFound = []
+		self.sequences = []
 		while index < len(tokens):
 			token = tokens[index]
 			if token.type == "CTRLBEGIN":
@@ -59,7 +59,7 @@ class CtrlSeqSet:
 					ctrl_contents.append(token)
 					index += 1
 					token = tokens[index]
-				self.ctrlSeqsFound.append([ctrl_contents, token.lexpos])
+				self.sequences.append([ctrl_contents, token.lexpos])
 			index += 1
 
 def confirmCtrlSeq(ctrl_contents, sequence, sourceText, parseParams, ctrlEndPos):
