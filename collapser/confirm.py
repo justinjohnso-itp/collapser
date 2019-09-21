@@ -98,8 +98,8 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		print "************************************"
 
 		choice = -1
-		while choice is not "1" and choice is not "2" and choice is not "3":
-			sys.stdout.write("\n1) Confirm, 2) Skip, 3) Stop > ")
+		while choice is not "1" and choice is not "2" and choice is not "3" and choice is not "4":
+			sys.stdout.write("\n1) Confirm, 2) Skip, 3) Regen, 4) Stop > ")
 			choice = getch.getch()
 			if choice == "1":
 				print "1\n >>> Confirmed."
@@ -109,6 +109,10 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				print "2\n >>> Skipping."
 				return
 			elif choice == "3":
+				print "3\n >>> Regenerating."
+				confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos)
+				return
+			elif choice == "4":
 				print "3\n >>> Halting."
 				fileio.finishConfirmKeys()
 				sys.exit(0)
