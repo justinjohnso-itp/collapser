@@ -80,7 +80,9 @@ def confirmCtrlSeq(ctrl_contents, sequence, sourceText, parseParams, ctrlEndPos)
 		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
 			print '''************************************'''
-			rendered = renderVariant(truncStart, v.txt, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence)
+			pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence)
+			post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequence)
+			rendered = renderVariant(truncStart, v.txt, truncEnd, maxLineLength, parseParams, pre, post)
 			print rendered
 		print "************************************"
 
@@ -113,9 +115,7 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	return key
 
 
-def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence):
-	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence)
-	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequence)
+def renderVariant(truncStart, variant, truncEnd, maxLineLength,  parseParams, pre, post):
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered, parseParams)
 	wrapped = wrap(rendered, maxLineLength)
