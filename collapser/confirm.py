@@ -34,12 +34,12 @@ class SequenceList:
 		self.pos = 0
 		self.preprocessTokens(tokens)
 
-	def getPreviousCtrlSeq(self):
+	def previous(self):
 		if self.pos <= 0:
 			return None
 		return self.sequences[self.pos-1]
 	
-	def getNextCtrlSeq(self):
+	def next(self):
 		if self.pos >= len(self.sequences) - 1:
 			return None
 		return self.sequences[self.pos+1]
@@ -165,7 +165,7 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceLi
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
 	prevCtrlSeqEndPos = pre.rfind("]")
 	if prevCtrlSeqEndPos >= 0:
-		prevCtrlSeq = sequenceList.getPreviousCtrlSeq()
+		prevCtrlSeq = sequenceList.previous()
 		if prevCtrlSeq is not None:
 			prevVariants = ctrlseq.renderAll(prevCtrlSeq[0], parseParams, showAllVars=True)
 			variantTxt = chooser.oneOf(prevVariants.alts, pure=True).txt
@@ -184,7 +184,7 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList):
 	post = getRawPost(sourceText, ctrlEndPos)
 	nextCtrlSeqStartPos = post.find("[")
 	if nextCtrlSeqStartPos >= 0:
-		nextCtrlSeq = sequenceList.getNextCtrlSeq()
+		nextCtrlSeq = sequenceList.next()
 		if nextCtrlSeq is not None:
 			nextVariants = ctrlseq.renderAll(nextCtrlSeq[0], parseParams, showAllVars=True)
 			variantTxt = chooser.oneOf(nextVariants.alts, pure=True).txt
@@ -221,7 +221,6 @@ def cleanContext(text):
 			if endBodyPos is not -1:
 				text = text[:pos-1] + text[endBodyPos+1:]
 		pos = text.find("[MACRO", pos+1)
-
 
 	# remove DEFINEs.
 	pos = text.find("[DEFINE")
