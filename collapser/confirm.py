@@ -21,8 +21,7 @@ def process(tokens, sourceText, parseParams):
 
 	parseParams.discourseVarChance = 0
 	
-	sequence = CtrlSeqSet()
-	sequence.preprocessTokens(tokens)
+	sequence = CtrlSeqSet(tokens)
 
 	fileio.startConfirmKeys()
 	for seq, endPos in sequence.ctrlSeqsFound:
@@ -32,9 +31,10 @@ def process(tokens, sourceText, parseParams):
 
 class CtrlSeqSet:
 
-	def __init__(self):
+	def __init__(self, tokens):
 		self.ctrlSeqsFound = []
 		self.ctrlSeqPos = 0
+		self.preprocessTokens(tokens)
 
 	def getPreviousCtrlSeq(self):
 		if self.ctrlSeqPos <= 0:
