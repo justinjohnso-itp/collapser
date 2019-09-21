@@ -193,11 +193,11 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos):
 			# print "post was: '%s'" % post
 			post = post[:newCtrlSeqPos] + variantTxt + post[endSeqPos+1:]
 			# print "post now: '%s'" % post
-			# truncate again
-			postBufferLen = 60
-			post = post[:postBufferLen]
 	post = cleanContext(post)
 	post = macros.expand(post, parseParams, haltOnBadMacros=False)
+	# truncate again
+	postBufferLen = 60
+	post = post[:postBufferLen]
 	return post
 
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
@@ -217,12 +217,12 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
 			# print "pre was: '%s'" % pre
 			pre = pre[:startSeqPos] + variantTxt + pre[newCtrlSeqPos+1:]
 			# print "pre now: '%s'" % pre
-			# truncate again
-			preBufferLen = 60
-			pre = pre[-1*preBufferLen:]
 			# print "post trunc, pre now: '%s'" % pre
 	pre = cleanContext(pre)
 	pre = macros.expand(pre, parseParams, haltOnBadMacros=False)
+	# truncate again
+	preBufferLen = 60
+	pre = pre[-1*preBufferLen:]
 	return pre
 
 def cleanContext(text):
