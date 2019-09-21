@@ -18,56 +18,51 @@ import fileio
 
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
-	global ctrlSeqsFound
-	global ctrlSeqPos
 
 	parseParams.discourseVarChance = 0
-	ctrlSeqPos = 0
 	
-	preprocessTokens(tokens)
+	sequence = CtrlSeqSet()
+	sequence.preprocessTokens(tokens)
 
 	fileio.startConfirmKeys()
-	for seq, endPos in ctrlSeqsFound:
-		confirmCtrlSeq(seq, sourceText, parseParams, endPos)
-		ctrlSeqPos += 1
+	for seq, endPos in sequence.ctrlSeqsFound:
+		confirmCtrlSeq(seq, sequence, sourceText, parseParams, endPos)
+		sequence.ctrlSeqPos += 1
 	fileio.finishConfirmKeys()
 
-def preprocessTokens(tokens):
-	global ctrlSeqsFound
-	index = 0
-	ctrlSeqsFound = []
-	while index < len(tokens):
-		token = tokens[index]
-		if token.type == "CTRLBEGIN":
-			ctrl_contents = []
-			index += 1
+class CtrlSeqSet:
+
+	def __init__(self):
+		self.ctrlSeqsFound = []
+		self.ctrlSeqPos = 0
+
+	def getPreviousCtrlSeq(self):
+		if self.ctrlSeqPos <= 0:
+			return None
+		return self.ctrlSeqsFound[self.ctrlSeqPos-1]
+	
+	def getNextCtrlSeq(self):
+		if self.ctrlSeqPos >= len(self.ctrlSeqsFound) - 1:
+			return None
+		return self.ctrlSeqsFound[self.ctrlSeqPos+1]
+
+	def preprocessTokens(self, tokens):
+		index = 0
+		self.ctrlSeqsFound = []
+		while index < len(tokens):
 			token = tokens[index]
-			while token.type != "CTRLEND":
-				ctrl_contents.append(token)
+			if token.type == "CTRLBEGIN":
+				ctrl_contents = []
 				index += 1
 				token = tokens[index]
-			ctrlSeqsFound.append([ctrl_contents, token.lexpos])
-		index += 1
+				while token.type != "CTRLEND":
+					ctrl_contents.append(token)
+					index += 1
+					token = tokens[index]
+				self.ctrlSeqsFound.append([ctrl_contents, token.lexpos])
+			index += 1
 
-ctrlSeqsFound = []
-ctrlSeqPos = -1
-
-def getPreviousCtrlSeq():
-	global ctrlSeqsFound
-	global ctrlSeqPos
-	if ctrlSeqPos <= 0:
-		return None
-	return ctrlSeqsFound[ctrlSeqPos-1]
-
-def getNextCtrlSeq():
-	global ctrlSeqsFound
-	global ctrlSeqPos
-	if ctrlSeqPos >= len(ctrlSeqsFound) - 1:
-		return None
-	return ctrlSeqsFound[ctrlSeqPos+1]
-
-
-def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
+def confirmCtrlSeq(ctrl_contents, sequence, sourceText, parseParams, ctrlEndPos):
 
 	maxLineLength = 80
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
@@ -85,7 +80,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 		for v in variants.alts:
 			print '''************************************'''
-			rendered = renderVariant(truncStart, v.txt, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos)
+			rendered = renderVariant(truncStart, v.txt, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence)
 			print rendered
 		print "************************************"
 
@@ -102,7 +97,7 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				return
 			elif choice == "3":
 				print "3\n >>> Regenerating."
-				confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos)
+				confirmCtrlSeq(ctrl_contents, sequence, sourceText, parseParams, ctrlEndPos)
 				return
 			elif choice == "4":
 				print "3\n >>> Halting."
@@ -118,9 +113,9 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	return key
 
 
-def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos):
-	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos)
-	post = getRenderedPost(sourceText, parseParams, ctrlEndPos)
+def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence):
+	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence)
+	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequence)
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered, parseParams)
 	wrapped = wrap(rendered, maxLineLength)
@@ -165,11 +160,11 @@ def getRawPost(sourceText, ctrlEndPos):
 	post = cleanContext(post)
 	return post[:60]
 
-def getRenderedPost(sourceText, parseParams, ctrlEndPos):
+def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequence):
 	post = getRawPost(sourceText, ctrlEndPos)
 	newCtrlSeqPos = post.find("[")
 	if newCtrlSeqPos >= 0:
-		newCtrlSeq = getNextCtrlSeq()
+		newCtrlSeq = sequence.getNextCtrlSeq()
 		if newCtrlSeq is not None:
 			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
 			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
@@ -184,11 +179,11 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos):
 	post = post[:postBufferLen]
 	return post
 
-def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
+def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence):
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
 	newCtrlSeqPos = pre.rfind("]")
 	if newCtrlSeqPos >= 0:
-		newCtrlSeq = getPreviousCtrlSeq()
+		newCtrlSeq = sequence.getPreviousCtrlSeq()
 		if newCtrlSeq is not None:
 			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
 			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
