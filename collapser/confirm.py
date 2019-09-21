@@ -15,22 +15,6 @@ import fileio
 # TODO Macros?
 # TODO: Don't add truncs if there's actually nothing to trunc (i.e. we're at the start/end of the sequence)
 
-ctrlSeqsFound = []
-ctrlSeqPos = -1
-
-def getPreviousCtrlSeq():
-	global ctrlSeqsFound
-	global ctrlSeqPos
-	if ctrlSeqPos <= 0:
-		return None
-	return ctrlSeqsFound[ctrlSeqPos-1]
-
-def getNextCtrlSeq():
-	global ctrlSeqsFound
-	global ctrlSeqPos
-	if ctrlSeqPos >= len(ctrlSeqsFound) - 1:
-		return None
-	return ctrlSeqsFound[ctrlSeqPos+1]
 
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
@@ -38,15 +22,14 @@ def process(tokens, sourceText, parseParams):
 	global ctrlSeqPos
 
 	parseParams.discourseVarChance = 0
+	ctrlSeqPos = 0
 	
 	preprocessTokens(tokens)
 
-	ctrlSeqPos = 0
 	fileio.startConfirmKeys()
 	for seq, endPos in ctrlSeqsFound:
 		confirmCtrlSeq(seq, sourceText, parseParams, endPos)
 		ctrlSeqPos += 1
-
 	fileio.finishConfirmKeys()
 
 def preprocessTokens(tokens):
@@ -66,13 +49,22 @@ def preprocessTokens(tokens):
 			ctrlSeqsFound.append([ctrl_contents, token.lexpos])
 		index += 1
 
+ctrlSeqsFound = []
+ctrlSeqPos = -1
 
-def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
-	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
-	post = getRawPost(sourceText, ctrlEndPos)
-	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
-	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
-	return key
+def getPreviousCtrlSeq():
+	global ctrlSeqsFound
+	global ctrlSeqPos
+	if ctrlSeqPos <= 0:
+		return None
+	return ctrlSeqsFound[ctrlSeqPos-1]
+
+def getNextCtrlSeq():
+	global ctrlSeqsFound
+	global ctrlSeqPos
+	if ctrlSeqPos >= len(ctrlSeqsFound) - 1:
+		return None
+	return ctrlSeqsFound[ctrlSeqPos+1]
 
 
 def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
@@ -116,6 +108,14 @@ def confirmCtrlSeq(ctrl_contents, sourceText, parseParams, ctrlEndPos):
 				print "3\n >>> Halting."
 				fileio.finishConfirmKeys()
 				sys.exit(0)
+
+
+def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
+	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
+	post = getRawPost(sourceText, ctrlEndPos)
+	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
+	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
+	return key
 
 
 def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, parseParams, ctrlStartPos, ctrlEndPos):
