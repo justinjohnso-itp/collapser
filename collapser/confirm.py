@@ -164,25 +164,6 @@ def getRawPost(sourceText, ctrlEndPos):
 	post = cleanContext(post)
 	return post[:60]
 
-def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequence):
-	post = getRawPost(sourceText, ctrlEndPos)
-	newCtrlSeqPos = post.find("[")
-	if newCtrlSeqPos >= 0:
-		newCtrlSeq = sequence.getNextCtrlSeq()
-		if newCtrlSeq is not None:
-			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
-			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
-			endSeqPos = post.find("]", newCtrlSeqPos)
-			if endSeqPos == -1:
-				endSeqPos = len(post)
-			post = post[:newCtrlSeqPos] + variantTxt + post[endSeqPos+1:]
-	post = cleanContext(post)
-	post = macros.expand(post, parseParams, haltOnBadMacros=False)
-	# truncate again
-	postBufferLen = 60
-	post = post[:postBufferLen]
-	return post
-
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence):
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
 	newCtrlSeqPos = pre.rfind("]")
@@ -201,6 +182,25 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence):
 	preBufferLen = 60
 	pre = pre[-1*preBufferLen:]
 	return pre
+
+def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequence):
+	post = getRawPost(sourceText, ctrlEndPos)
+	newCtrlSeqPos = post.find("[")
+	if newCtrlSeqPos >= 0:
+		newCtrlSeq = sequence.getNextCtrlSeq()
+		if newCtrlSeq is not None:
+			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
+			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
+			endSeqPos = post.find("]", newCtrlSeqPos)
+			if endSeqPos == -1:
+				endSeqPos = len(post)
+			post = post[:newCtrlSeqPos] + variantTxt + post[endSeqPos+1:]
+	post = cleanContext(post)
+	post = macros.expand(post, parseParams, haltOnBadMacros=False)
+	# truncate again
+	postBufferLen = 60
+	post = post[:postBufferLen]
+	return post
 
 def cleanContext(text):
 	# Strip comments.
