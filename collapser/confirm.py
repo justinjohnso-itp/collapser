@@ -147,7 +147,6 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
 	return wrapped
 
-
 def getRawPre(sourceText, ctrlStartPos, ctrlEndPos):
 	preBufferLen = 850
 	if ctrlStartPos < preBufferLen:
@@ -166,16 +165,16 @@ def getRawPost(sourceText, ctrlEndPos):
 
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence):
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
-	newCtrlSeqPos = pre.rfind("]")
-	if newCtrlSeqPos >= 0:
-		newCtrlSeq = sequence.getPreviousCtrlSeq()
-		if newCtrlSeq is not None:
-			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
-			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
-			startSeqPos = pre.rfind("[")
-			if startSeqPos == -1:
-				startSeqPos = 0
-			pre = pre[:startSeqPos] + variantTxt + pre[newCtrlSeqPos+1:]
+	prevCtrlSeqEndPos = pre.rfind("]")
+	if prevCtrlSeqEndPos >= 0:
+		prevCtrlSeq = sequence.getPreviousCtrlSeq()
+		if prevCtrlSeq is not None:
+			prevVariants = ctrlseq.renderAll(prevCtrlSeq[0], parseParams, showAllVars=True)
+			variantTxt = chooser.oneOf(prevVariants.alts, pure=True).txt
+			prevCtrlSeqStartPos = pre.rfind("[")
+			if prevCtrlSeqStartPos == -1:
+				prevCtrlSeqStartPos = 0
+			pre = pre[:prevCtrlSeqStartPos] + variantTxt + pre[prevCtrlSeqEndPos+1:]
 	pre = cleanContext(pre)
 	pre = macros.expand(pre, parseParams, haltOnBadMacros=False)
 	# truncate again
@@ -185,16 +184,16 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence):
 
 def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequence):
 	post = getRawPost(sourceText, ctrlEndPos)
-	newCtrlSeqPos = post.find("[")
-	if newCtrlSeqPos >= 0:
-		newCtrlSeq = sequence.getNextCtrlSeq()
-		if newCtrlSeq is not None:
-			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
-			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
-			endSeqPos = post.find("]", newCtrlSeqPos)
-			if endSeqPos == -1:
-				endSeqPos = len(post)
-			post = post[:newCtrlSeqPos] + variantTxt + post[endSeqPos+1:]
+	nextCtrlSeqStartPos = post.find("[")
+	if nextCtrlSeqStartPos >= 0:
+		nextCtrlSeq = sequence.getNextCtrlSeq()
+		if nextCtrlSeq is not None:
+			nextVariants = ctrlseq.renderAll(nextCtrlSeq[0], parseParams, showAllVars=True)
+			variantTxt = chooser.oneOf(nextVariants.alts, pure=True).txt
+			nextCtrlSeqEndPos = post.find("]", nextCtrlSeqStartPos)
+			if nextCtrlSeqEndPos == -1:
+				nextCtrlSeqEndPos = len(post)
+			post = post[:nextCtrlSeqStartPos] + variantTxt + post[nextCtrlSeqEndPos+1:]
 	post = cleanContext(post)
 	post = macros.expand(post, parseParams, haltOnBadMacros=False)
 	# truncate again
