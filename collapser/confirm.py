@@ -82,7 +82,7 @@ def confirmCtrlSeq(ctrl_contents, sequence, sourceText, parseParams, ctrlEndPos)
 			print '''************************************'''
 			pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequence)
 			post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequence)
-			rendered = renderVariant(truncStart, v.txt, truncEnd, maxLineLength, parseParams, pre, post)
+			rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd, maxLineLength, parseParams)
 			print rendered
 		print "************************************"
 
@@ -115,7 +115,7 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	return key
 
 
-def renderVariant(truncStart, variant, truncEnd, maxLineLength,  parseParams, pre, post):
+def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  parseParams):
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered, parseParams)
 	wrapped = wrap(rendered, maxLineLength)

@@ -50,7 +50,7 @@ def confirmRenderVariant(text, ctrlSeqPos, variantPos, trunc, maxWidth):
 	pre = confirm.getRenderedPre(text, parseParams, ctrlStartPos, ctrlEndPos, sequence)
 	post = confirm.getRenderedPost(text, parseParams, ctrlEndPos, sequence)
 	firstVariant = variants.alts[variantPos].txt
-	result = confirm.renderVariant(trunc, firstVariant, trunc, maxWidth, parseParams, pre, post)
+	result = confirm.renderVariant(trunc, pre, firstVariant, post, trunc, maxWidth, parseParams)
 	return result
 
 
