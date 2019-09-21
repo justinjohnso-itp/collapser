@@ -124,25 +124,18 @@ def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, pars
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered, parseParams)
 	wrapped = wrap(rendered, maxLineLength)
-	# print "pre: '%s'" % pre
 	# Figure out what line the variant starts on.
 	prevNL = result.find_previous(wrapped, "\n", len(truncStart + pre))
-	# print "prevNL: %d" % prevNL
 	numSpaces = len(truncStart + pre) - prevNL
-	# print "numSpaces: %d" % numSpaces
 	spaces = " " * numSpaces
 	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
 	nextNewLinePos = wrapped.find("\n", len(truncStart + pre + variant))
-	# print "nextNewLinePos: %d" % nextNewLinePos
 	if numSpaces + len(variant + post + truncEnd) < maxLineLength and post.find("\n") == -1:
-		# print "!! Single line"
 		# Single line.
 		numSpacesBetween = len(variant) - 2
-		# print "numSpacesBetween: %d" % numSpacesBetween
 		spacesBetween = " " * numSpacesBetween
 		wrapped = wrapped + spaces + "^" + spacesBetween + "^\n"
 	else:
-		# print "!! MULTI Line"
 		if prevNL == 0:
 			wrapped = spaces + "v\n" + wrapped
 		else:
@@ -150,13 +143,9 @@ def renderVariant(truncStart, variant, truncEnd, maxLineLength, sourceText, pars
 		endVariantPos = len(wrapped) - len(post) - len(truncEnd)
 		nextNewLinePos = wrapped.find("\n", endVariantPos)
 		lastNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)
-		# print "last, next: %d, %d" % (lastNewLinePos, nextNewLinePos)
 		numSpaces = endVariantPos - lastNewLinePos - 2
-		# print "numSpaces: %d" % numSpaces
 		spaces = " " * numSpaces
-		# print "spaces: '%s'" % spaces
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
-	# print "wrapped: '%s'" % wrapped
 	return wrapped
 
 
@@ -177,22 +166,17 @@ def getRawPost(sourceText, ctrlEndPos):
 	return post[:60]
 
 def getRenderedPost(sourceText, parseParams, ctrlEndPos):
-	# print "ctrlEndPos: %d" % ctrlEndPos
 	post = getRawPost(sourceText, ctrlEndPos)
-	# print "post: '%s'" % post
 	newCtrlSeqPos = post.find("[")
 	if newCtrlSeqPos >= 0:
 		newCtrlSeq = getNextCtrlSeq()
 		if newCtrlSeq is not None:
 			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
-			# print "newVariants.alts: '%s'" % newVariants.alts
 			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
 			endSeqPos = post.find("]", newCtrlSeqPos)
 			if endSeqPos == -1:
 				endSeqPos = len(post)
-			# print "post was: '%s'" % post
 			post = post[:newCtrlSeqPos] + variantTxt + post[endSeqPos+1:]
-			# print "post now: '%s'" % post
 	post = cleanContext(post)
 	post = macros.expand(post, parseParams, haltOnBadMacros=False)
 	# truncate again
@@ -201,23 +185,17 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos):
 	return post
 
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos):
-	# print "ctrlEndPos: %d" % ctrlEndPos
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
-	# print "pre: '%s'" % pre
 	newCtrlSeqPos = pre.rfind("]")
 	if newCtrlSeqPos >= 0:
 		newCtrlSeq = getPreviousCtrlSeq()
 		if newCtrlSeq is not None:
 			newVariants = ctrlseq.renderAll(newCtrlSeq[0], parseParams, showAllVars=True)
-			# print "newVariants.alts: '%s'" % newVariants.alts
 			variantTxt = chooser.oneOf(newVariants.alts, pure=True).txt
 			startSeqPos = pre.rfind("[")
 			if startSeqPos == -1:
 				startSeqPos = 0
-			# print "pre was: '%s'" % pre
 			pre = pre[:startSeqPos] + variantTxt + pre[newCtrlSeqPos+1:]
-			# print "pre now: '%s'" % pre
-			# print "post trunc, pre now: '%s'" % pre
 	pre = cleanContext(pre)
 	pre = macros.expand(pre, parseParams, haltOnBadMacros=False)
 	# truncate again
