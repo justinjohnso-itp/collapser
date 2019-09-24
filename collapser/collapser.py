@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # coding=utf-8
 
+# TODO: Make an abstraction that holds the tokens for the book and rendered text in parallel, so you can say "show me the rendered text(s) for this particular control sequence", interrogate the control sequence at a specific position in the rendered text, etc.
+
 import sys
 import getopt
 import re
