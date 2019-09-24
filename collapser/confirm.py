@@ -22,8 +22,10 @@ def process(tokens, sourceText, parseParams):
 
 	fileio.startConfirmKeys()
 	for seq, endPos in sequenceList.sequences:
-		confirmCtrlSeq(seq, sequenceList, sourceText, parseParams, endPos)
+		result = confirmCtrlSeq(seq, sequenceList, sourceText, parseParams, endPos)
 		sequenceList.pos += 1
+		if result == False:
+			break
 	fileio.finishConfirmKeys()
 
 
@@ -85,22 +87,26 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 		print "************************************"
 
 		choice = -1
-		while choice is not "1" and choice is not "2" and choice is not "3" and choice is not "4":
-			sys.stdout.write("\n1) Confirm, 2) Skip, 3) Regen, 4) Stop > ")
+		while choice is not "1" and choice is not "2" and choice is not "3" and choice is not "4" and choice is not "5":
+			sys.stdout.write("\n1) Confirm, 2) Skip, 3) Regen, 4) Done Confirming, 5) Quit > ")
 			choice = getch.getch()
 			if choice == "1":
 				print "1\n >>> Confirmed."
 				fileio.confirmKey(key)
-				return
+				return True
 			elif choice == "2":
 				print "2\n >>> Skipping."
-				return
+				return True
 			elif choice == "3":
 				print "3\n >>> Regenerating."
 				confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos)
-				return
+				return True
 			elif choice == "4":
-				print "3\n >>> Halting."
+				print "4\n >>> Done Confirming."
+				fileio.finishConfirmKeys()
+				return False
+			elif choice == "5":
+				print "5\n >>> Quit."
 				fileio.finishConfirmKeys()
 				sys.exit(0)
 
