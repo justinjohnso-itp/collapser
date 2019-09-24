@@ -2,7 +2,8 @@
 import ctrlseq
 import result
 
-# TODO: Doesn't seem to be checking that StickyMacro, maybe macro also, aren't defined twice?
+# TODO: Doesn't seem to be checking that StickyMacro isn't defined twice?
+# TODO: Sticky Macros aren't honoring author prefered mark. See test_author_preferred_sticky_macro
 
 class Macros:
 	def __init__(self):
@@ -104,9 +105,14 @@ def expand(text, params, haltOnBadMacros=True):
 	startPos = text.find(mStart)
 	renderHadMoreMacrosCtr = 0
 	while startPos != -1:
+		# Get macro name
 		endPos = text.find(mEnd, startPos+1)
 		key = text[startPos+1:endPos]
+
+		# Expand the macro
 		rendered = __m.render(key, params)
+
+		# If unrecognized, see if it's a formatting code; fail otherwise.
 		if rendered == None:
 			parts = key.split('/')
 			if parts[0] in formatting_codes:
@@ -118,6 +124,8 @@ def expand(text, params, haltOnBadMacros=True):
 				raise result.ParseException(badResult)
 			startPos = text.find(mStart, startPos+1)
 			continue
+
+		# If the expansion itself contains macros, check for recursion then set the start position for the next loop iteration.
 		if rendered.find(mStart) >= 0:
 			renderHadMoreMacrosCtr += 1
 		else:
@@ -126,6 +134,7 @@ def expand(text, params, haltOnBadMacros=True):
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Possibly recursive macro loop near here", text[startPos:startPos+20], startPos)
 			raise result.ParseException(badResult)
+
 		text = text[:startPos] + rendered + text[endPos+1:]
 		oldStartPos = startPos
 		startPos = text.find(mStart, startPos)
