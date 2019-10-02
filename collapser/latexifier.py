@@ -58,7 +58,15 @@ def renderControlSeqs(sourceText):
 			partTitle = contents[2]
 			epigraph = contents[3]
 			source = contents[4]
-			repl = template_part[0] + partNum + template_part[1] + partTitle + template_part[2] + epigraph + template_part[3] + source + template_part[4]
+			# Hack to get "\mainmatter" to appear in right spot for opening chapter (otherwise page 1 is on the blank page preceeding and inner/outer positioning is wrong.)
+			optMainMatter = ""
+			if partNum == "PART ONE":
+				optMainMatter = "\\mainmatter"
+			repl = template_part[0] + optMainMatter + template_part[1] + partNum + template_part[2] + partTitle + template_part[3] + epigraph + template_part[4] + source + template_part[5]
+		elif code == "epigraph":
+			epigraph = contents[1]
+			source = contents[2]
+			repl = template_epigraph[0] + epigraph + template_epigraph[1] + source + template_epigraph[2]
 		elif code == "chapter":
 			chapNum = contents[1]
 			repl = template_chapter[0] + chapNum + template_chapter[1]
