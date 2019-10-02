@@ -128,7 +128,14 @@ def latexWrapper(text, templates, seed, includeFrontMatter):
 	output += templates["end"]
 
 	# Insert the seed number where it appeared in front matter.
-	output = output.replace("SEED_NUMBER", "%d" % seed)
+	msg = "This copy was generated from seed #%s and is the only copy generated from that seed." % seed
+	if seed == -1:
+		seed = "01893"
+		msg = "This run of Advance Reader Copies have all been generated from seed #%s." % seed
+	output = output.replace("SEED_TEXT", msg)
+	output = output.replace("SEED_NUMBER", "%s" % seed)
+
+
 
 	return output
 
