@@ -157,10 +157,11 @@ template_chapter = ['''
 template_part = ['''
 
 \\cleartorecto
-
+\\thispagestyle{empty}
+''', '''
 \\begin{ChapterStart}
 \\vspace*{4\\nbs} 
-\\ChapterTitle{PART ''', '''} 
+\\ChapterTitle{''', '''} 
 \\vspace*{2\\nbs} 
 \\ChapterTitle{''', '''} 
 \\end{ChapterStart}
@@ -176,6 +177,17 @@ template_part = ['''
 
 \\cleartorecto
 
+''']
+
+template_epigraph = ['''
+\\begin{adjustwidth}{3em}{3em}
+\\begin{parascale}[0.88]
+''', '''\\\\
+\\par
+\\noindent \\textit{''', '''}
+\\end{parascale}
+\\end{adjustwidth}
+\\vspace*{2\\nbs} 
 ''']
 
 template_section_break = '''
