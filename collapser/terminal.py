@@ -2,6 +2,7 @@
 import shlex
 import subprocess
 import re
+import sys
 
 def runCommand(command, paramString, shell=False):
 	if shell:

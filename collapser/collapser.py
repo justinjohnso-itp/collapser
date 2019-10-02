@@ -243,6 +243,8 @@ def postLatexSanityCheck(latexLog):
 		print "Unexpected size (%d kb); halting." % (result["numBytes"] / 1000)
 		return False
 
+	# TODO: Check that it contains a key phrase that should exist in every version
+
 	return True
 
 def getStats(latexLog):
