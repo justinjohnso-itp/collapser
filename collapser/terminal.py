@@ -28,6 +28,7 @@ def runCommand(command, paramString, shell=False):
 
 
 # Note: This requires pdftk, and specifically the version here updated for newer MacOS: https://stackoverflow.com/questions/39750883/pdftk-hanging-on-macos-sierra
+# https://www.pdflabs.com/docs/pdftk-man-page/
 
 def countPages(pdfPath):
 	result = runCommand("pdftk", "%s dump_data | grep NumberOfPages" % pdfPath, shell=True)

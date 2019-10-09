@@ -108,6 +108,7 @@ def renderControlSeqs(sourceText):
 # Raise errors if anything unexpected is found in the converted output.
 def postConversionSanityCheck(text):
 	# Look for unexpected characters etc. here
+	# Note: can't use find_line_number_for_file etc. b/c those markers have been stripped.
 	pos = text.find('_')
 	if pos is not -1:
 		raise ValueError("Found invalid underscore '_' character on line %d:\n%s" % (result.find_line_number(text, pos), result.find_line_text(text, pos)) )
