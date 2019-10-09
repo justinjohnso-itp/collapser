@@ -34,6 +34,31 @@ def loadManifest(path, manifest):
 def getFileId(fn):
 	return "\n\n%% file %s\n\n" % fn
 
+__seedfilename = "seednum.dat"
+__generation = 0
+
+def getNextSeedFromFile():
+	global __seedfilename
+	global __generation
+	seedRaw = readInputFile(__seedfilename)
+	# We expect this to be a 4-digit integer.
+	try:
+		seed = int(seedRaw)
+	except:
+		print "Couldn't read '%s' contents as int: found '%s'." % (__seedfilename, seedRaw)
+		sys.exit()
+
+	seed += 1
+	if seed > 9999:
+		print "Exceeded available seed range for generation '%d'; halting." % __generation
+		sys.exit()
+
+	writeOutputFile(__seedfilename, "%d" % seed)
+	print "(Iterated from file, generation %d, seed %d)" % (__generation, seed)
+	return (__generation * 10000) + seed
+
+
+
 
 __keyfile = None
 __confirms = {}

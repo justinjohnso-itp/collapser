@@ -1,6 +1,6 @@
 
 import random
-
+import fileio
 
 def number(highest):
 	return random.randint(1,highest)
@@ -30,13 +30,14 @@ def setSeed(num):
 	random.seed(num)
 
 def randomSeed():
+	series = 0
+
 	rSeed = number(10000000)
 	random.seed(rSeed)
 	return rSeed
 
 def nextSeed():
-	# Eventually, replace this with a file-based iterator.
-	return randomSeed()
+	return fileio.getNextSeedFromFile()
 
 def unSeed():
 	random.seed()
