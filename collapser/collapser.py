@@ -35,6 +35,7 @@ Arguments:
   --help         Show this message
   --front		 Include frontmatter
   --seed=x       Use the given integer as a seed
+  --seed=random  Don't use an incremental seed; use one purely at random.
   --nopdf		 Skip pdf generation
   --noconfirm	 Skip variant confirmation
   --strategy=x   Selection strategy.
@@ -68,6 +69,7 @@ def main():
 	discourseVarChance = 80
 	preferenceForAuthorsVersion = 20
 	padding = -1
+	randSeed = False
 
 	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "padding="])
 	if len(args) > 0:
@@ -83,11 +85,14 @@ def main():
 			showUsage()
 			sys.exit()
 		elif opt == "--seed":
-			try:
-				seed = int(arg)
-			except:
-				print "Invalid --seed parameter '%s': not an integer." % arg
-				sys.exit()
+			if arg == "random":
+				randSeed = True
+			else:
+				try:
+					seed = int(arg)
+				except:
+					print "Invalid --seed parameter '%s': not an integer." % arg
+					sys.exit()
 		elif opt == "--strategy":
 			if arg not in quantparse.ParseParams.VALID_STRATEGIES:
 				print "Invalid --strategy parameter '%s': must be one of %s" % (arg, quantparse.ParseParams.VALID_STRATEGIES)
@@ -159,6 +164,9 @@ def main():
 	else:
 		if strategy != "random":
 			print "Ignoring seed (b/c strategy = %s)" % strategy
+		elif randSeed:
+			seed = chooser.randomSeed()
+			print "Seed (purely random): %d" % seed
 		elif seed is -1:
 			seed = chooser.nextSeed()
 			print "Seed (next): %d" % seed
