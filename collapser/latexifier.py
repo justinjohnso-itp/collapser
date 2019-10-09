@@ -127,6 +127,9 @@ def latexWrapper(text, templates, seed, includeFrontMatter):
 	output += text
 	output += templates["end"]
 
+	if seed < 9999:
+		seed = "0%d" % seed
+
 	# Insert the seed number where it appeared in front matter.
 	msg = "This copy was generated from seed #%s and is the only copy generated from that seed." % seed
 	if seed == -1:
