@@ -5,6 +5,7 @@
 # We're looking for curly-brace things like {chapter|2} and replacing them with the appropriate latex. 
 
 import re
+import result
 
 # Main entry point.
 def go(sourceText, templates, seed, doFront):
@@ -111,9 +112,9 @@ def postConversionSanityCheck(text):
 	if pos is not -1:
 		raise ValueError("Found invalid underscore '_' character on line %d:\n%s" % (result.find_line_number(text, pos), result.find_line_text(text, pos)) )
 	
-	# pos = text.find('''"''')
-	# if pos is not -1:
-	# 	raise ValueError("Found dumb quote character on line %d; use “ ” \n%s" % (quantlex.find_line_number(text, pos), quantlex.find_line_text(text, pos)) )
+	pos = text.find('''"''')
+	if pos is not -1:
+		raise ValueError("Found dumb quote character on line %d; use “ ” \n%s" % (result.find_line_number_for_file(text, pos), result.find_line_text(text, pos)) )
 
 	return
 
