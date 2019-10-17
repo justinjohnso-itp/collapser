@@ -403,4 +403,27 @@ def test_lex_sticky_macro():
 	toks = quantlex.lex(text).package
 	assert toks[1].value == "MACRO"
 
+def test_lex_banned():
+	text = "[DEFINE *@alpha>test]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.package
+	assert len(toks) == 7
+	assert toks[0].type == "CTRLBEGIN"
+	assert toks[1].type == "DEFINE"
+	assert toks[2].type == "BANNED"
+	assert toks[3].type == "VARIABLE"
+	assert toks[3].value == "alpha"
+	assert toks[4].type == "DIVIDER"
+	assert toks[5].type == "TEXT"
+	assert toks[6].type == "CTRLEND"
+
+	text = "[50>*text1|text2]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.package
+	assert toks[3].type == "BANNED"
+	assert toks[4].value == "text1"
+
+
 
