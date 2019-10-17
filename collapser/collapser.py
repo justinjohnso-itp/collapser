@@ -40,6 +40,7 @@ Arguments:
   --noconfirm	 Skip variant confirmation
   --strategy=x   Selection strategy.
   		"random": default
+  		"skipbanned": random, but avoid banned alternatives
   		"author": Author's preferred
   		"pair": Two versions optimizing for difference
   		"longest"
@@ -129,8 +130,8 @@ def main():
 		showUsage()
 		sys.exit()
 
-	if seed is not -1 and strategy is not "random":
-		print "*** You set seed to %d but strategy to '%s'; a seed can only be used when strategy is 'random' ***\n" % (seed, strategy)
+	if seed is not -1 and strategy is not "random" and strategy is not "skipbanned":
+		print "*** You set seed to %d but strategy to '%s'; a seed can only be used when strategy is 'random' or 'skipbanned' ***\n" % (seed, strategy)
 		sys.exit()
 
 	if seed is not -1 and len(setDefines) is not 0:
@@ -162,7 +163,7 @@ def main():
 			outputPDF(alternateOutputFile, padding)
 
 	else:
-		if strategy != "random":
+		if strategy is not "random" and strategy is not "skipbanned":
 			print "Ignoring seed (b/c strategy = %s)" % strategy
 		elif randSeed:
 			seed = chooser.randomSeed()
