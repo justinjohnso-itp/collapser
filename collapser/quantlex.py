@@ -23,6 +23,7 @@ tokens = (
    'DEFINE',
    'VARIABLE',
    'MACRO',
+   'BANNED',
    'ERROR_LONE_GT',
    'ERROR_LONE_VAR'
 )
@@ -30,6 +31,7 @@ tokens = (
 # Regular expression rules for simple tokens
 t_AUTHOR = r'\^'
 t_ALWAYS = r'\~'
+t_BANNED = r'\*'
 
 def t_VARIABLE(t):
 	r'@[A-Za-z_\-][A-Za-z_\-0-9]*\>?'
@@ -72,7 +74,7 @@ def t_DEFINE(t):
 	return t
 
 def t_TEXT(t):
-	r'[^\[\]\|\>\@\^\#\~]+'
+	r'[^\[\]\|\>\@\^\#\~\*]+'
 	return t
 
 def t_COMMENT(t):
@@ -161,11 +163,11 @@ def lex(text):
 		if tok.type == "DEFINE" and ( prevTok is -1 or prevTok.type != "CTRLBEGIN" ):
 			result.flagBad("DEFINE can only appear at the start of a control sequence.", text, tok.lexpos)
 			break;
-		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER", "CTRLBEGIN", "DIVIDER"] ):
+		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER", "CTRLBEGIN", "DIVIDER", "BANNED"] ):
 			result.flagBad("Found a @variable but in an unexpected spot.", text, tok.lexpos)
 			break;
 		if prevTok is not -1:
-			if prevTok.type == "DEFINE" and tok.type not in ["VARIABLE", "AUTHOR", "NUMBER"]:
+			if prevTok.type == "DEFINE" and tok.type not in ["VARIABLE", "AUTHOR", "NUMBER", "BANNED"]:
 				result.flagBad("DEFINE must be followed by a variable name, as in [DEFINE @var].", text, prevTok.lexpos)
 				break;
 
@@ -181,10 +183,14 @@ def lex(text):
 				break;
 			if prevTok.type == "MACRO" and tok.type != "TEXT":
 				result.flagBad("MACRO must be followed by text.", text, tok.lexpos)
+			if prevTok.type == "BANNED" and tok.type != "TEXT" and tok.type != "VARIABLE":
+				result.flagBad("The banned symbol must come immediately before either text or a variable.", text, tok.lexpos) 
+				break;
 
 		result.package.append(tok)
 		penultTok = prevTok
 		prevTok = tok
+	print result
 	return result
 
 

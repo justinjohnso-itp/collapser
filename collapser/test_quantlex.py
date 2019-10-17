@@ -408,22 +408,21 @@ def test_lex_banned():
 	result = quantlex.lex(text)
 	assert result.isValid == True
 	toks = result.package
-	assert len(toks) == 7
+	assert len(toks) == 6
 	assert toks[0].type == "CTRLBEGIN"
 	assert toks[1].type == "DEFINE"
 	assert toks[2].type == "BANNED"
 	assert toks[3].type == "VARIABLE"
 	assert toks[3].value == "alpha"
-	assert toks[4].type == "DIVIDER"
-	assert toks[5].type == "TEXT"
-	assert toks[6].type == "CTRLEND"
+	assert toks[4].type == "TEXT"
+	assert toks[5].type == "CTRLEND"
 
 	text = "[50>*text1|text2]"
 	result = quantlex.lex(text)
 	assert result.isValid == True
 	toks = result.package
-	assert toks[3].type == "BANNED"
-	assert toks[4].value == "text1"
+	assert toks[2].type == "BANNED"
+	assert toks[3].value == "text1"
 
 
 
