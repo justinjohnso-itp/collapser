@@ -552,8 +552,9 @@ def test_banned_symbol_basic():
 	text = '''I hate vowels! [k|l|*e|m|x]'''
 	for i in range(25):
 		assert parse(text, params) != "I hate vowels! e"
-	text = '''[*If all are marked|*Choose one at random]'''
-	verifyEachIsFound(["If all are marked", "Choose one at random"], text, params)
+	text = '''A[*If all are marked|*Can't choose any]B'''
+	for i in range(10):
+		assert parse(text, params) == "AB"
 	text = '''In this case [I suppose ]either is okay.'''
 	verifyEachIsFound(["In this case I suppose either is okay.", "In this case either is okay."], text, params)
 	text = '''In this case [*I suppose ]it's not okay.'''
