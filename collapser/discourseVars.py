@@ -13,13 +13,13 @@ def resetStats():
 
 def showStats(vars):
 	global dpStats
-	print "*******************************************************"
-	print "How many times set discourse variables changed text weight:"
+	# print "*******************************************************"
+	# print "How many times set discourse variables changed text weight:"
 	# print dpStats
 	# filteredStats = {k, v for k, v in dpStats.items() if vars.check(k) }
 	filtered = dict(filter(lambda i: vars.check(i[0]), dpStats.items()))
-	print filtered
-	print "*******************************************************"
+	# print filtered
+	# print "*******************************************************"
 
 def trace(txt):
 	if showTrace:

@@ -50,7 +50,7 @@ class Result:
 		else:
 			output = ""
 			for item in self.package:
-				output += item + ", "
+				output += str(item) + ", "
 			return output
 
 
