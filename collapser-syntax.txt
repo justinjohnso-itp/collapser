@@ -40,13 +40,13 @@ Control characters should never be ones that would appear in the manuscript. So 
 	[ ] Begin and end a control sequence.
 	{ } Macro/format block
 	|	Divide alternatives
-	*	Bold formatting
 	>	Conditional text
 	@	Indicates a variable	
 	^	Author-preferred
 	#	Comment
 	~	Always print this block.
 	/	Split params in formatting block
+	*	Indicate banned option.
 
 Start a line with a # for a comment to be stripped/ignored.
 
@@ -144,6 +144,17 @@ Conditional logic is not yet supported, but you can use macros to get around thi
 		[MACRO orLostKeys][@lostKeys>{txt}]
 		[MACRO txt][~I'm wordy or confused!]
 
+
+** Banned Options **
+
+Add a * at the start of a block of variable definition to indicate text you don't want selected when the "skipbanned" option is used. This is useful to mark works in progress while still allowing generation of a satisfying output.
+
+Put this immediately before the text or variable, after any other control options.
+
+	[use this|*not this]
+	[50>use this|50>*not this]
+	[DEFINE *@notReady]
+	[DEFINE 50>^*@notReady]
 
 
 ** Formatting Codes

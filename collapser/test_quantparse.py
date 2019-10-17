@@ -23,7 +23,7 @@ def parseResult(text, params = None):
 
 
 # When sent an array like ["A", "B", "C"] and a test to parse, will fail if after a large number of attempts to parse it hasn't seen each option appear as a parse result.
-def verifyEachIsFound(opts, text):
+def verifyEachIsFound(opts, text, params = None):
 	found = {}
 	ctr = 0
 	timesToTry = 100
@@ -37,7 +37,7 @@ def verifyEachIsFound(opts, text):
 		return False
 
 	while anyNotFound() and ctr < timesToTry:
-		result = parse(text)
+		result = parse(text, params)
 		for pos, key in enumerate(opts):
 			if result == opts[pos]:
 				found[key] = True
@@ -539,8 +539,46 @@ def test_tobe_discourse_var():
 	for i in range(10):
 		assert parse(text, params) == "No, not really."
 
+def test_banned_symbol_basic():
+	text = '''Of these, [this is okay|and so is this].'''
+	params = quantparse.ParseParams(chooseStrategy="skipbanned")
+	verifyEachIsFound(["Of these, this is okay.", "Of these, and so is this."], text, params)
+	text = '''Of these, [only this is okay|*this is not].'''
+	for i in range(10):
+		assert parse(text, params) == "Of these, only this is okay."
+	text = '''Of these, [*this is not okay|but this is].'''
+	for i in range(10):
+		assert parse(text, params) == "Of these, but this is."
+	text = '''I hate vowels! [k|l|*e|m|x]'''
+	for i in range(25):
+		assert parse(text, params) != "I hate vowels! e"
+	text = '''[*If all are marked|*Choose one at random]'''
+	verifyEachIsFound(["If all are marked", "Choose one at random"], text, params)
+	text = '''In this case [I suppose ]either is okay.'''
+	verifyEachIsFound(["In this case I suppose either is okay.", "In this case either is okay."], text, params)
+	text = '''In this case [*I suppose ]it's not okay.'''
+	for i in range(10):
+		assert parse(text, params) == "In this case it's not okay."
 
+def test_banned_symbol_complex():
+	text = '''[DEFINE *@alpha]Here's some [@alpha>text|words].'''
+	params = quantparse.ParseParams(chooseStrategy="skipbanned")
+	for i in range(10):
+		assert parse(text, params) == "Here's some words."
+	text = '''[DEFINE @alpha]Here's some [@alpha>text|words].'''
+	verifyEachIsFound(["Here's some text.", "Here's some words."], text, params)
+	text = '''[DEFINE 90>*@alpha|10>@omega]Here's some [@alpha>text|@omega>words|nonsense].'''
+	for i in range(10):
+		assert parse(text, params) == "Here's some words."
 
+def test_banned_symbol_invalid():
+	text = '''[DEFINE @alpha]Test of [*@alpha>option|other].'''
+	params = quantparse.ParseParams(chooseStrategy="skipbanned")
+	with pytest.raises(Exception) as e_info:
+		parse(text, params)
+	text = '''[This is one option|*^and this is another'''
+	with pytest.raises(Exception) as e_info:
+		parse(text, params)
 
 
 def test_long_passages():
