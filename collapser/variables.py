@@ -154,6 +154,7 @@ def check(key):
 def handleDefs(tokens, params):
 	output = []
 	index = 0
+	lastVarName = ""
 	global __v
 	params.setDefines = map(lambda x: x.lower(), params.setDefines)
 	while index < len(tokens):
@@ -185,6 +186,7 @@ def handleDefs(tokens, params):
 			item = ctrlseq.parseItem(ctrl_contents, params)
 			assert tokens[index-1].type == "VARIABLE"
 			varname = item.txt.lower()
+			lastVarName = varname
 			if varname in __v.variables:
 				badResult = result.Result(result.PARSE_RESULT)
 				badResult.flagBad("Variable '@%s' is defined twice." % varname, params.originalText, tokens[index-1].lexpos)
@@ -201,7 +203,9 @@ def handleDefs(tokens, params):
 					alts.setAuthorPreferred()
 				if item.prob:
 					probTotal += item.prob
-				alts.add(varname, item.prob)
+				skipBanned = params.chooseStrategy == "skipbanned" and item.banned
+				if not skipBanned:
+					alts.add(varname, item.prob)
 
 				__v.set(groupName, item.txt, False)
 
@@ -214,7 +218,9 @@ def handleDefs(tokens, params):
 				badResult = result.Result(result.PARSE_RESULT)
 				badResult.flagBad("Probabilities in a DEFINE must sum to 100: found %d instead." % probTotal, params.originalText, tokens[index-1].lexpos)
 				raise result.ParseException(badResult)
-			if params.chooseStrategy == "author" and len(alts) == 1 and not foundAuthorPreferred:
+			if len(alts) == 0:
+				__v.set(groupName, lastVarName, False)
+			elif params.chooseStrategy == "author" and len(alts) == 1 and not foundAuthorPreferred:
 				varPicked = alts.getAuthorPreferred()
 				__v.set(groupName, varPicked, False)
 			elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
