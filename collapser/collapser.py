@@ -151,7 +151,7 @@ def main():
 		seed = chooser.nextSeed()
 		for x in range(tries):
 			seeds.append(seed)
-			texts.append(getCollapsedTextFromFile(inputFile, params))
+			texts.append(collapseInputText(inputFile, params))
 			seed = chooser.nextSeed()
 		leastSimilarPair = differ.getTwoLeastSimilar(texts)
 		text0 = texts[leastSimilarPair[0]]
@@ -174,7 +174,7 @@ def main():
 			chooser.setSeed(seed)
 			print "Seed (requested): %d" % seed
 
-		collapsedText = getCollapsedTextFromFile(inputFile, params)
+		collapsedText = collapseInputText(inputFile, params)
 		fileio.writeOutputFile(rawOutputFile, collapsedText)
 
 		render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding)
@@ -199,7 +199,7 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, pa
 
 
 
-def getCollapsedTextFromFile(inputFile, params):
+def collapseInputText(inputFile, params):
 	files = []
 	inputText = fileio.readInputFile(inputFile)
 	if inputFile[-12:] == manifestFile:
