@@ -9,22 +9,17 @@ import re
 
 import fileio
 import collapse
-import latexifier
 import quantlex
 import quantparse
 import chooser
 import result
 import differ
-import terminal
+import renderer_latex
 
-latexBegin = "fragments/begin.tex"
-latexEnd = "fragments/end.tex"
-latexFrontMatter = "fragments/frontmatter.tex"
-latexPostFrontMatter = "fragments/postfrontmatter.tex"
 manifestFile = "manifest.txt"
-pdfOutputDir = "output/"
-alternateOutputFile = pdfOutputDir + "alternate.tex"
-rawOutputFile = pdfOutputDir + "raw_out.txt"
+outputDir = "output/"
+alternateOutputFile = outputDir + "alternate.tex"
+rawOutputFile = outputDir + "raw_out.txt"
 blankPDF = "extras/blankpages.pdf"
 
 
@@ -183,13 +178,19 @@ def main():
 		else:
 			chooser.setSeed(seed)
 			print "Seed (requested): %d" % seed
+
 		collapsedText = getCollapsedTextFromFile(inputFile, params)
-		makeOutputFile(collapsedText, outputFile, seed, doFront)
+		fileio.writeOutputFile(rawOutputFile, collapsedText)
+
 		if outputFormat == "pdf":
-			print "Running lualatex..."
-			outputPDF(outputFile, padding)
-		else:
-			print "Skipping output."
+			renderParams = {
+				"seed": seed,
+				"doFront": doFront,
+				"padding": padding,
+				"outputDir": outputDir
+			}
+			renderer = renderer_latex.RendererLatex(collapsedText, renderParams)
+			renderer.render(outputFile)
 
 
 
@@ -215,85 +216,7 @@ def getCollapsedTextFromFile(inputFile, params):
 
 	return collapsedText
 
-def makeOutputFile(collapsedText, outputFile, seed, doFront):
-	fileio.writeOutputFile(rawOutputFile, collapsedText)
 
-	latexTemplateFiles = {
-		"begin": fileio.readInputFile(latexBegin),
-		"end": fileio.readInputFile(latexEnd),
-		"frontMatter": fileio.readInputFile(latexFrontMatter),
-		"postFrontMatter": fileio.readInputFile(latexPostFrontMatter)
-	}
-
-	outputText = latexifier.go(collapsedText, latexTemplateFiles, seed, doFront)
-	fileio.writeOutputFile(outputFile, outputText)
-
-def outputPDF(outputFile, padding):
-	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (pdfOutputDir, outputFile))
-	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
-	latexLooksGood = postLatexSanityCheck(result["output"])
-	if not latexLooksGood:
-		print "*** Generation failed. Check .log file in output folder."
-		sys.exit()
-	else:
-		stats = getStats(result["output"])
-		print "Success! Generated %d page PDF." % stats["numPages"]
-		if padding is not -1:
-			addPadding(outputFile, stats["numPages"], padding)
-
-def postLatexSanityCheck(latexLog):
-	numPages = 0
-
-	overfulls = len(re.findall(r"\nOverfull \\hbox", latexLog))
-	if overfulls > 500:
-		print "Too many overfulls (found %d); halting." % overfulls
-		return False
-
-	result = getStats(latexLog)
-	if result["numPages"] == -1:
-		print "Couldn't find output line; halting."
-		return False
-
-	if result["numPages"] < 5 or result["numPages"] > 300:
-		print "Unexpected page length (%d); halting." % result["numPages"]
-		return False
-	if result["numBytes"] < 100000 or result["numBytes"] > 3000000:
-		print "Unexpected size (%d kb); halting." % (result["numBytes"] / 1000)
-		return False
-
-	# TODO: Check that it contains a key phrase that should exist in every version
-
-	return True
-
-def getStats(latexLog):
-	data = { "numPages": -1, "numBytes": -1 }
-	result = re.search(r"Output written on .*\.pdf \(([0-9]+) pages, ([0-9]+) bytes", latexLog)
-	if result:
-		data["numPages"] = int(result.groups()[0])
-		data["numBytes"] = int(result.groups()[1])
-	return data
-
-
-
-def addPadding(outputFile, reportedPages, desiredPageCount):
-
-	numPDFPages = terminal.countPages("output/combined.pdf")
-	if numPDFPages != reportedPages:
-		print "*** Latex reported generating %d page PDF, but pdftk reported the output was %d pages instead. Aborting." % (reportedPages, numPDFPages)
-		sys.exit()
-
-	if numPDFPages > desiredPageCount:
-		print "*** Generation exceeded maximum length of %d page: was %d pages." % (desiredPageCount, numPDFPages)
-		sys.exit()
-
-	# If equal, no action needed. Otherwise, add padding to the desired number of pages, which must remain constant in print on demand so the cover art doesn't need to be resized.
-
-	if numPDFPages < desiredPageCount:
-		terminal.addBlankPages("output/combined.pdf", "output/combined-padded.pdf", desiredPageCount - numPDFPages)
-		numCombinedPages = terminal.countPages("output/combined-padded.pdf")
-		if numCombinedPages != desiredPageCount:
-			print "*** Tried to pad output PDF to %d pages but result was %d pages instead." % (desiredPageCount, numPDFPages)
-			sys.exit()
 
 
 
