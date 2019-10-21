@@ -23,7 +23,7 @@ class RendererLatex(renderer.Renderer):
 		self.makeOutputFile()
 
 	def makeStagedFile(self):
-		workFile = specialLatexAndPDFFixes(self.collapsedText)
+		self.collapsedText = specialLatexAndPDFFixes(self.collapsedText)
 		workFile = self.renderControlSequences()
 		postLatexificationSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])
