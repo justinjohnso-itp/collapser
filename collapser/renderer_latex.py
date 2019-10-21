@@ -26,7 +26,7 @@ class RendererLatex(renderer.Renderer):
 
 	def makeStagedFile(self):
 		workFile = specialFixes(self.collapsedText)
-		workFile = renderControlSeqsInLatex(workFile)
+		workFile = self.renderControlSequences()
 		postLatexificationSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])
 		latexFileName = self.params["fileId"] + ".tex"
@@ -36,6 +36,44 @@ class RendererLatex(renderer.Renderer):
 		inputFileName = self.params["fileId"] + ".tex"
 		outputFileName = self.params["fileId"] + ".pdf"
 		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["padding"])
+
+	def renderControlSequence(self, contents):
+		code = contents[0]
+		if code == "part":
+			partNum = contents[1]
+			partTitle = contents[2]
+			epigraph = contents[3]
+			source = contents[4]
+			# Hack to get "\mainmatter" to appear in right spot for opening chapter (otherwise page 1 is on the blank page preceeding and inner/outer positioning is wrong.)
+			optMainMatter = ""
+			if partNum == "PART ONE":
+				optMainMatter = "\\mainmatter"
+			return template_part[0] + optMainMatter + template_part[1] + partNum + template_part[2] + partTitle + template_part[3] + epigraph + template_part[4] + source + template_part[5]
+		if code == "epigraph":
+			epigraph = contents[1]
+			source = contents[2]
+			return template_epigraph[0] + epigraph + template_epigraph[1] + source + template_epigraph[2]
+		if code == "chapter":
+			chapNum = contents[1]
+			return template_chapter[0] + chapNum + template_chapter[1]
+		if code == "section_break":
+			return template_section_break
+		if code == "verse":
+			text = contents[1]
+			return template_verse[0] + text + template_verse[1]
+		if code == "verse_inline":
+			text = contents[1]
+			return template_verse_inline[0] + text + template_verse_inline[1]
+		if code == "pp":
+			return template_pp
+		if code == "i":
+			text = contents[1]
+			return template_i[0] + text + template_i[1]
+		if code == "vspace":
+			text = contents[1]
+			return template_vspace[0] + text + template_vspace[1]
+
+		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, codeSeq)) 
 
 
 
@@ -59,71 +97,7 @@ def specialFixes(text):
 	return text
 
 
-# Render all control sequences in appropriate latex
-def renderControlSeqsInLatex(sourceText):
-	rendered = []
-	pos = 0
 
-	formatStartPos = sourceText.find("{", pos)
-	while formatStartPos is not -1:
-		rendered.append(sourceText[pos:formatStartPos])
-		formatEndPos = sourceText.find("}", formatStartPos)
-		if formatEndPos is -1:
-			raise ValueError("Found { without closing brace.")
-		codeSeq = sourceText[formatStartPos:formatEndPos+1]
-		contents = codeSeq[1:-1].split('/')
-		code = contents[0]
-		repl = ""
-
-		if code == "part":
-			partNum = contents[1]
-			partTitle = contents[2]
-			epigraph = contents[3]
-			source = contents[4]
-			# Hack to get "\mainmatter" to appear in right spot for opening chapter (otherwise page 1 is on the blank page preceeding and inner/outer positioning is wrong.)
-			optMainMatter = ""
-			if partNum == "PART ONE":
-				optMainMatter = "\\mainmatter"
-			repl = template_part[0] + optMainMatter + template_part[1] + partNum + template_part[2] + partTitle + template_part[3] + epigraph + template_part[4] + source + template_part[5]
-		elif code == "epigraph":
-			epigraph = contents[1]
-			source = contents[2]
-			repl = template_epigraph[0] + epigraph + template_epigraph[1] + source + template_epigraph[2]
-		elif code == "chapter":
-			chapNum = contents[1]
-			repl = template_chapter[0] + chapNum + template_chapter[1]
-		elif code == "section_break":
-			repl = template_section_break
-		elif code == "verse":
-			text = contents[1]
-			repl = template_verse[0] + text + template_verse[1]
-		elif code == "verse_inline":
-			text = contents[1]
-			repl = template_verse_inline[0] + text + template_verse_inline[1]
-		elif code == "pp":
-			repl = template_pp
-		elif code == "i":
-			text = contents[1]
-			repl = template_i[0] + text + template_i[1]
-		elif code == "vspace":
-			text = contents[1]
-			repl = template_vspace[0] + text + template_vspace[1]
-
-		elif code == "test":
-			repl = "<<TEST_STANDALONE>>"
-		elif code == "test_param":
-			repl = "<<TEST_PARAMS>>" + contents[1] + "<<END>>"
-
-		else:
-			raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, codeSeq)) 
-
-		rendered.append(repl)
-		pos = formatEndPos+1
-		formatStartPos = sourceText.find("{", pos)
-
-	rendered.append(sourceText[pos:len(sourceText)])
-
-	return ''.join(rendered)	
 
 
 # Raise errors if anything unexpected is found in the converted output.
