@@ -36,7 +36,9 @@ Arguments:
   --front		 Include frontmatter
   --seed=x       Use the given integer as a seed
   --seed=random  Don't use an incremental seed; use one purely at random.
-  --nopdf		 Skip pdf generation
+  --output=x	 Format to output (default none)
+  		"pdf": 	 Latex -> PDF
+  		"text":  Plain text
   --noconfirm	 Skip variant confirmation
   --strategy=x   Selection strategy.
   		"random": default
@@ -63,7 +65,7 @@ def main():
 	outputText = ""
 	seed = -1
 	strategy = "random"
-	doPDF = True
+	outputFormat = ""
 	doFront = False
 	doConfirm = True
 	setDefines = []
@@ -72,7 +74,9 @@ def main():
 	padding = -1
 	randSeed = False
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "nopdf", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "padding="])
+	VALID_OUTPUTS = ["pdf", "none"]
+
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "padding="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -98,8 +102,12 @@ def main():
 			if arg not in quantparse.ParseParams.VALID_STRATEGIES:
 				print "Invalid --strategy parameter '%s': must be one of %s" % (arg, quantparse.ParseParams.VALID_STRATEGIES)
 			strategy = arg
-		elif opt == "--nopdf":
-			doPDF = False
+		elif opt == "--output":
+			if arg != "" and arg not in VALID_OUTPUTS:
+				print "Invalid --output parameter '%s': must be one of %s" % (arg, VALID_OUTPUTS)
+			outputFormat = arg
+			if arg == "none":
+				outputFormat = ""
 		elif opt == "--noconfirm":
 			doConfirm = False
 		elif opt == "--front":
@@ -141,6 +149,7 @@ def main():
 	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance)
 
 	if strategy == "pair":
+		# TODO make this work with new output format.
 		texts = []
 		tries = 10
 		seeds = []
@@ -156,7 +165,7 @@ def main():
 		seed1 = seeds[leastSimilarPair[1]]
 		makeOutputFile(text0, outputFile, seed0, doFront)
 		makeOutputFile(text1, alternateOutputFile, seed1, doFront)
-		if doPDF:
+		if outputFormat == "pdf":
 			print "Running lualatex (text 1)..."
 			outputPDF(outputFile, padding)
 			print "Running lualatex (text 2)..."
@@ -176,11 +185,11 @@ def main():
 			print "Seed (requested): %d" % seed
 		collapsedText = getCollapsedTextFromFile(inputFile, params)
 		makeOutputFile(collapsedText, outputFile, seed, doFront)
-		if doPDF:
+		if outputFormat == "pdf":
 			print "Running lualatex..."
 			outputPDF(outputFile, padding)
 		else:
-			print "Skipping PDF."
+			print "Skipping output."
 
 
 
