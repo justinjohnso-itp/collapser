@@ -19,18 +19,24 @@ class RendererLatex(renderer.Renderer):
 
 	# collapsedText, params
 
-	def render(self, outputFileName):
+	def render(self, fileId):
 		print "Rendering to LaTeX/PDF."
+		self.makeStagedFile(fileId)
+		self.makeOutputFile(fileId)
+
+	def makeStagedFile(self, fileId):
 		workFile = specialFixes(self.collapsedText)
 		workFile = renderControlSeqs(workFile)
 		postConversionSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])
-		latexFileName = outputFileName + ".tex"
-		print "latexFileName: '%s'" % latexFileName
+		latexFileName = fileId + ".tex"
 		fileio.writeOutputFile(latexFileName, stagedFileText)
-		pdfFileName = outputFileName + ".pdf"
-		print "pdfFileName: '%s'" % pdfFileName
+
+	def makeOutputFile(self, fileId):
+		latexFileName = fileId + ".tex"
+		pdfFileName = fileId + ".pdf"
 		outputPDF(self.params["outputDir"], latexFileName, pdfFileName, self.params["padding"])
+
 
 
 # Handle any tweaks to the rendered text before we begin the latex conversion.

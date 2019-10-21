@@ -9,7 +9,15 @@ class Renderer(object):
 		self.params = params
 
 	@abc.abstractmethod
-	def render(self, outputFileName):
+	def render(self, fileId):
+		pass
+
+	@abc.abstractmethod
+	def makeStagedFile(self, fileId):
+		pass
+
+	@abc.abstractmethod
+	def makeOutputFile(self, fileId):
 		pass
 
 
