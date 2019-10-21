@@ -182,15 +182,19 @@ def main():
 		collapsedText = getCollapsedTextFromFile(inputFile, params)
 		fileio.writeOutputFile(rawOutputFile, collapsedText)
 
-		if outputFormat == "pdf":
+		if outputFormat != "":
 			renderParams = {
 				"seed": seed,
 				"doFront": doFront,
 				"padding": padding,
 				"outputDir": outputDir
 			}
-			renderer = renderer_latex.RendererLatex(collapsedText, renderParams)
-			renderer.render(outputFile)
+			renderer = None
+			if outputFormat == "pdf":
+				renderer = renderer_latex.RendererLatex(collapsedText, renderParams)
+
+			if renderer is not None:
+				renderer.render(outputFile)
 
 
 

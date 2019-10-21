@@ -18,6 +18,7 @@ class RendererLatex(renderer.Renderer):
 	# collapsedText, params
 
 	def render(self, outputFileName):
+		print "Rendering to LaTeX/PDF."
 		workFile = specialFixes(self.collapsedText)
 		workFile = renderControlSeqs(workFile)
 		postConversionSanityCheck(workFile)
