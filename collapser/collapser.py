@@ -18,7 +18,7 @@ import renderer_latex
 
 manifestFile = "manifest.txt"
 outputDir = "output/"
-alternateOutputFile = outputDir + "alternate.tex"
+alternateOutputFile = outputDir + "alternate"
 collapsedFileName = outputDir + "collapsed.txt"
 
 
@@ -78,6 +78,9 @@ def main():
 		if opt == "-i":
 			inputFile = arg
 		elif opt == "-o":
+			if len(re.findall(r"(\/|(\.(pdf|tex|txt)))", arg)) > 0:
+				print "Please do not include paths or file extensions in output file (use --output to specify format)."
+				sys.exit()
 			outputFile = arg
 		elif opt == "--help":
 			print "Help."

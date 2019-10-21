@@ -6,12 +6,14 @@ import re
 import result
 import fileio
 import terminal
+import sys
 
 latexBegin = "fragments/begin.tex"
 latexEnd = "fragments/end.tex"
 latexFrontMatter = "fragments/frontmatter.tex"
 latexPostFrontMatter = "fragments/postfrontmatter.tex"
 
+# TODO Add cleanup step to get rid of temp files
 
 class RendererLatex(renderer.Renderer):
 
@@ -22,9 +24,13 @@ class RendererLatex(renderer.Renderer):
 		workFile = specialFixes(self.collapsedText)
 		workFile = renderControlSeqs(workFile)
 		postConversionSanityCheck(workFile)
-		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])	
-		fileio.writeOutputFile(outputFileName, stagedFileText)
-		outputPDF(self.params["outputDir"], outputFileName, self.params["padding"])
+		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])
+		latexFileName = outputFileName + ".tex"
+		print "latexFileName: '%s'" % latexFileName
+		fileio.writeOutputFile(latexFileName, stagedFileText)
+		pdfFileName = outputFileName + ".pdf"
+		print "pdfFileName: '%s'" % pdfFileName
+		outputPDF(self.params["outputDir"], latexFileName, pdfFileName, self.params["padding"])
 
 
 # Handle any tweaks to the rendered text before we begin the latex conversion.
@@ -163,8 +169,8 @@ def latexWrapper(text, seed, includeFrontMatter):
 
 
 
-def outputPDF(outputDir, outputFile, padding):
-	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (outputDir, outputFile))
+def outputPDF(outputDir, inputFile, outputFile, padding):
+	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (outputDir, inputFile))
 	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
 	latexLooksGood = postLatexSanityCheck(result["output"])
 	if not latexLooksGood:
