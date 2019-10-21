@@ -185,6 +185,7 @@ def main():
 def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding):
 	if outputFormat != "":
 		renderParams = {
+			"fileId": outputFile,
 			"seed": seed,
 			"doFront": doFront,
 			"padding": padding,
@@ -197,7 +198,7 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, pa
 		if renderer is None:
 			print "No rendering requested or available."
 		else:
-			renderer.render(outputFile)
+			renderer.render()
 
 
 
