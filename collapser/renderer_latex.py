@@ -26,16 +26,16 @@ class RendererLatex(renderer.Renderer):
 
 	def makeStagedFile(self):
 		workFile = specialFixes(self.collapsedText)
-		workFile = renderControlSeqs(workFile)
-		postConversionSanityCheck(workFile)
+		workFile = renderControlSeqsInLatex(workFile)
+		postLatexificationSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])
 		latexFileName = self.params["fileId"] + ".tex"
 		fileio.writeOutputFile(latexFileName, stagedFileText)
 
 	def makeOutputFile(self):
-		latexFileName = self.params["fileId"] + ".tex"
-		pdfFileName = self.params["fileId"] + ".pdf"
-		outputPDF(self.params["outputDir"], latexFileName, pdfFileName, self.params["padding"])
+		inputFileName = self.params["fileId"] + ".tex"
+		outputFileName = self.params["fileId"] + ".pdf"
+		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["padding"])
 
 
 
@@ -62,7 +62,7 @@ def specialFixes(text):
 
 
 # Render all control sequences in appropriate latex
-def renderControlSeqs(sourceText):
+def renderControlSeqsInLatex(sourceText):
 	rendered = []
 	pos = 0
 
@@ -129,7 +129,7 @@ def renderControlSeqs(sourceText):
 
 
 # Raise errors if anything unexpected is found in the converted output.
-def postConversionSanityCheck(text):
+def postLatexificationSanityCheck(text):
 	# Look for unexpected characters etc. here
 	# Note: can't use find_line_number_for_file etc. b/c those markers have been stripped.
 	pos = text.find('_')
