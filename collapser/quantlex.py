@@ -190,7 +190,6 @@ def lex(text):
 		result.package.append(tok)
 		penultTok = prevTok
 		prevTok = tok
-	print result
 	return result
 
 
