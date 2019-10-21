@@ -5,10 +5,10 @@ import renderer
 import re
 import fileio
 
-class RendererText(renderer.Renderer):
+class RendererHTML(renderer.Renderer):
 
 	def render(self):
-		print "Rendering to plain text."
+		print "Rendering to HTML."
 		self.makeStagedFile()
 		self.makeOutputFile()
 
@@ -16,11 +16,11 @@ class RendererText(renderer.Renderer):
 		pass
 
 	def makeOutputFile(self):
-		self.collapsedText = prepForTextOutput(self.collapsedText)
+		self.collapsedText = prepForHTMLOutput(self.collapsedText)
 		workFile = self.renderFormattingSequences()
-		workFile = specialTextFixes(workFile)
-		postTextificationSanityCheck(workFile)
-		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".txt"
+		workFile = specialHTMLFixes(workFile)
+		postHTMLificationSanityCheck(workFile)
+		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".html"
 		fileio.writeOutputFile(outputFileName, workFile)
 
 	def renderFormattingSequence(self, contents):
@@ -30,73 +30,78 @@ class RendererText(renderer.Renderer):
 			partTitle = contents[2]
 			epigraph = contents[3]
 			source = contents[4]
-			return "\n\n\n\n\n" + partNum + "\n\n" + partTitle + "\n\n\n\n" + epigraph + "\n\n" + source + "\n\n"
+			return "<h1>" + partNum + ": " + partTitle + "</h1><p>&nbsp;</p><blockquote>" + epigraph + "</blockquote><blockquote><i>" + source + "</i></blockquote><p>&nbsp;</p>"
 		if code == "epigraph":
 			epigraph = contents[1]
 			source = contents[2]
-			return "\n\n" + epigraph + "\n\n" + source + "\n\n"
+			return "<blockquote>" + epigraph + "</blockquote><blockquote><i>" + source + "</i></blockquote><p>&nbsp;</p>"
 		if code == "chapter":
 			chapNum = contents[1]
 			intro = "" if chapNum == "EPILOGUE" else "Chapter "
-			return "\n\n\n\n" + intro + chapNum + "\n\n\n"
+			return "<h2>" + intro + chapNum + "</h2>"
 		if code == "section_break":
-			return "\n#\n"
+			return "<hr>"
 		if code == "verse":
-			text = indent(contents[1])
-			return "\n\n" + text + "\n\n"
+			text = contents[1]
+			return "<blockquote><i>" + text + "</i></blockquote>"
 		if code == "verse_inline":
-			text = indent(contents[1])
-			return "\n    " + text + "\n"
+			text = contents[1]
+			return "\n<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + text + "</i>\n"
 		if code == "pp":
-			return "\n\n"
+			return "</p><p>"
 		if code == "i":
 			text = contents[1]
-			return "_" + text + "_"
+			return "<i>" + text + "</i>"
 		if code == "vspace":
 			# TODO: Make this work if there's a need.
-			return "\n\n\n"
+			return "<p>&nbsp;</p>"
 
 		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, contents)) 
 
 
-def indent(text):
-	lines = text.split('\n')
-	lines_indented = map(lambda line: "    " + line, lines)
-	return '\n'.join(lines_indented)
-
-def prepForTextOutput(text):
+def prepForHTMLOutput(text):
 	# Fixes that need to happen before we expand formatting sequences.
-
-	# Get rid of extra whitespace on lines.
-	text = re.sub(r"\n[ \t]*\n", "\n\n", text)
-
-	# Collapse multiple line breaks in a row (before formatter adds any)
-	text = re.sub(r"[\n]{3,}", "\n\n", text)
 
 	# Remove space at start of lines (before formatter adds any)
 	text = re.sub(r"\n[ \t]*", "\n", text)
 
 	return text
 
-def specialTextFixes(text):
+def specialHTMLFixes(text):
 	# Fixes that should happen after all output is rendered.
 	# Fix unicode quotes and special chars
-	text = re.sub(r"’", "'", text)
-	text = re.sub(r"‘", "'", text)
-	text = re.sub(r"“", '"', text)
-	text = re.sub(r"”", '"', text)
+	text = re.sub(r"'", "&rsquo;", text)
+	text = re.sub(r"’", "&rsquo;", text)
+	text = re.sub(r"‘", "&lsquo;", text)
+	text = re.sub(r"“", '&ldquo;', text)
+	text = re.sub(r"”", '&rdquo;', text)
 	text = re.sub(r"…", "...", text)
-	text = re.sub(r"—", "---", text)
+	text = re.sub(r"—", "&mdash;", text)
+	text = re.sub(r"---", "&mdash;", text)
 
-	# Remove Latex explicit line break markers
-	text = re.sub(r"\\\\", "", text)
+	# Convert Latex explicit line break markers
+	text = re.sub(r"\\\\", "<br>", text)
 
 	# Fix single spaces at start of new lines (we can't get rid of these earlier because we might have a tag like {pp} we haven't processed yet, but we only look for single spaces to avoid removing epigraph indents.)
 	text = re.sub(r"\n (\w)", r"\n\1", text)
 
+	# Fix line breaks in the middle of sentences.
+	text = re.sub(r"\n([a-z])", r" \1", text)
+
+	# Convert to paragraphs.
+	lines = text.split('\n')
+	output_lines = []
+	for line in lines:
+		if len(line) > 0 and line[0] != "<":
+			output_lines.append("<p>" + line + "</p>")
+		else:
+			output_lines.append(line)
+	# text = re.sub(r"\n(.*)\n", r"<p>\1</p>\n\n", text)
+	text = '\n\n'.join(output_lines)
+
 	return text
 
-def postTextificationSanityCheck(text):
+def postHTMLificationSanityCheck(text):
 	# Look for unexpected characters etc. here
 	pos = text.find('{')
 	if pos is not -1:

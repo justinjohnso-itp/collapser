@@ -18,6 +18,7 @@ import result
 import differ
 import renderer_latex
 import renderer_text
+import renderer_html
 
 manifestFile = "manifest.txt"
 outputDir = "output/"
@@ -34,8 +35,7 @@ Arguments:
   --seed=x       Use the given integer as a seed
   --seed=random  Don't use an incremental seed; use one purely at random.
   --output=x	 Format to output (default none)
-  		"pdf": 	 Latex -> PDF
-  		"txt":   Plain text
+  				 "pdf", "txt", "html"
   --noconfirm	 Skip variant confirmation
   --strategy=x   Selection strategy.
   		"random": default
@@ -71,7 +71,7 @@ def main():
 	padding = -1
 	randSeed = False
 
-	VALID_OUTPUTS = ["pdf", "txt", "none"]
+	VALID_OUTPUTS = ["pdf", "txt", "html", "none"]
 
 	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "padding="])
 	if len(args) > 0:
@@ -199,6 +199,9 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, pa
 			renderer = renderer_latex.RendererLatex(collapsedText, renderParams)
 		elif outputFormat == "txt":
 			renderer = renderer_text.RendererText(collapsedText, renderParams)
+		elif outputFormat == "html":
+			renderer = renderer_html.RendererHTML(collapsedText, renderParams)
+
 
 		if renderer is None:
 			print "No rendering requested or available."
