@@ -14,7 +14,7 @@ class AbstractRenderer(renderer.Renderer):
 	def makeOutputFile(self):
 		pass
 
-	def renderControlSequence(self, contents):
+	def renderFormattingSequence(self, contents):
 		code = contents[0]
 		if code == "i":
 			text = contents[1]
@@ -99,41 +99,41 @@ def test_getNextCtrlSeq_EdgeCases():
 	assert result is None
 
 
-def test_renderControlSequences():
+def test_renderFormattingSequences():
 	text = '''This is a test of {i/emphasis} and {epigraph/A quotation/Rand Miller} other stuff.'''
 	emptyParams = {}
 	ar = AbstractRenderer(text, emptyParams)
 	expectedOutput = '''This is a test of /emphasis/ and -- A quotation -- (Rand Miller) other stuff.'''
-	result = ar.renderControlSequences()
+	result = ar.renderFormattingSequences()
 	assert result == expectedOutput
-	result = ar.renderControlSequences()
+	result = ar.renderFormattingSequences()
 	assert result == expectedOutput
 
-def test_renderControlSequences_EdgeCases():
+def test_renderFormattingSequences_EdgeCases():
 	emptyParams = {}
 
 	text = '''No control seqs here.'''
 	ar = AbstractRenderer(text, emptyParams)
-	result = ar.renderControlSequences()
+	result = ar.renderFormattingSequences()
 	assert result == text
 
 	text = '''{i/One}{i/Two}{i/Three}'''
 	ar = AbstractRenderer(text, emptyParams)
-	result = ar.renderControlSequences()
+	result = ar.renderFormattingSequences()
 	assert result == "/One//Two//Three/"
 
 	text = '''{i/One} more time.'''
 	ar = AbstractRenderer(text, emptyParams)
-	result = ar.renderControlSequences()
+	result = ar.renderFormattingSequences()
 	assert result == "/One/ more time."
 
 	text = '''One more {i/time}'''
 	ar = AbstractRenderer(text, emptyParams)
-	result = ar.renderControlSequences()
+	result = ar.renderFormattingSequences()
 	assert result == "One more /time/"
 
 	text = '''One more {i/time}!'''
 	ar = AbstractRenderer(text, emptyParams)
-	result = ar.renderControlSequences()
+	result = ar.renderFormattingSequences()
 	assert result == "One more /time/!"
 

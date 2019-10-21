@@ -24,7 +24,7 @@ class RendererLatex(renderer.Renderer):
 
 	def makeStagedFile(self):
 		self.collapsedText = specialLatexAndPDFFixes(self.collapsedText)
-		workFile = self.renderControlSequences()
+		workFile = self.renderFormattingSequences()
 		postLatexificationSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])
 		latexFileName = self.params["fileId"] + ".tex"
@@ -35,7 +35,7 @@ class RendererLatex(renderer.Renderer):
 		outputFileName = self.params["fileId"] + ".pdf"
 		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["padding"])
 
-	def renderControlSequence(self, contents):
+	def renderFormattingSequence(self, contents):
 		code = contents[0]
 		if code == "part":
 			partNum = contents[1]

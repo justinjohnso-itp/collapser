@@ -27,7 +27,7 @@ class Renderer(object):
 		pass
 
 	@abc.abstractmethod
-	def renderControlSequence(self, text):
+	def renderFormattingSequence(self, text):
 		return text
 
 
@@ -40,14 +40,14 @@ class Renderer(object):
 		self.collapsedText = text
 
 
-	def renderControlSequences(self):
+	def renderFormattingSequences(self):
 		self.resetCtrlSeqPos()
 		ctrlSeq = self.getNextCtrlSeq()
 		output = []
 		while ctrlSeq is not None:
 			leadingText = ctrlSeq[0]
 			seqParams = ctrlSeq[1:]
-			rendered = self.renderControlSequence(seqParams)
+			rendered = self.renderFormattingSequence(seqParams)
 			output.append(leadingText)
 			output.append(rendered)
 			ctrlSeq = self.getNextCtrlSeq()

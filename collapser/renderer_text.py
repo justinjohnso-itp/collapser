@@ -17,13 +17,13 @@ class RendererText(renderer.Renderer):
 
 	def makeOutputFile(self):
 		self.collapsedText = prepForTextOutput(self.collapsedText)
-		workFile = self.renderControlSequences()
+		workFile = self.renderFormattingSequences()
 		workFile = specialTextFixes(workFile)
 		postTextificationSanityCheck(workFile)
 		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".txt"
 		fileio.writeOutputFile(outputFileName, workFile)
 
-	def renderControlSequence(self, contents):
+	def renderFormattingSequence(self, contents):
 		code = contents[0]
 		if code == "part":
 			partNum = contents[1]
