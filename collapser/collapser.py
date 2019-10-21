@@ -158,13 +158,8 @@ def main():
 		seed0 = seeds[leastSimilarPair[0]]
 		text1 = texts[leastSimilarPair[1]]
 		seed1 = seeds[leastSimilarPair[1]]
-		makeOutputFile(text0, outputFile, seed0, doFront)
-		makeOutputFile(text1, alternateOutputFile, seed1, doFront)
-		if outputFormat == "pdf":
-			print "Running lualatex (text 1)..."
-			outputPDF(outputFile, padding)
-			print "Running lualatex (text 2)..."
-			outputPDF(alternateOutputFile, padding)
+		render(outputFormat, text0, outputDir, outputFile, seed0, doFront, padding)
+		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, padding)
 
 	else:
 		if strategy is not "random" and strategy is not "skipbanned":
@@ -182,19 +177,25 @@ def main():
 		collapsedText = getCollapsedTextFromFile(inputFile, params)
 		fileio.writeOutputFile(rawOutputFile, collapsedText)
 
-		if outputFormat != "":
-			renderParams = {
-				"seed": seed,
-				"doFront": doFront,
-				"padding": padding,
-				"outputDir": outputDir
-			}
-			renderer = None
-			if outputFormat == "pdf":
-				renderer = renderer_latex.RendererLatex(collapsedText, renderParams)
+		render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding)
 
-			if renderer is not None:
-				renderer.render(outputFile)
+
+def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding):
+	if outputFormat != "":
+		renderParams = {
+			"seed": seed,
+			"doFront": doFront,
+			"padding": padding,
+			"outputDir": outputDir
+		}
+		renderer = None
+		if outputFormat == "pdf":
+			renderer = renderer_latex.RendererLatex(collapsedText, renderParams)
+
+		if renderer is None:
+			print "No rendering requested or available."
+		else:
+			renderer.render(outputFile)
 
 
 
