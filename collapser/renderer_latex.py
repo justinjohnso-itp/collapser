@@ -214,7 +214,7 @@ def getStats(latexLog):
 
 def addPadding(outputFile, reportedPages, desiredPageCount):
 
-	numPDFPages = terminal.countPages("output/combined.pdf")
+	numPDFPages = countPages("output/combined.pdf")
 	if numPDFPages != reportedPages:
 		print "*** Latex reported generating %d page PDF, but pdftk reported the output was %d pages instead. Aborting." % (reportedPages, numPDFPages)
 		sys.exit()
@@ -226,11 +226,34 @@ def addPadding(outputFile, reportedPages, desiredPageCount):
 	# If equal, no action needed. Otherwise, add padding to the desired number of pages, which must remain constant in print on demand so the cover art doesn't need to be resized.
 
 	if numPDFPages < desiredPageCount:
-		terminal.addBlankPages("output/combined.pdf", "output/combined-padded.pdf", desiredPageCount - numPDFPages)
-		numCombinedPages = terminal.countPages("output/combined-padded.pdf")
+		addBlankPages("output/combined.pdf", "output/combined-padded.pdf", desiredPageCount - numPDFPages)
+		numCombinedPages = countPages("output/combined-padded.pdf")
 		if numCombinedPages != desiredPageCount:
 			print "*** Tried to pad output PDF to %d pages but result was %d pages instead." % (desiredPageCount, numPDFPages)
 			sys.exit()
+
+
+
+# Note: This requires pdftk, and specifically the version here updated for newer MacOS: https://stackoverflow.com/questions/39750883/pdftk-hanging-on-macos-sierra
+# https://www.pdflabs.com/docs/pdftk-man-page/
+
+def countPages(pdfPath):
+	result = terminal.runCommand("pdftk", "%s dump_data | grep NumberOfPages" % pdfPath, shell=True)
+	if not result["success"]:
+		print "*** Couldn't get stats on output PDF; aborting."
+		sys.exit()
+	# == "NumberOfPages: 18"
+	pagesResult = re.search(r"NumberOfPages: ([0-9]+)", result["output"])
+	numPDFPages = int(pagesResult.groups()[0])
+	return numPDFPages
+
+
+# This also required pdftk, plus a blankpages.pdf with a large number of empty pages of the same size as the rest of the book.
+def addBlankPages(inputPDF, outputPDF, numBlankPages):
+	result = terminal.runCommand("pdftk", "A=%s B=extras/blankpages.pdf cat A B1-%s output %s" % (inputPDF, numBlankPages, outputPDF))
+	if not result["success"]:
+		print "*** Couldn't generate padded PDF. %s" % result["output"]
+		sys.exit()
 
 
 

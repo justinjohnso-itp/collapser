@@ -27,24 +27,3 @@ def runCommand(command, paramString, shell=False):
 	return result
 
 
-# Note: This requires pdftk, and specifically the version here updated for newer MacOS: https://stackoverflow.com/questions/39750883/pdftk-hanging-on-macos-sierra
-# https://www.pdflabs.com/docs/pdftk-man-page/
-
-def countPages(pdfPath):
-	result = runCommand("pdftk", "%s dump_data | grep NumberOfPages" % pdfPath, shell=True)
-	if not result["success"]:
-		print "*** Couldn't get stats on output PDF; aborting."
-		sys.exit()
-	# == "NumberOfPages: 18"
-	pagesResult = re.search(r"NumberOfPages: ([0-9]+)", result["output"])
-	numPDFPages = int(pagesResult.groups()[0])
-	return numPDFPages
-
-
-# This also required pdftk, plus a blankpages.pdf with a large number of empty pages of the same size as the rest of the book.
-def addBlankPages(inputPDF, outputPDF, numBlankPages):
-	result = runCommand("pdftk", "A=%s B=extras/blankpages.pdf cat A B1-%s output %s" % (inputPDF, numBlankPages, outputPDF))
-	if not result["success"]:
-		print "*** Couldn't generate padded PDF. %s" % result["output"]
-		sys.exit()
-

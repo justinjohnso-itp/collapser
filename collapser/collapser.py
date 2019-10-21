@@ -19,8 +19,7 @@ import renderer_latex
 manifestFile = "manifest.txt"
 outputDir = "output/"
 alternateOutputFile = outputDir + "alternate.tex"
-rawOutputFile = outputDir + "raw_out.txt"
-blankPDF = "extras/blankpages.pdf"
+collapsedFileName = outputDir + "collapsed.txt"
 
 
 
@@ -175,7 +174,7 @@ def main():
 			print "Seed (requested): %d" % seed
 
 		collapsedText = collapseInputText(inputFile, params)
-		fileio.writeOutputFile(rawOutputFile, collapsedText)
+		fileio.writeOutputFile(collapsedFileName, collapsedText)
 
 		render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding)
 
