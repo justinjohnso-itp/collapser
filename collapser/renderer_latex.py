@@ -17,15 +17,13 @@ latexPostFrontMatter = "fragments/postfrontmatter.tex"
 
 class RendererLatex(renderer.Renderer):
 
-	# collapsedText, params
-
 	def render(self):
 		print "Rendering to LaTeX/PDF."
 		self.makeStagedFile()
 		self.makeOutputFile()
 
 	def makeStagedFile(self):
-		workFile = specialFixes(self.collapsedText)
+		workFile = specialLatexAndPDFFixes(self.collapsedText)
 		workFile = self.renderControlSequences()
 		postLatexificationSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])
@@ -78,7 +76,7 @@ class RendererLatex(renderer.Renderer):
 
 
 # Handle any tweaks to the rendered text before we begin the latex conversion.
-def specialFixes(text):
+def specialLatexAndPDFFixes(text):
 
 	# Ensure verses don't break across pages.
 	# {verse/A looking-glass held above this stream...}
