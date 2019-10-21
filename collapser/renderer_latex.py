@@ -41,8 +41,6 @@ class RendererLatex(renderer.Renderer):
 
 # Handle any tweaks to the rendered text before we begin the latex conversion.
 def specialFixes(text):
-	# Strip file identifiers (used by the lexer and parser to know what source file a given line comes from, so useful error messages can be printed).
-	text = re.sub(r"\% file (.*)\n", "", text)
 
 	# Ensure verses don't break across pages.
 	# {verse/A looking-glass held above this stream...}
