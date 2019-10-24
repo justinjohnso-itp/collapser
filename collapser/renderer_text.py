@@ -76,6 +76,9 @@ def prepForTextOutput(text):
 	# Remove space at start of lines (before formatter adds any)
 	text = re.sub(r"\n[ \t]*", "\n", text)
 
+	# Fix extra spacing around {pp} tags.
+	text = re.sub(r"[\n ]*\{pp\}[\n ]*", "{pp}", text)
+
 	return text
 
 def specialTextFixes(text):
