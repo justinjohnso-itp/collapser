@@ -92,7 +92,8 @@ def specialTextFixes(text):
 	text = re.sub(r"—", "---", text)
 
 	# Remove Latex explicit line break markers
-	text = re.sub(r"\\\\", "", text)
+	text = re.sub(r"\\\\[ ]*\n", "\n", text)
+	text = re.sub(r"\\\\[ ]*", "\n", text)
 
 	# Fix single spaces at start of new lines (we can't get rid of these earlier because we might have a tag like {pp} we haven't processed yet, but we only look for single spaces to avoid removing epigraph indents.)
 	text = re.sub(r"\n (\w)", r"\n\1", text)
