@@ -71,7 +71,7 @@ def prepForTextOutput(text):
 	text = re.sub(r"\n[ \t]*\n", "\n\n", text)
 
 	# Collapse multiple line breaks in a row (before formatter adds any)
-	text = re.sub(r"[\n]{3,}", "\n\n", text)
+	text = re.sub(r"[\n ]{3,}", "\n\n", text)
 
 	# Remove space at start of lines (before formatter adds any)
 	text = re.sub(r"\n[ \t]*", "\n", text)
