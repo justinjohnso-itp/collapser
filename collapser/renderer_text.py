@@ -42,11 +42,11 @@ class RendererText(renderer.Renderer):
 		if code == "section_break":
 			return "\n#\n"
 		if code == "verse":
-			text = indent(contents[1]).strip()
+			text = indent(contents[1])
 			return "\n\n" + text + "\n\n"
 		if code == "verse_inline":
-			text = indent(contents[1]).strip()
-			return "\n    " + text + "\n"
+			text = indent(contents[1])
+			return "\n" + text + "\n"
 		if code == "pp":
 			return "\n\n"
 		if code == "i":
@@ -61,7 +61,8 @@ class RendererText(renderer.Renderer):
 
 def indent(text):
 	lines = text.split('\n')
-	lines_indented = map(lambda line: "    " + line, lines)
+	lines_indented = map(lambda line: "\t" + line, lines)
+	print "lines_indented: %s" % lines_indented
 	return '\n'.join(lines_indented)
 
 def prepForTextOutput(text):
@@ -79,6 +80,10 @@ def prepForTextOutput(text):
 	# Fix extra spacing around {pp} tags.
 	text = re.sub(r"[\n ]*\{pp\}[\n ]*", "{pp}", text)
 
+	# Remove Latex explicit line break markers
+	text = re.sub(r"\\\\[ ]*\n", "\n", text)
+	text = re.sub(r"\\\\[ ]*", "\n", text)
+
 	return text
 
 def specialTextFixes(text):
@@ -90,10 +95,6 @@ def specialTextFixes(text):
 	text = re.sub(r"”", '"', text)
 	text = re.sub(r"…", "...", text)
 	text = re.sub(r"—", "---", text)
-
-	# Remove Latex explicit line break markers
-	text = re.sub(r"\\\\[ ]*\n", "\n", text)
-	text = re.sub(r"\\\\[ ]*", "\n", text)
 
 	# Fix single spaces at start of new lines (we can't get rid of these earlier because we might have a tag like {pp} we haven't processed yet, but we only look for single spaces to avoid removing epigraph indents.)
 	text = re.sub(r"\n (\w)", r"\n\1", text)
