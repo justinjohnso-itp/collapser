@@ -42,10 +42,10 @@ class RendererText(renderer.Renderer):
 		if code == "section_break":
 			return "\n#\n"
 		if code == "verse":
-			text = indent(contents[1])
+			text = indent(contents[1]).strip()
 			return "\n\n" + text + "\n\n"
 		if code == "verse_inline":
-			text = indent(contents[1])
+			text = indent(contents[1]).strip()
 			return "\n    " + text + "\n"
 		if code == "pp":
 			return "\n\n"
