@@ -16,6 +16,7 @@ class RendererMarkdown(renderer.Renderer):
 		self.collapsedText = prepForMarkdownOutput(self.collapsedText)
 		workFile = self.renderFormattingSequences()
 		workFile = specialMarkdownFixes(workFile)
+		workFile = generateTitle() + workFile
 		postMarkdownificationSanityCheck(workFile)
 		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".md"
 		fileio.writeOutputFile(outputFileName, workFile)
@@ -96,5 +97,15 @@ def postMarkdownificationSanityCheck(text):
 	if pos is not -1:
 		raise ValueError("Found invalid underscore '{' character on line %d:\n%s" % (result.find_line_number(text, pos), result.find_line_text(text, pos)) )
 
+def generateTitle():
+	return """---
+title: Subcutanean
+author: Aaron A. Reed
+rights: All Rights Reserved
+language: en-US
+date: 2020-02-02
+...
+
+"""
 
 
