@@ -62,7 +62,6 @@ class RendererText(renderer.Renderer):
 def indent(text):
 	lines = text.split('\n')
 	lines_indented = map(lambda line: "\t" + line, lines)
-	print "lines_indented: %s" % lines_indented
 	return '\n'.join(lines_indented)
 
 def prepForTextOutput(text):
