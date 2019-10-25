@@ -45,9 +45,9 @@ cover-image: fragments/subcutanean-ebook-cover.jpg
 
 """ % seed
 
-# --epub-cover-image=fragments/subcutanean-ebook-cover.jpg
+# Note: This requires pandoc to be installed on the OS.
 def outputEPub(outputDir, inputFile, outputFile):
-	result = terminal.runCommand('pandoc', '%stitle.md %s -o %s --css=fragments/epub.css' % (outputDir, inputFile, outputFile))
+	result = terminal.runCommand('pandoc', '%stitle.md %s -o %s --css=fragments/epub.css --toc' % (outputDir, inputFile, outputFile))
 	if not result["success"]:
 		print "*** Couldn't run pandoc; aborting."
 		print result["output"]
