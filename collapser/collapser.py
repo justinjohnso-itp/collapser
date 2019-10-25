@@ -38,7 +38,8 @@ Arguments:
   --seed=x       Use the given integer as a seed
   --seed=random  Don't use an incremental seed; use one purely at random.
   --output=x	 Format to output (default none)
-  				 "pdf", "txt", "html", "md", "epub", "mobi"
+  				 "pdf" (for POD), "pdfdigital" (for online use),
+  				 "txt", "html", "md", "epub", "mobi"
   --noconfirm	 Skip variant confirmation
   --strategy=x   Selection strategy.
   		"random": default
@@ -73,8 +74,9 @@ def main():
 	preferenceForAuthorsVersion = 20
 	padding = -1
 	randSeed = False
+	isDigital = False
 
-	VALID_OUTPUTS = ["pdf", "txt", "html", "md", "epub", "mobi", "none"]
+	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "none"]
 
 	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "padding="])
 	if len(args) > 0:
@@ -108,6 +110,9 @@ def main():
 		elif opt == "--output":
 			if arg != "" and arg not in VALID_OUTPUTS:
 				print "Invalid --output parameter '%s': must be one of %s" % (arg, VALID_OUTPUTS)
+			if arg == "pdfdigital":
+				arg = "pdf"
+				isDigital = True
 			outputFormat = arg
 			if arg == "none":
 				outputFormat = ""
@@ -166,8 +171,8 @@ def main():
 		seed0 = seeds[leastSimilarPair[0]]
 		text1 = texts[leastSimilarPair[1]]
 		seed1 = seeds[leastSimilarPair[1]]
-		render(outputFormat, text0, outputDir, outputFile, seed0, doFront, padding)
-		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, padding)
+		render(outputFormat, text0, outputDir, outputFile, seed0, doFront, padding, isDigital)
+		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, padding, isDigital)
 
 	else:
 		if strategy is not "random" and strategy is not "skipbanned":
@@ -185,17 +190,19 @@ def main():
 		collapsedText = collapseInputText(inputFile, params)
 		fileio.writeOutputFile(collapsedFileName, collapsedText)
 
-		render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding)
+		render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding, isDigital)
 
 
-def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding):
+def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding, isDigital):
 	if outputFormat != "":
+		print "isDigital: %s" % isDigital
 		renderParams = {
 			"fileId": outputFile,
 			"seed": seed,
 			"doFront": doFront,
 			"padding": padding,
-			"outputDir": outputDir
+			"outputDir": outputDir,
+			"isDigital": isDigital
 		}
 		renderer = None
 		if outputFormat == "pdf":

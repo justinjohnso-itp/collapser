@@ -33,7 +33,7 @@ class RendererLatex(renderer.Renderer):
 	def makeOutputFile(self):
 		inputFileName = self.params["fileId"] + ".tex"
 		outputFileName = self.params["fileId"] + ".pdf"
-		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["padding"])
+		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["padding"], self.params["isDigital"])
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
@@ -145,7 +145,7 @@ def latexWrapper(text, seed, includeFrontMatter):
 
 
 
-def outputPDF(outputDir, inputFile, outputFile, padding):
+def outputPDF(outputDir, inputFile, outputFile, padding, isDigital):
 	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (outputDir, inputFile))
 	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
 	latexLooksGood = postLatexSanityCheck(result["output"])
@@ -157,6 +157,9 @@ def outputPDF(outputDir, inputFile, outputFile, padding):
 		print "Success! Generated %d page PDF." % stats["numPages"]
 		if padding is not -1:
 			addPadding(outputFile, stats["numPages"], padding)
+		if isDigital:
+			print "isDigital, so adding cover"
+			addCover(outputFile, "fragments/cover.pdf")
 
 
 
@@ -214,6 +217,13 @@ def addPadding(outputFile, reportedPages, desiredPageCount):
 			print "*** Tried to pad output PDF to %d pages but result was %d pages instead." % (desiredPageCount, numPDFPages)
 			sys.exit()
 
+
+def addCover(inputPDF, coverfile):
+	arguments = "A=%s B=output/%s cat A B output output/subcutanean-with-cover.pdf" % (coverfile, inputPDF)
+	result = terminal.runCommand("pdftk", arguments)
+	if not result["success"]:
+		print "*** Couldn't generate PDF with cover. %s" % result["output"]
+		sys.exit()
 
 
 # Note: This requires pdftk, and specifically the version here updated for newer MacOS: https://stackoverflow.com/questions/39750883/pdftk-hanging-on-macos-sierra
