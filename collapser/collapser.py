@@ -31,7 +31,7 @@ collapsedFileName = outputDir + "collapsed.txt"
 
 
 def showUsage():
-	print """Usage: collapser -i <INPUT> -o <OUTPUT> options
+	print """Usage: collapser -i <INPUT> -o <OUTPUT_KEY> options
 Arguments:
   --help         Show this message
   --front		 Include frontmatter
