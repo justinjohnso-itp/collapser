@@ -19,6 +19,7 @@ import differ
 import renderer_latex
 import renderer_text
 import renderer_html
+import renderer_markdown
 
 manifestFile = "manifest.txt"
 outputDir = "output/"
@@ -71,7 +72,7 @@ def main():
 	padding = -1
 	randSeed = False
 
-	VALID_OUTPUTS = ["pdf", "txt", "html", "none"]
+	VALID_OUTPUTS = ["pdf", "txt", "html", "md", "none"]
 
 	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "padding="])
 	if len(args) > 0:
@@ -201,7 +202,8 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, pa
 			renderer = renderer_text.RendererText(collapsedText, renderParams)
 		elif outputFormat == "html":
 			renderer = renderer_html.RendererHTML(collapsedText, renderParams)
-
+		elif outputFormat == "md":
+			renderer = renderer_markdown.RendererMarkdown(collapsedText, renderParams)
 
 		if renderer is None:
 			print "No rendering requested or available."
