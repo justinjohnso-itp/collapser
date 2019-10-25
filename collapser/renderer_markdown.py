@@ -12,6 +12,9 @@ class RendererMarkdown(renderer.Renderer):
 		self.makeOutputFile()
 
 	def makeStagedFile(self):
+		pass
+		
+	def makeOutputFile(self):
 		print "Rendering to Markdown."
 		self.collapsedText = prepForMarkdownOutput(self.collapsedText)
 		workFile = self.renderFormattingSequences()
@@ -20,9 +23,6 @@ class RendererMarkdown(renderer.Renderer):
 		postMarkdownificationSanityCheck(workFile)
 		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".md"
 		fileio.writeOutputFile(outputFileName, workFile)
-
-	def makeOutputFile(self):
-		pass
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
