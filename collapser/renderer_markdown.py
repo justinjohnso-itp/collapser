@@ -19,6 +19,8 @@ class RendererMarkdown(renderer.Renderer):
 		self.collapsedText = prepForMarkdownOutput(self.collapsedText)
 		workFile = self.renderFormattingSequences()
 		workFile = specialMarkdownFixes(workFile)
+		if self.params["doFront"]:
+			workFile = generateFrontMatter(self.params["seed"]) + workFile
 		postMarkdownificationSanityCheck(workFile)
 		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".md"
 		fileio.writeOutputFile(outputFileName, workFile)
@@ -95,5 +97,30 @@ def postMarkdownificationSanityCheck(text):
 	pos = text.find('{')
 	if pos is not -1:
 		raise ValueError("Found invalid underscore '{' character on line %d:\n%s" % (result.find_line_number(text, pos), result.find_line_text(text, pos)) )
+
+
+def generateFrontMatter(seed):
+	text = ""
+	if seed == -1:
+		text = """
+This is a special Advance Reader Copy of *Subcutanean*. In the final version, each printing of the book will be unique, generated from a specific seed. Words, sentences, or whole scenes may appear in some printings but not in others, or vice versa. No two copies will be alike.
+
+For now, each Advance Reader Copy in this printing shares the seed 01893, and the same text.
+
+subcutanean.textories.com
+"""
+	else:
+		text = """
+The book you’re holding is unique. There is no other exactly like it.
+
+Each printing of *Subcutanean* is different. This is the one and only version generated from seed %s. Words, sentences, or whole scenes may appear in this printing but not in others, or vice versa. No two copies are alike.
+
+But all of them are the same story, more or less. Don’t worry about what’s in the other versions. It doesn’t matter. This is the one that’s happening to you.
+
+This is the one you have.
+
+subcutanean.textories.com
+"""
+	return text
 
 
