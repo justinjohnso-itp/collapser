@@ -35,7 +35,7 @@ class RendererMarkdown(renderer.Renderer):
 		if code == "epigraph":
 			epigraph = contents[1]
 			source = contents[2]
-			return "\n\n" + indent(epigraph) + ">\n>\n" + indent(source) + "\n\n"
+			return "\n\n" + indent(epigraph) + "\n>\n>" + source + "\n\n"
 		if code == "chapter":
 			chapNum = contents[1]
 			intro = "" if chapNum == "EPILOGUE" else "Chapter "
