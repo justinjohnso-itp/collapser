@@ -67,7 +67,10 @@ def parse(tokens, sourceText, parseParams):
 
 			bestPos = -1
 			bestLen = -1
-			if parseParams.chooseStrategy == "shortest":
+			secondBestLen = -1
+			isShortest = parseParams.chooseStrategy == "shortest"
+			if isShortest:
+				secondBestLen = 999999999
 				bestLen = 999999999
 			for pos, key in enumerate(optsToTry):
 				variables.setAllTo(False)
@@ -78,15 +81,18 @@ def parse(tokens, sourceText, parseParams):
 				thisLen = len(handleParsing(tempTokens, parseParamsCopy))
 
 				isBetter = False
-				if parseParams.chooseStrategy == "longest":
-					isBetter = thisLen > bestLen
-				elif parseParams.chooseStrategy == "shortest":
+				if isShortest:
 					isBetter = thisLen < bestLen
+				else:
+					isBetter = thisLen > bestLen
 				if isBetter:
 					bestPos = pos
+					secondBestLen = bestLen
 					bestLen = thisLen
+				elif (isShortest and thisLen < secondBestLen) or (not isShortest and thisLen > secondBestLen):
+					secondBestLen = thisLen
 
-			print "Best was %s at %d" % (optsToTry[bestPos], bestLen)
+			print "Best was %s (%d chars %s than next best)" % (optsToTry[bestPos], abs(bestLen - secondBestLen), "longer" if parseParams.chooseStrategy == "longest" else "shorter")
 			bestDefines.append(optsToTry[bestPos])
 
 		parseParams.setDefines = bestDefines
