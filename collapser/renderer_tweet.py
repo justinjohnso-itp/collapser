@@ -105,7 +105,6 @@ def breakSentenceIntoChunks(sentence, max_size = MAX_TWEET_SIZE):
 			right = breakSentenceIntoChunks(right[0], max_size)
 		return left + right
 
-	print "Couldn't split sentence."
 	return [sentence]
 
 def getNearestPosToMiddle(text, spl, MIN_VIABLE_SPLIT_DIFF = 6):
@@ -131,7 +130,7 @@ def getNearestPosToMiddle(text, spl, MIN_VIABLE_SPLIT_DIFF = 6):
 
 # [("Sentence.", "SPACE"), ("Second sentence.", "PARAGRAPH"), ]
 
-def splitIntoSentences(text, spl):
+def splitIntoSentences(text):
 	text = re.sub(r" +\n", "\n", text)
 	text = re.sub(r"\n{2,}", "\n\n", text)
 	outputArr = []
@@ -171,7 +170,9 @@ def splitIntoSentences(text, spl):
 
 		prevPos = endPos
 
-
+	last = text[prevPos:]
+	outputArr.append(Sentence(last, "SPACE"))
+	
 	return outputArr
 
 
