@@ -130,16 +130,37 @@ def latexWrapper(text, seed, includeFrontMatter):
 	output += text
 	output += templates["end"]
 
-	if seed < 9999:
-		seed = "0%d" % seed
+	print "seed: %d" % seed
+	if seed == -1:
+		print "still"
+		seedPrinted = "01893-b"
+	elif seed < 9999:
+		seedPrinted = "0%d" % seed
+	else:
+		seedPrinted = "%s" % seed
 
 	# Insert the seed number where it appeared in front matter.
-	msg = "This copy was generated from seed #%s and is the only copy generated from that seed." % seed
+	msg = "This copy was generated from seed #%s and is the only copy generated from that seed." % seedPrinted
 	if seed == -1:
-		seed = "01893"
-		msg = "This run of Advance Reader Copies have all been generated from seed #%s." % seed
+		msg = "This run of Advance Reader Copies have all been generated from seed #%s." % seedPrinted
 	output = output.replace("SEED_TEXT", msg)
-	output = output.replace("SEED_NUMBER", "%s" % seed)
+	output = output.replace("SEED_NUMBER", "%s" % seedPrinted)
+
+	frontMatterMsg = ""
+	if seed == -1:
+		print "still"
+		frontMatterMsg = """This is a special Advance Reader Copy of \\textsc{Subcutanean}. In the final version, each printing of the book will be unique, generated from a specific seed. Words, sentences, or whole scenes may appear in some printings but not in others, or vice versa. No two copies will be alike.
+
+For now, each Advance Reader Copy in this printing shares the seed %s, and the same text.""" % seedPrinted
+	else:
+		frontMatterMsg = """The book you're holding is unique. There is no other exactly like it.
+
+Each printing of \\textsc{Subcutanean} is different. This is the one and only version generated from seed %s. Words, sentences, or whole scenes may appear in this printing but not in others, or vice versa. No two copies are alike.
+
+But all of them are the same story, more or less. Don't worry about what's in the other versions. It doesn't matter. This is the one that's happening to you.
+
+This is the one you have.""" % seedPrinted
+	output = output.replace("FRONT_MATTER_MSG", "%s" % frontMatterMsg)
 
 	return output
 

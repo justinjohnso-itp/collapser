@@ -33,7 +33,7 @@ class RendererEPub(renderer.Renderer):
 
 def generateTitle(seed):
 	if seed == -1:
-		seed = "01893"
+		seed = "01893-b"
 	return """---
 title: Subcutanean %s
 author: Aaron A. Reed

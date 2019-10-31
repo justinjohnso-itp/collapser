@@ -101,11 +101,19 @@ def postMarkdownificationSanityCheck(text):
 
 def generateFrontMatter(seed):
 	text = ""
+	
+	if seed == -1:
+		seedPrinted = "01893-b"
+	elif seed < 9999:
+		seedPrinted = "0%d" % seed
+	else:
+		seedPrinted = "%s" % seed
+
 	if seed == -1:
 		text = """
 This is a special Advance Reader Copy of *Subcutanean*. In the final version, each printing of the book will be unique, generated from a specific seed. Words, sentences, or whole scenes may appear in some printings but not in others, or vice versa. No two copies will be alike.
 
-For now, each Advance Reader Copy in this printing shares the seed 01893, and the same text.
+For now, each Advance Reader Copy in this printing shares the same seed, and the same text.
 
 subcutanean.textories.com
 """
@@ -120,7 +128,7 @@ But all of them are the same story, more or less. Don’t worry about what’s i
 This is the one you have.
 
 subcutanean.textories.com
-"""
+""" % seed
 	return text
 
 
