@@ -79,7 +79,26 @@ def test_breakSentenceIntoChunks_Recursive():
 	assert result[3].sentence == " verbose;"
 	assert result[3].join == "PARAGRAPH"
 
+def test_splitIntoSentences():
+	text = """What if Twitter? Only allowed 20.
 
+Chars!"""
+	result = renderer_tweet.splitIntoSentences(text)
+	assert len(result) == 3
+	assert result[0].sentence == "What if Twitter?"
+	assert result[0].join == "SPACE"
+	assert result[1].sentence == "Only allowed 20."
+	assert result[1].join == "PARAGRAPH"
+	assert result[2].sentence == "Chars!"
+	assert result[2].join == "SPACE"
+
+# def test_splitIntoTweets():
+# 	text = "What if Twitter? Only allowed 20. Chars!"
+# 	result = renderer_tweet.splitIntoTweets(text, 20)
+# 	assert len(result) == 3
+# 	assert result[0] == "What if Twitter?"
+# 	assert result[1] == "Only allowed 20."
+# 	assert result[2] == "Chars!"
 
 
 

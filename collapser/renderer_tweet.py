@@ -52,7 +52,7 @@ class Sentence():
 	def __repr__(self):
 		return "(Sentence: \"%s\", join: %s)" % (self.sentence, self.join)
 
-def splitIntoTweets(text):
+def splitIntoTweets(text, max_size = MAX_TWEET_SIZE):
 	sentences = splitIntoSentences(text)
 	# for sentence in sentences:
 	# 	print "> %s" % sentence[0]
@@ -64,11 +64,11 @@ def splitIntoTweets(text):
 		
 		tweet = ""
 
-		while len(tweet) <= MAX_TWEET_SIZE and sPos < len(sentences):
+		while len(tweet) <= max_size and sPos < len(sentences):
 			nextSentence = sentences[sPos].sentence
 			nextJoin = sentences[sPos].join
 
-			if len(tweet) + len(nextSentence) <= MAX_TWEET_SIZE:
+			if len(tweet) + len(nextSentence) <= max_size:
 				tweet += nextSentence
 				sPos += 1
 				if nextJoin != "SPACE":
@@ -76,6 +76,8 @@ def splitIntoTweets(text):
 				tweet += " "
 			else:
 				chunks = breakSentenceIntoChunks(sentences[sPos])
+				if len(chunks) == 1:
+					break
 				sentences = sentences[:sPos] + chunks + sentences[sPos+1:]
 				continue
 
@@ -83,10 +85,13 @@ def splitIntoTweets(text):
 			print "Skipping too-long sentence."
 			sPos += 1
 
-		print "Tweet (%d):\n%s\n\n" % (len(tweet), tweet)
+		print "Tweet (%d):\n\"%s\"\n\n" % (len(tweet), tweet)
+		if len(tweet) > max_size:
+			print "ERROR: Tried to append tweet with length %d" % len(tweet)
+			break
 		tweets.append(tweet)
 
-	return ""
+	return tweets
 
 
 def breakSentenceIntoChunks(sentence, max_size = MAX_TWEET_SIZE):
