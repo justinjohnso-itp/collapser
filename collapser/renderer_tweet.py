@@ -61,10 +61,15 @@ def splitIntoTweets(text):
 			nextJoin = sentences[sPos][1]
 
 			if len(tweet) + len(nextSentence) <= MAX_TWEET_SIZE:
-				tweet += nextSentence + " "
+				tweet += nextSentence
 				sPos += 1
+				if nextJoin != "SPACE":
+					break
+				tweet += " "
 			else:
-				break
+				chunks = breakSentenceIntoChunks(nextSentence, nextJoin)
+				sentences = sentences[:sPos] + chunks + sentences[sPos+1:]
+				continue
 
 		if tweet == "":
 			print "Skipping too-long sentence."
@@ -74,6 +79,32 @@ def splitIntoTweets(text):
 		tweets.append(tweet)
 
 	return ""
+
+
+def breakSentenceIntoChunks(txt, endJoin):
+	# TODO pairs like () ? 
+	splitCharsInBestOrder = [';', ':', ',', '---', ',"', '...']
+	for spl in splitCharsInBestOrder:
+		result = trySentenceSplit(txt, endJoin, spl)
+		if result is not None:
+			return result
+	print "Couldn't split sentence."
+	return [txt, endJoin]
+
+
+def trySentenceSplit(txt, endJoin, splitChar):
+	parts = txt.split(splitChar)
+	if len(parts) > 1:
+		output = []
+		for part, pos in enumerate(parts):
+			if len(part) <= 3:  # This split is not useful
+				return None
+			if pos == len(parts)-1:
+				output.append([part, endJoin])
+			else:
+				output.append([part + splitChar, "SPACE"])
+		return output
+	return None
 
 
 # [("Sentence.", "SPACE"), ("Second sentence.", "PARAGRAPH"), ]
