@@ -92,13 +92,13 @@ Chars!"""
 	assert result[2].sentence == "Chars!"
 	assert result[2].join == "SPACE"
 
-# def test_splitIntoTweets():
-# 	text = "What if Twitter? Only allowed 20. Chars!"
-# 	result = renderer_tweet.splitIntoTweets(text, 20)
-# 	assert len(result) == 3
-# 	assert result[0] == "What if Twitter?"
-# 	assert result[1] == "Only allowed 20."
-# 	assert result[2] == "Chars!"
+def test_splitIntoTweets():
+	text = "What if Twitter? Only allowed 20. Chars!"
+	result = renderer_tweet.splitIntoTweets(text, 20)
+	assert len(result) == 3
+	assert result[0] == "What if Twitter?"
+	assert result[1] == "Only allowed 20."
+	assert result[2] == "Chars!"
 
 
 

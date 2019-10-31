@@ -54,16 +54,11 @@ class Sentence():
 
 def splitIntoTweets(text, max_size = MAX_TWEET_SIZE):
 	sentences = splitIntoSentences(text)
-	# for sentence in sentences:
-	# 	print "> %s" % sentence[0]
-	# print "Found %d sentences:" % len(sentences)
 
 	tweets = []
 	sPos = 0
 	while sPos < len(sentences):
-		
 		tweet = ""
-
 		while len(tweet) <= max_size and sPos < len(sentences):
 			nextSentence = sentences[sPos].sentence
 			nextJoin = sentences[sPos].join
@@ -89,7 +84,7 @@ def splitIntoTweets(text, max_size = MAX_TWEET_SIZE):
 		if len(tweet) > max_size:
 			print "ERROR: Tried to append tweet with length %d" % len(tweet)
 			break
-		tweets.append(tweet)
+		tweets.append(tweet.strip())
 
 	return tweets
 
