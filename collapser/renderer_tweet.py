@@ -5,6 +5,7 @@ import renderer
 import re
 import fileio
 import renderer_text
+import sys
 
 class RendererTweet(renderer.Renderer):
 
@@ -37,25 +38,88 @@ class RendererTweet(renderer.Renderer):
 # - Special handling for chapter/part breaks and quotations.
 
 
+# Edge cases.
+# What about an italics that splits across sentences, like "_Okay. Great. What now?_"
+# Quoted dialogue with multiple sentences. Should try to keep together.
+
+MAX_TWEET_SIZE = 240
 
 def splitIntoTweets(text):
 	sentences = splitIntoSentences(text)
-	return sentences
+	# for sentence in sentences:
+	# 	print "> %s" % sentence[0]
+	# print "Found %d sentences:" % len(sentences)
+
+	tweets = []
+	sPos = 0
+	while sPos < len(sentences):
+		
+		tweet = ""
+
+		while len(tweet) <= MAX_TWEET_SIZE and sPos < len(sentences):
+			nextSentence = sentences[sPos][0]
+			nextJoin = sentences[sPos][1]
+
+			if len(tweet) + len(nextSentence) <= MAX_TWEET_SIZE:
+				tweet += nextSentence + " "
+				sPos += 1
+			else:
+				break
+
+		if tweet == "":
+			print "Skipping too-long sentence."
+			sPos += 1
+
+		print "Tweet (%d):\n%s\n\n" % (len(tweet), tweet)
+		tweets.append(tweet)
+
+	return ""
 
 
-# ["Sentence.", "SPACE", "Second sentence.", "PARAGRAPH", ]
+# [("Sentence.", "SPACE"), ("Second sentence.", "PARAGRAPH"), ]
 
 def splitIntoSentences(text):
+	text = re.sub(r" +\n", "\n", text)
+	text = re.sub(r"\n{2,}", "\n\n", text)
 	outputArr = []
 	pos = 0
-	pattern = r"([.!?_\"])([ \n]+)"
+	pattern = r"([\.!\?][_\"\)]*)([ \n\#]+)(?![a-z])"
+	#pattern = r"(\.|!|\?|\._|\?_|!_|\.\"|\?\"|!\"|\.\)|\?\)|!\))([ \n\#]+)"
+
+	prevPos = 0
 	for match in re.finditer(pattern, text):
 		startPos = match.start()
 		endPos = match.end()
-		print 'Sentence ended with char "%s" at %d:%d' % (text[startPos:endPos], startPos, endPos)
+		endPunc = match.group(1)
+		endSpace = match.group(2)
+		# print 'Sentence ended with endPunc "%s" and endSpace "%s" at %d:%d' % (endPunc, endSpace, startPos, endPos)
+
+		sentence = text[prevPos:startPos + len(endPunc)]
+		# print '-->sentence: "%s"' % sentence
+		join = ""
+		if endSpace == " " or endSpace == "  ":
+			join = "SPACE"
+		elif re.search(r".*\#.*", endSpace):
+			join = "SECTIONBREAK"
+		elif re.search(r"CHAPTER", endSpace):
+			join = "CHAPTERBREAK"
+		elif re.search(r"PART", endSpace):
+			join = "PARTBREAK"
+		elif re.search(r"(\n){2,}", endSpace):
+			join = "PARAGRAPH"
+		elif endSpace == "\n":
+			join = "LINEBREAK"
+		# print "-->join: %s" % join
+		if join == "":
+			print "ERROR"
+			sys.exit()
+
+		outputArr.append([sentence, join])
+
+		prevPos = endPos
 
 
-	return text
+	return outputArr
 
 
 
