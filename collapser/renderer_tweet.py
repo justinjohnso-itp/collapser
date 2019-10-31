@@ -71,24 +71,30 @@ def splitIntoTweets(text, max_size = MAX_TWEET_SIZE):
 					break
 				tweet += " "
 			else:
+				addTweet(tweets, tweet, max_size)
+				tweet = ""
+				if len(nextSentence) <= max_size:
+					continue
 				chunks = breakSentenceIntoChunks(sentences[sPos])
-				if len(chunks) == 1:
-					break
-				sentences = sentences[:sPos] + chunks + sentences[sPos+1:]
-				continue
+				for chunk in chunks:
+					addTweet(tweets, chunk.sentence, max_size)
+				sPos += 1
+				break
 
-		if tweet == "":
-			print "Skipping too-long sentence."
-			sPos += 1
-
-		print "Tweet (%d):\n\"%s\"\n\n" % (len(tweet), tweet)
-		tweet = tweet.strip()
-		if len(tweet) > max_size:
-			print "ERROR: Tried to append tweet with length %d" % len(tweet)
-			break
-		tweets.append(tweet)
+		addTweet(tweets, tweet, max_size)
 
 	return tweets
+
+def addTweet(tweets, tweet, max_size):
+	if len(tweet.strip()) == 0:
+		return
+	tweet = tweet.strip()
+	print "Tweet (%d):\n\"%s\"\n\n" % (len(tweet), tweet)
+	if len(tweet) > max_size:
+		print "ERROR: Tried to append tweet with length %d" % len(tweet)
+		sys.exit()
+	tweets.append(tweet)
+
 
 
 def breakSentenceIntoChunks(sentence, max_size = MAX_TWEET_SIZE):
