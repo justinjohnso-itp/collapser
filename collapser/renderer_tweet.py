@@ -71,11 +71,14 @@ def splitIntoTweets(text, max_size = MAX_TWEET_SIZE):
 					break
 				tweet += " "
 			else:
-				addTweet(tweets, tweet, max_size)
+				chunks = breakSentenceIntoChunks(sentences[sPos])
+				if len(tweet) < 15 and len(tweet) + len(chunks[0].sentence) <= max_size:
+					chunks[0].sentence = tweet + chunks[0].sentence
+				else:
+					addTweet(tweets, tweet, max_size)
 				tweet = ""
 				if len(nextSentence) <= max_size:
 					continue
-				chunks = breakSentenceIntoChunks(sentences[sPos])
 				for chunk in chunks:
 					addTweet(tweets, chunk.sentence, max_size)
 				sPos += 1
@@ -89,6 +92,8 @@ def addTweet(tweets, tweet, max_size):
 	if len(tweet.strip()) == 0:
 		return
 	tweet = tweet.strip()
+	tweet = re.sub(r"\n", " ", tweet)
+	tweet = re.sub(r" +", " ", tweet)
 	print "Tweet (%d):\n\"%s\"\n\n" % (len(tweet), tweet)
 	if len(tweet) > max_size:
 		print "ERROR: Tried to append tweet with length %d" % len(tweet)
@@ -98,7 +103,7 @@ def addTweet(tweets, tweet, max_size):
 
 
 def breakSentenceIntoChunks(sentence, max_size = MAX_TWEET_SIZE):
-	splitCharsInBestOrder = [';', ':', ',', '---', ',"', '...']
+	splitCharsInBestOrder = [';', ',', '---', ',"', ':', '...']
 	text = sentence.sentence
 	for spl in splitCharsInBestOrder:
 		bestPos = getNearestPosToMiddle(text, spl)
