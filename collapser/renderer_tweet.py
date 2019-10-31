@@ -101,19 +101,23 @@ def breakSentenceIntoChunks(text, endJoin):
 	print "Could't split sentence."
 	return [text, endJoin]
 
-def getNearestPosToMiddle(text, spl):
+def getNearestPosToMiddle(text, spl, MIN_VIABLE_SPLIT_DIFF = 6):
 	midPos = len(text) / 2
 	prevPos = text.rfind(spl, 0, midPos)
 	nextPos = text.find(spl, midPos)
 	if prevPos == -1 and nextPos == -1:
 		return -1
 	if prevPos == -1 and nextPos != -1:
-		return nextPos
+		prevPos = -99999999
 	if nextPos == -1 and prevPos != -1:
-		return prevPos
+		nextPos = 99999999
 	if midPos - prevPos <= nextPos - midPos:
-		return prevPos
-	return nextPos
+		if prevPos >= MIN_VIABLE_SPLIT_DIFF:
+			return prevPos
+	else:
+		if nextPos < len(text) - MIN_VIABLE_SPLIT_DIFF - 1:
+			return nextPos
+	return -1
 
 
 
