@@ -89,19 +89,21 @@ def splitIntoTweets(text):
 	return ""
 
 
-def breakSentenceIntoChunks(sentence):
+def breakSentenceIntoChunks(sentence, max_size = MAX_TWEET_SIZE):
+	print "Trying breakSentenceIntoChunks for: %s" % sentence
 	splitCharsInBestOrder = [';', ':', ',', '---', ',"', '...']
+	text = sentence.sentence
 	for spl in splitCharsInBestOrder:
-		bestPos = getNearestPosToMiddle(sentence.text, spl)
+		bestPos = getNearestPosToMiddle(text, spl)
 		if bestPos == -1:
 			continue
-		left = Sentence(sentence.text[:bestPos+len(spl)], "SPACE")
-		right = Sentence(sentence.text[bestPos+len(spl):], sentence.join)
-		# if len(left) > MAX_TWEET_SIZE:
-		# 	left = breakSentenceIntoChunks(left[0], left[1])
-		# if len(right) > MAX_TWEET_SIZE:
-		# 	right = breakSentenceIntoChunks(right[0], right[1])
-		return [left, right]
+		left = [Sentence(text[:bestPos+len(spl)], "SPACE")]
+		right = [Sentence(text[bestPos+len(spl):], sentence.join)]
+		if len(left[0].sentence) > max_size:
+			left = breakSentenceIntoChunks(left[0], max_size)
+		if len(right[0].sentence) > max_size:
+			right = breakSentenceIntoChunks(right[0], max_size)
+		return left + right
 
 	print "Couldn't split sentence."
 	return [sentence]
