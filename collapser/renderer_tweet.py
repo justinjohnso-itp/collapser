@@ -23,7 +23,7 @@ class RendererTweet(renderer.Renderer):
 		inputFile = self.params["outputDir"] + self.params["fileId"] + ".txt"
 		inputText = fileio.readInputFile(inputFile)
 		tweets = splitIntoTweets(inputText)
-		output = ""
+		output = "\n==============\n".join(tweets)
 
 		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".tweets.txt"
 		fileio.writeOutputFile(outputFileName, output)
@@ -67,7 +67,12 @@ def splitIntoTweets(text, max_size = MAX_TWEET_SIZE):
 			if len(tweet) + len(nextSentence) <= max_size:
 				tweet += nextSentence
 				sPos += 1
-				if nextJoin != "SPACE":
+				if nextJoin == "PARAGRAPH" and sentences[sPos].join == "PARAGRAPH":
+					# Account for the case of two short paragraphs.
+					if len(tweet) + len(sentences[sPos].sentence) + 2 <= max_size:
+						tweet += "||" + sentences[sPos].sentence
+						sPos += 1
+				elif nextJoin != "SPACE":
 					break
 				tweet += " "
 			else:
@@ -94,6 +99,7 @@ def addTweet(tweets, tweet, max_size):
 	tweet = tweet.strip()
 	tweet = re.sub(r"\n", " ", tweet)
 	tweet = re.sub(r" +", " ", tweet)
+	tweet = re.sub(r"\|\|", "\n\n", tweet)
 	print "Tweet (%d):\n\"%s\"\n\n" % (len(tweet), tweet)
 	if len(tweet) > max_size:
 		print "ERROR: Tried to append tweet with length %d" % len(tweet)
