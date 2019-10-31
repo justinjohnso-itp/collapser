@@ -22,6 +22,7 @@ import renderer_html
 import renderer_markdown
 import renderer_epub
 import renderer_mobi
+import renderer_tweet
 
 manifestFile = "manifest.txt"
 outputDir = "output/"
@@ -39,7 +40,7 @@ Arguments:
   --seed=random  Don't use an incremental seed; use one purely at random.
   --output=x	 Format to output (default none)
   				 "pdf" (for POD), "pdfdigital" (for online use),
-  				 "txt", "html", "md", "epub", "mobi"
+  				 "txt", "html", "md", "epub", "mobi", "tweet"
   --noconfirm	 Skip variant confirmation
   --strategy=x   Selection strategy.
   		"random": default
@@ -76,7 +77,7 @@ def main():
 	randSeed = False
 	isDigital = False
 
-	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "none"]
+	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
 	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "padding="])
 	if len(args) > 0:
@@ -217,6 +218,8 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, pa
 			renderer = renderer_epub.RendererEPub(collapsedText, renderParams)
 		elif outputFormat == "mobi":
 			renderer = renderer_mobi.RendererMobi(collapsedText, renderParams)
+		elif outputFormat == "tweet":
+			renderer = renderer_tweet.RendererTweet(collapsedText, renderParams)
 
 		if renderer is None:
 			print "No rendering requested or available."
