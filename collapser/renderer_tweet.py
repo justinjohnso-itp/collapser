@@ -81,35 +81,46 @@ def splitIntoTweets(text):
 	return ""
 
 
-def breakSentenceIntoChunks(txt, endJoin):
-	# TODO pairs like () ? 
+def breakSentenceIntoChunks(text, endJoin):
+	# Get the middle position of the string.
+
+	# Find the nearest split char either before or after.
 	splitCharsInBestOrder = [';', ':', ',', '---', ',"', '...']
 	for spl in splitCharsInBestOrder:
-		result = trySentenceSplit(txt, endJoin, spl)
-		if result is not None:
-			return result
-	print "Couldn't split sentence."
-	return [txt, endJoin]
+		bestPos = getNearestPosToMiddle(text, spl)
+		if bestPos == -1:
+			continue
+		left = [text[:bestPos+spl], "SPACE"]
+		right = [text[bestPos+1:], endJoin]
+		if len(left) > MAX_TWEET_SIZE:
+			left = breakSentenceIntoChunks(left[0], left[1])
+		if len(right) > MAX_TWEET_SIZE:
+			right = breakSentenceIntoChunks(right[0], right[1])
+		return left + right
+
+	print "Could't split sentence."
+	return [text, endJoin]
+
+def getNearestPosToMiddle(text, spl):
+	midPos = len(text) / 2
+	prevPos = text.rfind(spl, 0, midPos)
+	nextPos = text.find(spl, midPos)
+	if prevPos == -1 and nextPos == -1:
+		return -1
+	if prevPos == -1 and nextPos != -1:
+		return nextPos
+	if nextPos == -1 and prevPos != -1:
+		return prevPos
+	if midPos - prevPos <= nextPos - midPos:
+		return prevPos
+	return nextPos
 
 
-def trySentenceSplit(txt, endJoin, splitChar):
-	parts = txt.split(splitChar)
-	if len(parts) > 1:
-		output = []
-		for part, pos in enumerate(parts):
-			if len(part) <= 3:  # This split is not useful
-				return None
-			if pos == len(parts)-1:
-				output.append([part, endJoin])
-			else:
-				output.append([part + splitChar, "SPACE"])
-		return output
-	return None
 
 
 # [("Sentence.", "SPACE"), ("Second sentence.", "PARAGRAPH"), ]
 
-def splitIntoSentences(text):
+def splitIntoSentences(text, spl):
 	text = re.sub(r" +\n", "\n", text)
 	text = re.sub(r"\n{2,}", "\n\n", text)
 	outputArr = []
