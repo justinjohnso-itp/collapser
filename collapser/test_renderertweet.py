@@ -51,7 +51,7 @@ def test_breakSentenceIntoChunks():
 	assert len(result) == 2
 	assert result[0].sentence == "This is my;"
 	assert result[0].join == "SPACE"
-	assert result[1].sentence == " sample sentence."
+	assert result[1].sentence == "sample sentence."
 	assert result[1].join == "PARAGRAPH"
 
 	sen = renderer_tweet.Sentence("This is my sample sentence.", "SPACE")
@@ -64,7 +64,7 @@ def test_breakSentenceIntoChunks():
 	result = renderer_tweet.breakSentenceIntoChunks(sen)
 	assert len(result) == 2
 	assert result[0].sentence == ";Semicolons bad,"
-	assert result[1].sentence == " but commas good"
+	assert result[1].sentence == "but commas good"
 
 def test_breakSentenceIntoChunks_Recursive():
 	sen = renderer_tweet.Sentence("Verbose; verbose, verbose: verbose;", "PARAGRAPH")
@@ -72,11 +72,11 @@ def test_breakSentenceIntoChunks_Recursive():
 	assert len(result) == 4
 	assert result[0].sentence == "Verbose;"
 	assert result[0].join == "SPACE"
-	assert result[1].sentence == " verbose,"
+	assert result[1].sentence == "verbose,"
 	assert result[1].join == "SPACE"
-	assert result[2].sentence == " verbose:"
+	assert result[2].sentence == "verbose:"
 	assert result[2].join == "SPACE"
-	assert result[3].sentence == " verbose;"
+	assert result[3].sentence == "verbose;"
 	assert result[3].join == "PARAGRAPH"
 
 def test_splitIntoSentences():
@@ -92,13 +92,27 @@ Chars!"""
 	assert result[2].sentence == "Chars!"
 	assert result[2].join == "SPACE"
 
-def test_splitIntoTweets():
+def test_splitIntoTweets_Basic():
 	text = "What if Twitter? Only allowed 20. Chars!"
 	result = renderer_tweet.splitIntoTweets(text, 20)
 	assert len(result) == 3
 	assert result[0] == "What if Twitter?"
 	assert result[1] == "Only allowed 20."
 	assert result[2] == "Chars!"
+
+def test_splitActualCases():
+	text = """"What you looking at?" Niko asked from behind me, and I _leapt_, fucking leapt to my feet like the floor was electric, whirling around to face him, body in full panic like all the building adrenalin had been released in an instant and I guess it probably had; panting and overwhelmed with terror and nausea and a terrible, stabbing relief at seeing him, seeing a him I could believe in instead of a me I couldn't."""
+	result = renderer_tweet.breakSentenceIntoChunks(renderer_tweet.Sentence(text, "SPACE"))
+	assert len(result) == 3
+	assert result[0].sentence == """"What you looking at?" Niko asked from behind me, and I _leapt_, fucking leapt to my feet like the floor was electric,"""
+	assert result[1].sentence == """whirling around to face him, body in full panic like all the building adrenalin had been released in an instant and I guess it probably had;"""
+	assert result[2].sentence == """panting and overwhelmed with terror and nausea and a terrible, stabbing relief at seeing him, seeing a him I could believe in instead of a me I couldn't."""
+
+	# result = renderer_tweet.splitIntoTweets(text)
+	# assert len(result) == 3
+	# assert result[0] == """"What you looking at?" Niko asked from behind me, and I _leapt_, fucking leapt to my feet like the floor was electric,"""
+	# assert result[1] == """whirling around to face him, body in full panic like all the building adrenalin had been released in an instant and I guess it probably had;"""
+	# assert result[2] == """panting and overwhelmed with terror and nausea and a terrible, stabbing relief at seeing him, seeing a him I could believe in instead of a me I couldn't."""
 
 
 

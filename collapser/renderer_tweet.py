@@ -23,9 +23,10 @@ class RendererTweet(renderer.Renderer):
 		inputFile = self.params["outputDir"] + self.params["fileId"] + ".txt"
 		inputText = fileio.readInputFile(inputFile)
 		tweets = splitIntoTweets(inputText)
+		output = ""
 
 		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".tweets.txt"
-		fileio.writeOutputFile(outputFileName, tweets)
+		fileio.writeOutputFile(outputFileName, output)
 
 	def renderFormattingSequence(self, contents):
 		pass
@@ -81,24 +82,24 @@ def splitIntoTweets(text, max_size = MAX_TWEET_SIZE):
 			sPos += 1
 
 		print "Tweet (%d):\n\"%s\"\n\n" % (len(tweet), tweet)
+		tweet = tweet.strip()
 		if len(tweet) > max_size:
 			print "ERROR: Tried to append tweet with length %d" % len(tweet)
 			break
-		tweets.append(tweet.strip())
+		tweets.append(tweet)
 
 	return tweets
 
 
 def breakSentenceIntoChunks(sentence, max_size = MAX_TWEET_SIZE):
-	print "Trying breakSentenceIntoChunks for: %s" % sentence
 	splitCharsInBestOrder = [';', ':', ',', '---', ',"', '...']
 	text = sentence.sentence
 	for spl in splitCharsInBestOrder:
 		bestPos = getNearestPosToMiddle(text, spl)
 		if bestPos == -1:
 			continue
-		left = [Sentence(text[:bestPos+len(spl)], "SPACE")]
-		right = [Sentence(text[bestPos+len(spl):], sentence.join)]
+		left = [Sentence(text[:bestPos+len(spl)].strip(), "SPACE")]
+		right = [Sentence(text[bestPos+len(spl):].strip(), sentence.join)]
 		if len(left[0].sentence) > max_size:
 			left = breakSentenceIntoChunks(left[0], max_size)
 		if len(right[0].sentence) > max_size:
