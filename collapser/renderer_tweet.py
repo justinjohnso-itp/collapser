@@ -44,6 +44,14 @@ class RendererTweet(renderer.Renderer):
 
 MAX_TWEET_SIZE = 240
 
+class Sentence():
+	def __init__(self, s, j):
+		self.sentence = s
+		self.join = j
+
+	def __repr__(self):
+		return "(Sentence: \"%s\", join: %s)" % (self.sentence, self.join)
+
 def splitIntoTweets(text):
 	sentences = splitIntoSentences(text)
 	# for sentence in sentences:
@@ -57,8 +65,8 @@ def splitIntoTweets(text):
 		tweet = ""
 
 		while len(tweet) <= MAX_TWEET_SIZE and sPos < len(sentences):
-			nextSentence = sentences[sPos][0]
-			nextJoin = sentences[sPos][1]
+			nextSentence = sentences[sPos].sentence
+			nextJoin = sentences[sPos].join
 
 			if len(tweet) + len(nextSentence) <= MAX_TWEET_SIZE:
 				tweet += nextSentence
@@ -67,7 +75,7 @@ def splitIntoTweets(text):
 					break
 				tweet += " "
 			else:
-				chunks = breakSentenceIntoChunks(nextSentence, nextJoin)
+				chunks = breakSentenceIntoChunks(sentences[sPos])
 				sentences = sentences[:sPos] + chunks + sentences[sPos+1:]
 				continue
 
@@ -81,25 +89,22 @@ def splitIntoTweets(text):
 	return ""
 
 
-def breakSentenceIntoChunks(text, endJoin):
-	# Get the middle position of the string.
-
-	# Find the nearest split char either before or after.
+def breakSentenceIntoChunks(sentence):
 	splitCharsInBestOrder = [';', ':', ',', '---', ',"', '...']
 	for spl in splitCharsInBestOrder:
-		bestPos = getNearestPosToMiddle(text, spl)
+		bestPos = getNearestPosToMiddle(sentence.text, spl)
 		if bestPos == -1:
 			continue
-		left = [text[:bestPos+spl], "SPACE"]
-		right = [text[bestPos+1:], endJoin]
-		if len(left) > MAX_TWEET_SIZE:
-			left = breakSentenceIntoChunks(left[0], left[1])
-		if len(right) > MAX_TWEET_SIZE:
-			right = breakSentenceIntoChunks(right[0], right[1])
-		return left + right
+		left = Sentence(sentence.text[:bestPos+len(spl)], "SPACE")
+		right = Sentence(sentence.text[bestPos+len(spl):], sentence.join)
+		# if len(left) > MAX_TWEET_SIZE:
+		# 	left = breakSentenceIntoChunks(left[0], left[1])
+		# if len(right) > MAX_TWEET_SIZE:
+		# 	right = breakSentenceIntoChunks(right[0], right[1])
+		return [left, right]
 
-	print "Could't split sentence."
-	return [text, endJoin]
+	print "Couldn't split sentence."
+	return [sentence]
 
 def getNearestPosToMiddle(text, spl, MIN_VIABLE_SPLIT_DIFF = 6):
 	midPos = len(text) / 2
@@ -160,7 +165,7 @@ def splitIntoSentences(text, spl):
 			print "ERROR"
 			sys.exit()
 
-		outputArr.append([sentence, join])
+		outputArr.append(Sentence(sentence, join))
 
 		prevPos = endPos
 
