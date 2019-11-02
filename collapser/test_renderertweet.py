@@ -110,6 +110,14 @@ def test_splitIntoSentences_Breaks():
 	assert result[1].sentence == "* * *\n\nAnd then something else."
 	assert result[1].join == "SPACE"
 
+	text = """That was the end.\n\n\nPART THREE\n\nDELICIOUSNESS\n\n\n\nThe first time I saw him..."""
+	result = renderer_tweet.splitIntoSentences(text)
+	assert len(result) == 2
+	assert result[0].sentence == "That was the end."
+	assert result[0].join == "PARTBREAK"
+	assert result[1].sentence == "PART THREE\n\nDELICIOUSNESS\n\nThe first time I saw him..."
+	assert result[1].join == "SPACE"
+
 
 def test_splitIntoTweets_Basic():
 	text = "What if Twitter? Only allowed 20. Chars!"

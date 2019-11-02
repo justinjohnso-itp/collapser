@@ -171,10 +171,10 @@ def splitIntoSentences(text):
 			join = "SPACE"
 		elif breakSpace != None and re.search(r"Chapter ", breakSpace):
 			join = "CHAPTERBREAK"
+		elif breakSpace != None and re.search(r"PART ", breakSpace):
+			join = "PARTBREAK"
 		elif re.search(r".*\#.*", endSpace):
 			join = "SECTIONBREAK"
-		elif re.search(r"PART ", sentence):
-			join = "PARTBREAK"
 		elif re.search(r"(\n){2,}", endSpace):
 			join = "PARAGRAPH"
 		elif endSpace == "\n":
@@ -193,7 +193,8 @@ def splitIntoSentences(text):
 			savedBreak = breakSpace
 		elif join == "SECTIONBREAK":
 			savedBreak = "* * *\n\n"
-			print "setting savedBreak to '%s'" % savedBreak
+		elif join == "PARTBREAK":
+			savedBreak = breakSpace
 
 		prevPos = endPos
 
