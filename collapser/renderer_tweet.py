@@ -10,7 +10,6 @@ import sys
 class RendererTweet(renderer.Renderer):
 
 	def render(self):
-		print "Rendering to tweets."
 		self.makeStagedFile()
 		self.makeOutputFile()
 
@@ -153,42 +152,53 @@ def splitIntoSentences(text):
 	text = re.sub(r"\n{2,}", "\n\n", text)
 	outputArr = []
 	pos = 0
-	pattern = r"([\.!\?][_\"\)]*)([ \n\#]+)(?![a-z])"
-	#pattern = r"(\.|!|\?|\._|\?_|!_|\.\"|\?\"|!\"|\.\)|\?\)|!\))([ \n\#]+)"
-
+	# pattern = r"([\.!\?][_\"\)]*)([ \n\#]+)(?![a-z])(Chapter |Part )"
+	pattern = r"([\.!\?][_\"\)]*)([ \n\#]+)(?![a-z])(Chapter [0-9]+|PART .*\n\n.*)?"
 	prevPos = 0
+	savedBreak = ""
 	for match in re.finditer(pattern, text):
 		startPos = match.start()
 		endPos = match.end()
 		endPunc = match.group(1)
 		endSpace = match.group(2)
-		# print 'Sentence ended with endPunc "%s" and endSpace "%s" at %d:%d' % (endPunc, endSpace, startPos, endPos)
+		breakSpace = match.group(3)
+		print 'Sentence ended with endPunc "%s" and endSpace "%s" and breakSpace "%s" at %d:%d' % (endPunc, endSpace, breakSpace, startPos, endPos)
 
 		sentence = text[prevPos:startPos + len(endPunc)]
-		# print '-->sentence: "%s"' % sentence
+		print '-->sentence: "%s"' % sentence
 		join = ""
 		if endSpace == " " or endSpace == "  ":
 			join = "SPACE"
+		elif breakSpace != None and re.search(r"Chapter ", breakSpace):
+			join = "CHAPTERBREAK"
 		elif re.search(r".*\#.*", endSpace):
 			join = "SECTIONBREAK"
-		elif re.search(r"CHAPTER", endSpace):
-			join = "CHAPTERBREAK"
-		elif re.search(r"PART", endSpace):
+		elif re.search(r"PART ", sentence):
 			join = "PARTBREAK"
 		elif re.search(r"(\n){2,}", endSpace):
 			join = "PARAGRAPH"
 		elif endSpace == "\n":
 			join = "LINEBREAK"
-		# print "-->join: %s" % join
+		print "-->join: %s" % join
 		if join == "":
 			print "ERROR"
 			sys.exit()
 
+		sen = sentence
+		if savedBreak != "":
+			sentence = savedBreak + sentence
+			savedBreak = ""
 		outputArr.append(Sentence(sentence, join))
+		if join == "CHAPTERBREAK":
+			savedBreak = breakSpace		
+			print "savedBreak: '%s'" % savedBreak
 
 		prevPos = endPos
 
 	last = text[prevPos:]
+	if savedBreak != "":
+		sentence = savedBreak + sentence
+		savedBreak = ""
 	outputArr.append(Sentence(last, "SPACE"))
 	
 	return outputArr

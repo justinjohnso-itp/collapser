@@ -66,6 +66,7 @@ def test_breakSentenceIntoChunks():
 	assert result[0].sentence == ";Semicolons bad,"
 	assert result[1].sentence == "but commas good"
 
+
 def test_breakSentenceIntoChunks_Recursive():
 	sen = renderer_tweet.Sentence("Verbose; verbose, verbose: verbose;", "PARAGRAPH")
 	result = renderer_tweet.breakSentenceIntoChunks(sen, 10)
@@ -91,6 +92,15 @@ Chars!"""
 	assert result[1].join == "PARAGRAPH"
 	assert result[2].sentence == "Chars!"
 	assert result[2].join == "SPACE"
+
+def test_splitIntoSentences_Breaks():
+	text = """That was the end.\n\n\nChapter 3\n\nThe start of a new thing.\n\nAnd one more new thing."""
+	result = renderer_tweet.splitIntoSentences(text)
+	assert len(result) == 3
+	assert result[0].sentence == "That was the end."
+	assert result[0].join == "CHAPTERBREAK"
+	assert result[1].sentence == "Chapter 3\n\nThe start of a new thing."
+	assert result[1].join == "PARAGRAPH"
 
 def test_splitIntoTweets_Basic():
 	text = "What if Twitter? Only allowed 20. Chars!"
