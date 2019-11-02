@@ -96,7 +96,7 @@ def addTweet(tweets, tweet, max_size):
 	if len(tweet.strip()) == 0:
 		return
 	tweet = tweet.strip()
-	tweet = re.sub(r"\n", " ", tweet)
+	tweet = re.sub(r"([a-z])\n([a-z])", r"\1 \2", tweet)
 	tweet = re.sub(r" +", " ", tweet)
 	tweet = re.sub(r"\|\|", "\n\n", tweet)
 	print "Tweet (%d):\n\"%s\"\n\n" % (len(tweet), tweet)
