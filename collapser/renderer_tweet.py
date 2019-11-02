@@ -190,15 +190,16 @@ def splitIntoSentences(text):
 			savedBreak = ""
 		outputArr.append(Sentence(sentence, join))
 		if join == "CHAPTERBREAK":
-			savedBreak = breakSpace		
-			print "savedBreak: '%s'" % savedBreak
+			savedBreak = breakSpace
+		elif join == "SECTIONBREAK":
+			savedBreak = "* * *\n\n"
+			print "setting savedBreak to '%s'" % savedBreak
 
 		prevPos = endPos
 
 	last = text[prevPos:]
 	if savedBreak != "":
-		sentence = savedBreak + sentence
-		savedBreak = ""
+		last = savedBreak + last
 	outputArr.append(Sentence(last, "SPACE"))
 	
 	return outputArr
