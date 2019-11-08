@@ -15,17 +15,23 @@ import fileio
 
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
-
 	parseParams.discourseVarChance = 0
+	MAX_PER_SESSION = 6
 	
 	sequenceList = SequenceList(tokens)
 
 	fileio.startConfirmKeys()
+	ctr = 0
 	for seq, endPos in sequenceList.sequences:
+		# Return -1 to halt, 0 if already confirmed, 1 if successfully confirmed, 2 if skipped. 
 		result = confirmCtrlSeq(seq, sequenceList, sourceText, parseParams, endPos)
 		sequenceList.pos += 1
-		if result == False:
+		if result == -1:
 			break
+		if result == 1 or result == 2:
+			ctr += 1
+		if ctr >= MAX_PER_SESSION:
+			break	
 	fileio.finishConfirmKeys()
 
 
@@ -64,6 +70,8 @@ class SequenceList:
 
 def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos):
 
+	# Return -1 to halt, 0 if already confirmed, 1 if successfully confirmed, 2 if skipped, 3 if requesting regeneration.
+
 	maxLineLength = 80
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 	ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)
@@ -72,43 +80,45 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 	key = makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq)
 	truncStart = "..."
 	truncEnd = "..."
-	if fileio.isKeyConfirmed(key) == False:
-		lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)
-		lineColumn = result.find_column(sourceText, ctrlStartPos)
-		print "\n\n"
-		print "#################################################################"
-		print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
-		for v in variants.alts:
-			print '''************************************'''
-			pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList)
-			post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList)
-			rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd, maxLineLength, parseParams)
-			print rendered
-		print "************************************"
+	if fileio.isKeyConfirmed(key) == True:
+		return 0
 
-		choice = -1
-		while choice is not "1" and choice is not "2" and choice is not "3" and choice is not "4" and choice is not "5":
-			sys.stdout.write("\n1) Confirm, 2) Skip, 3) Regen, 4) Done Confirming, 5) Quit > ")
-			choice = getch.getch()
-			if choice == "1":
-				print "1\n >>> Confirmed."
-				fileio.confirmKey(key)
-				return True
-			elif choice == "2":
-				print "2\n >>> Skipping."
-				return True
-			elif choice == "3":
-				print "3\n >>> Regenerating."
-				confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos)
-				return True
-			elif choice == "4":
-				print "4\n >>> Done Confirming."
-				fileio.finishConfirmKeys()
-				return False
-			elif choice == "5":
-				print "5\n >>> Quit."
-				fileio.finishConfirmKeys()
-				sys.exit(0)
+	lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)
+	lineColumn = result.find_column(sourceText, ctrlStartPos)
+	print "\n\n"
+	print "#################################################################"
+	print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
+	for v in variants.alts:
+		print '''************************************'''
+		pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList)
+		post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList)
+		rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd, maxLineLength, parseParams)
+		print rendered
+	print "************************************"
+
+	choice = -1
+	while choice is not "1" and choice is not "2" and choice is not "3" and choice is not "4" and choice is not "5":
+		sys.stdout.write("\n1) Confirm, 2) Skip, 3) Regen, 4) Done Confirming, 5) Quit > ")
+		choice = getch.getch()
+		if choice == "1":
+			print "1\n >>> Confirmed."
+			fileio.confirmKey(key)
+			return 1
+		elif choice == "2":
+			print "2\n >>> Skipping."
+			return 2
+		elif choice == "3":
+			print "3\n >>> Regenerating."
+			confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos)
+			return 3
+		elif choice == "4":
+			print "4\n >>> Done Confirming."
+			fileio.finishConfirmKeys()
+			return -1
+		elif choice == "5":
+			print "5\n >>> Quit."
+			fileio.finishConfirmKeys()
+			sys.exit(0)
 
 
 def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
