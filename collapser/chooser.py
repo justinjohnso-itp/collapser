@@ -5,6 +5,22 @@ import fileio
 def number(highest):
 	return random.randint(1,highest)
 
+__noRepeatTracker = {}
+def numberNoRepeat(key, highest):
+	global __noRepeatTracker
+	num = 0
+	if highest <= 1:
+		return 1
+	if key not in __noRepeatTracker:
+		num = number(highest)
+	else:
+		lastTime = __noRepeatTracker[key]
+		num = number(highest - 1)
+		if num >= lastTime:
+			num += 1
+	__noRepeatTracker[key] = num
+	return num
+
 def oneOf(item, pure=False):
 	if pure:
 		saved_rng_state = random.getstate()
@@ -15,6 +31,13 @@ def oneOf(item, pure=False):
 		random.setstate(saved_rng_state)
 	return result
 
+def oneOfNoRepeat(key, item):
+	if len(item) == 0:
+		return ""
+	if len(item) == 1:
+		return item[0]
+	return item[numberNoRepeat(key, len(item))-1]
+
 __iterators = {}
 def iter(key):
 	global __iterators
@@ -22,6 +45,18 @@ def iter(key):
 		__iterators[key] = 0
 	__iterators[key] += 1
 	return __iterators[key]
+
+def resetIter(key):
+	global __iterators
+	if key in __iterators:
+		__iterators[key] = 0
+
+def resetAllIters():
+	global __iterators
+	global __noRepeatTracker
+	__iterators = {}
+	__noRepeatTracker = {}
+
 
 def percent(odds):
 	return random.randint(1,100) <= odds
