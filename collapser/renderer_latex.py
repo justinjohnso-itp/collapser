@@ -28,7 +28,7 @@ class RendererLatex(renderer.Renderer):
 		postLatexificationSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])
 		latexFileName = self.params["fileId"] + ".tex"
-		fileio.writeOutputFile(latexFileName, stagedFileText)
+		fileio.writeOutputFile(self.params["outputDir"] + latexFileName, stagedFileText)
 
 	def makeOutputFile(self):
 		inputFileName = self.params["fileId"] + ".tex"
