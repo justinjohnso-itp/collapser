@@ -47,6 +47,7 @@ class RendererLatex(renderer.Renderer):
 			return template_part[0] + optMainMatter + template_part[1] + partNum + template_part[2] + partTitle + template_part[3]
 		if code == "epigraph":
 			epigraph = contents[1]
+			epigraph = fixLongEpigraphLines(epigraph)
 			source = contents[2]
 			return template_epigraph[0] + epigraph + template_epigraph[1] + source + template_epigraph[2]
 		if code == "end_part_page":
@@ -269,6 +270,31 @@ def addBlankPages(inputPDF, outputPDF, numBlankPages):
 		sys.exit()
 
 
+def fixLongEpigraphLines(txt):
+	# This is a quick-and-dirty implementation that works for the couple of long poetry lines in Subcutanean's epigraphs, but wouldn't handle a lot of possible cases.
+	lines = txt.split('\\')
+	if len(lines) == 1:
+		return txt
+	output = []
+	APPROX_MAX_LINE_LEN = 56
+	AVG_WIDTH_LETTER = "r"
+	for line in lines:
+		if len(line.strip()) > APPROX_MAX_LINE_LEN:
+			breakPos = line.rfind(" ", 0, APPROX_MAX_LINE_LEN)
+			firstpart = line[:breakPos]
+			output.append(firstpart)
+			overflow = line[breakPos:]
+			if len(overflow) > APPROX_MAX_LINE_LEN:
+				print "*** Error: This epigraph line is just too damn long: '%s'" % line
+				sys.exit()
+			if overflow.strip() != "":
+				invisibleText = AVG_WIDTH_LETTER * (APPROX_MAX_LINE_LEN - len(overflow))
+				paddedOverflow = "\\phantom{%s} %s" % (invisibleText, overflow)
+				output.append(paddedOverflow)
+		elif line.strip() != "":
+			output.append(line)
+	result =  "\\\\".join(output)
+	return result
 
 
 template_chapter = ['''

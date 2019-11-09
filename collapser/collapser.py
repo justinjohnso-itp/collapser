@@ -198,7 +198,6 @@ def main():
 
 def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding, isDigital):
 	if outputFormat != "":
-		print "isDigital: %s" % isDigital
 		renderParams = {
 			"fileId": outputFile,
 			"seed": seed,
