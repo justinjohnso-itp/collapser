@@ -28,13 +28,13 @@ class RendererHTML(renderer.Renderer):
 		if code == "part":
 			partNum = contents[1]
 			partTitle = contents[2]
-			epigraph = contents[3]
-			source = contents[4]
-			return "<h1>" + partNum + ": " + partTitle + "</h1><p>&nbsp;</p><blockquote>" + epigraph + "</blockquote><blockquote><i>" + source + "</i></blockquote><p>&nbsp;</p>"
+			return "<h1>" + partNum + ": " + partTitle + "</h1><p>&nbsp;</p>"
 		if code == "epigraph":
 			epigraph = contents[1]
 			source = contents[2]
 			return "<blockquote>" + epigraph + "</blockquote><blockquote><i>" + source + "</i></blockquote><p>&nbsp;</p>"
+		if code == "end_part_page":
+			return "<p>&nbsp;</p>"
 		if code == "chapter":
 			chapNum = contents[1]
 			intro = "" if chapNum == "EPILOGUE" else "Chapter "

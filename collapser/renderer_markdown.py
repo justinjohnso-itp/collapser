@@ -30,13 +30,13 @@ class RendererMarkdown(renderer.Renderer):
 		if code == "part":
 			partNum = contents[1]
 			partTitle = contents[2]
-			epigraph = contents[3]
-			source = contents[4]
-			return "\n\n# " + partNum + ": " + partTitle + "\n\n" + indent(epigraph) + "\n>\n> " + source + "\n\n"
+			return "\n\n# " + partNum + ": " + partTitle
 		if code == "epigraph":
 			epigraph = contents[1]
 			source = contents[2]
 			return "\n\n" + indent(epigraph) + "\n>\n>" + source + "\n\n"
+		if code == "end_part_page":
+			return "\n\n"
 		if code == "chapter":
 			chapNum = contents[1]
 			intro = "" if chapNum == "EPILOGUE" else "Chapter "

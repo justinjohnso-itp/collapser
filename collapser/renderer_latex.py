@@ -40,17 +40,17 @@ class RendererLatex(renderer.Renderer):
 		if code == "part":
 			partNum = contents[1]
 			partTitle = contents[2]
-			epigraph = contents[3]
-			source = contents[4]
 			# Hack to get "\mainmatter" to appear in right spot for opening chapter (otherwise page 1 is on the blank page preceeding and inner/outer positioning is wrong.)
 			optMainMatter = ""
 			if partNum == "PART ONE":
 				optMainMatter = "\\mainmatter"
-			return template_part[0] + optMainMatter + template_part[1] + partNum + template_part[2] + partTitle + template_part[3] + epigraph + template_part[4] + source + template_part[5]
+			return template_part[0] + optMainMatter + template_part[1] + partNum + template_part[2] + partTitle + template_part[3]
 		if code == "epigraph":
 			epigraph = contents[1]
 			source = contents[2]
 			return template_epigraph[0] + epigraph + template_epigraph[1] + source + template_epigraph[2]
+		if code == "end_part_page":
+			return template_end_part
 		if code == "chapter":
 			chapNum = contents[1]
 			return template_chapter[0] + chapNum + template_chapter[1]
@@ -294,18 +294,14 @@ template_part = ['''
 \\ChapterTitle{''', '''} 
 \\end{ChapterStart}
 
-\\vspace*{4\\nbs} 
-\\begin{adjustwidth}{3em}{3em}
-\\begin{parascale}[0.88]
-''', '''\\\\
-\\par
-\\noindent \\textit{''', '''}
-\\end{parascale}
-\\end{adjustwidth}
+\\vspace*{4\\nbs}''']
+
+
+template_end_part = '''
 
 \\cleartorecto
 
-''']
+'''
 
 template_epigraph = ['''
 \\begin{adjustwidth}{3em}{3em}
