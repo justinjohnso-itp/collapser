@@ -16,7 +16,7 @@ import fileio
 # We should have a series of text and CTRLBEGIN/END sequences.
 def process(tokens, sourceText, parseParams):
 	parseParams.discourseVarChance = 0
-	MAX_PER_SESSION = 6
+	MAX_PER_SESSION = 5
 	
 	sequenceList = SequenceList(tokens)
 
@@ -130,6 +130,9 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 
 
 def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  parseParams):
+
+	# Expand macros.
+	variant = macros.expand(variant, parseParams, haltOnBadMacros=False)
 
 	# Don't show very long excerpts in their entirety.
 	if len(variant) > maxLineLength * 5:
