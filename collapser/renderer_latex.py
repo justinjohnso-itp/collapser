@@ -133,7 +133,6 @@ def latexWrapper(text, seed, includeFrontMatter):
 
 	print "seed: %d" % seed
 	if seed == -1:
-		print "still"
 		seedPrinted = "01893-b"
 	elif seed < 9999:
 		seedPrinted = "0%d" % seed
@@ -149,7 +148,6 @@ def latexWrapper(text, seed, includeFrontMatter):
 
 	frontMatterMsg = ""
 	if seed == -1:
-		print "still"
 		frontMatterMsg = """This is a special Advance Reader Copy of \\textsc{Subcutanean}. In the final version, each printing of the book will be unique, generated from a specific seed. Words, sentences, or whole scenes may appear in some printings but not in others, or vice versa. No two copies will be alike.
 
 For now, each Advance Reader Copy in this printing shares the seed %s, and the same text.""" % seedPrinted

@@ -131,6 +131,12 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 
 def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  parseParams):
 
+	# Don't show very long excerpts in their entirety.
+	if len(variant) > maxLineLength * 5:
+		startTruncPos = variant.rfind(" ", 0, maxLineLength * 2)
+		endTruncPos = variant.find(" ", len(variant) - (maxLineLength * 2), len(variant))
+		variant = variant[:startTruncPos] + ".... ... ...." + variant[endTruncPos:]
+
 	# Get the variant in context.
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
 	rendered = cleanFinal(rendered, parseParams)
