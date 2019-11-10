@@ -16,7 +16,7 @@ class Alts:
 	def add(self, txt, prob=None):
 		if prob == 0:
 			return
-		self.alts.append(Item(txt, prob, False))
+		self.alts.append(Item(txt, prob, False, None))
 		if prob is not None:
 			self.probabilityTotal += prob
 
@@ -59,14 +59,17 @@ class Alts:
 # Create a class for a single text item with probability.
 
 class Item:
-	def __init__(self, txt, prob, authorPreferred, banned = False):
+	def __init__(self, txt, prob, authorPreferred, fromVariable = None, banned = False):
 		self.txt = txt
 		self.prob = prob
 		self.authorPreferred = authorPreferred
+		self.fromVariable = fromVariable
 		self.banned = banned
 
 	def __repr__(self):
 		base = "Item: %s%s" % ("^" if self.authorPreferred else "", self.txt)
+		if self.fromVariable is not None:
+			base += " (b/c %s)" % self.fromVariable
 		if self.prob is not None:
 			return "%s>%s" % (self.prob, base)
 		return base
@@ -191,7 +194,7 @@ def parseItem(altBits, params, variablesAllowed=True):
 			raise result.ParseException(badResult)
 		index += 1
 
-	return Item(text, prob, ap, banned)
+	return Item(text, prob, ap, None, banned)
 
 
 
