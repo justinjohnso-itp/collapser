@@ -193,4 +193,18 @@ This is our story. [And no one can ever tell us that we didn't really believe in
                                                             ^     ^
 """]
 
+def test_macros_in_way():
+	start = """connected to us via [exploded rays of chandelier|an exploded pathway of library]. """
+	cruft = """[MACRO tube overview][@ffdropoff>a giant snake that had somehow coated itself in superglue and slithered through {tube overview end}|an immense pipe that had somehow coated itself in superglue and mugged {tube overview end}] [MACRO tube overview end][~a secondhand furniture store, encrusting itself with beds, nightstands, dressers, floor lamps (some lit), bookshelves, bureaus, trashcans, and laundry hampers. Escher's own frat house.] [MACRO set overview][~an experimental theater production set in an overstuffed and cramped bachelor pad bedroom, suspended in mid-air, furnishings cluttered together with no sensible order.] """
+	end = """Holy shit, I said. He laughed. Damn straight. Okay then. Who wants to go first?"""
+	rendered = confirmRenderVariant(start + end, 0, 0, "", 70)
+	expected = """                    v
+connected to us via exploded rays of chandelier. Holy shit, I said. He
+                                              ^
+laughed. Damn straight. Okay then. W
+"""
+	assert rendered == expected
+
+
+
 
