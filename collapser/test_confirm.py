@@ -205,6 +205,9 @@ laughed. Damn straight. Okay then. W
 """
 	assert rendered == expected
 
+	rendered = confirmRenderVariant(start + cruft + end, 0, 0, "", 70)
+	assert rendered == expected
+
 
 
 

@@ -245,7 +245,7 @@ def cleanContext(text):
 			endBodyPos = text.find("]", endDefPos+1)
 			if endBodyPos is not -1:
 				text = text[:pos-1] + text[endBodyPos+1:]
-		pos = text.find("[MACRO", pos+1)
+		pos = text.find("[MACRO")
 
 	# remove DEFINEs.
 	pos = text.find("[DEFINE")
