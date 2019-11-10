@@ -172,6 +172,7 @@ def parseItem(altBits, params, variablesAllowed=True):
 	ap = False
 	prob = None
 	banned = False
+	sourceVar = None
 	while index < len(altBits):
 		token = altBits[index]
 		if variablesAllowed == False and token.type == "VARIABLE":
@@ -182,6 +183,7 @@ def parseItem(altBits, params, variablesAllowed=True):
 			text = token.value
 			if token.type == "VARIABLE":
 				text = text.lower()
+				sourceVar = token.value
 		elif token.type == "AUTHOR":
 			ap = True
 		elif token.type == "NUMBER":
@@ -194,7 +196,7 @@ def parseItem(altBits, params, variablesAllowed=True):
 			raise result.ParseException(badResult)
 		index += 1
 
-	return Item(text, prob, ap, None, banned)
+	return Item(text, prob, ap, sourceVar, banned)
 
 
 
