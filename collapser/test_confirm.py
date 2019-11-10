@@ -38,7 +38,7 @@ def parseAndGetAlts(text):
 	ctrlcontents = getFirstCtrlSeq(tokens)
 	return variables.renderAll(ctrlcontents[0])
 
-def confirmRenderVariant(text, ctrlSeqPos, variantPos, trunc, maxWidth):
+def confirmRenderVariant(text, ctrlSeqPos, variantPos, trunc, maxWidth, prePostBuffer=850):
 	tokens = parseResult(text)
 	sequenceList = confirm.SequenceList(tokens)
 	sequenceList.pos = ctrlSeqPos
@@ -47,8 +47,8 @@ def confirmRenderVariant(text, ctrlSeqPos, variantPos, trunc, maxWidth):
 	variants = ctrlseq.renderAll(ctrlcontents[0], parseParams, showAllVars=True)
 	ctrlEndPos = ctrlcontents[1]
 	ctrlStartPos = text.rfind("[", 0, ctrlEndPos)
-	pre = confirm.getRenderedPre(text, parseParams, ctrlStartPos, ctrlEndPos, sequenceList)
-	post = confirm.getRenderedPost(text, parseParams, ctrlEndPos, sequenceList)
+	pre = confirm.getRenderedPre(text, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, prePostBuffer)
+	post = confirm.getRenderedPost(text, parseParams, ctrlEndPos, sequenceList, prePostBuffer)
 	firstVariant = variants.alts[variantPos].txt
 	result = confirm.renderVariant(trunc, pre, firstVariant, post, trunc, maxWidth, parseParams)
 	return result
@@ -207,6 +207,20 @@ laughed. Damn straight. Okay then. W
 
 	rendered = confirmRenderVariant(start + cruft + end, 0, 0, "", 70)
 	assert rendered == expected
+
+def test_macro_removal_edge_cases():
+	text = """some text [version a|version b]. [MACRO asdf ahksjdk asd fjhasfhksadfhkjadhskfahksjdfh ksadfhkas dfhkas dfhkas jdfhkas dfhjk asdhjfaks dfjh sd][~asdf]"""
+	rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
+	assert rendered == """some text version a.
+          ^       ^
+"""
+	text = """some text [version a|version b]. [MACRO asdf][~ahksjdk asd fjhasfhksadfhkjadhskfahksjdfh ksadfhkas dfhkas dfhkas jdfhkas dfhjk asdhjfaks dfjh sd]"""
+	rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
+	assert rendered == """some text version a.
+          ^       ^
+"""
+	
+
 
 
 

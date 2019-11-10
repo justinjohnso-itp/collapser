@@ -170,24 +170,23 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
 	return wrapped
 
-def getRawPre(sourceText, ctrlStartPos, ctrlEndPos):
-	preBufferLen = 850
+DEFAULT_BUFFER_LEN = 850
+def getRawPre(sourceText, ctrlStartPos, ctrlEndPos, preBufferLen = DEFAULT_BUFFER_LEN):
 	if ctrlStartPos < preBufferLen:
 		preBufferLen = ctrlStartPos
 	pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
 	pre = cleanContext(pre)
 	return pre[-60:]
 
-def getRawPost(sourceText, ctrlEndPos):
-	postBufferLen = 850
+def getRawPost(sourceText, ctrlEndPos, postBufferLen = DEFAULT_BUFFER_LEN):
 	if ctrlEndPos + postBufferLen > len(sourceText):
 		postBufferLen = len(sourceText) - ctrlEndPos
 	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
 	post = cleanContext(post)
 	return post[:60]
 
-def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList):
-	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
+def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
+	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos, bufferLen)
 	prevCtrlSeqEndPos = pre.rfind("]")
 	if prevCtrlSeqEndPos >= 0:
 		prevCtrlSeq = sequenceList.previous()
@@ -205,8 +204,8 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceLi
 	pre = pre[-1*preBufferLen:]
 	return pre
 
-def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList):
-	post = getRawPost(sourceText, ctrlEndPos)
+def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
+	post = getRawPost(sourceText, ctrlEndPos, bufferLen)
 	nextCtrlSeqStartPos = post.find("[")
 	if nextCtrlSeqStartPos >= 0:
 		nextCtrlSeq = sequenceList.next()
@@ -241,10 +240,16 @@ def cleanContext(text):
 	pos = text.find("[MACRO")
 	while pos is not -1:
 		endDefPos = text.find("]", pos)
-		if endDefPos is not -1:
-			endBodyPos = text.find("]", endDefPos+1)
-			if endBodyPos is not -1:
-				text = text[:pos-1] + text[endBodyPos+1:]
+		if endDefPos == -1:
+			# Couldn't find end of MACRO definition
+			text = text[:pos]
+			break
+		endBodyPos = text.find("]", endDefPos+1)
+		if endBodyPos == -1:
+			# Couldn't find end of MACRO body
+			text = text[:pos]
+			break
+		text = text[:pos-1] + text[endBodyPos+1:]
 		pos = text.find("[MACRO")
 
 	# remove DEFINEs.
