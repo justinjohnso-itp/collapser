@@ -27,3 +27,5 @@ def runCommand(command, paramString, shell=False):
 	return result
 
 
+def rename(input, output):
+	runCommand("mv", input + " " + output)

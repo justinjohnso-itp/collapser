@@ -55,7 +55,8 @@ Arguments:
                  Preface with ^ to negate
   --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
   --pickAuthorChance=x		Likelihood to pick author-preferred at random
-  --padding=x		Pad the output PDF to the given number of pages (232)
+  --skipPadding		Skip padding to 232 pages
+  --skipEndMatter	Don't add end matter in padding
 """
 
 
@@ -75,13 +76,14 @@ def main():
 	setDefines = []
 	discourseVarChance = 80
 	preferenceForAuthorsVersion = 20
-	padding = -1
+	skipPadding = False
+	skipEndMatter = False
 	randSeed = False
 	isDigital = False
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "padding="])
+	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "skipPadding", "skipEndMatter"])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -137,12 +139,10 @@ def main():
 			except:
 				print "Invalid --pickAuthorChance parameter '%s': not an integer." % arg
 				sys.exit()
-		elif opt == "--padding":
-			try:
-				padding = int(arg)
-			except:
-				print "Invalid --padding parameter '%s': not an integer." % arg
-				sys.exit()
+		elif opt == "--skipPadding":
+			skipPadding = True
+		elif opt == "--skipEndMatter":
+			skipEndMatter = True
 
 	if inputFile == "" or outputFile == "":
 		print "*** Missing input or output file. ***\n"
@@ -174,8 +174,8 @@ def main():
 		seed0 = seeds[leastSimilarPair[0]]
 		text1 = texts[leastSimilarPair[1]]
 		seed1 = seeds[leastSimilarPair[1]]
-		render(outputFormat, text0, outputDir, outputFile, seed0, doFront, padding, isDigital)
-		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, padding, isDigital)
+		render(outputFormat, text0, outputDir, outputFile, seed0, doFront, skipPadding, skipEndMatter, isDigital)
+		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, skipPadding, skipEndMatter, isDigital)
 
 	else:
 		if strategy is not "random" and strategy is not "skipbanned":
@@ -193,16 +193,17 @@ def main():
 		collapsedText = collapseInputText(inputFile, params)
 		fileio.writeOutputFile(collapsedFileName, collapsedText)
 
-		render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding, isDigital)
+		render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, skipPadding, skipEndMatter, isDigital)
 
 
-def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, padding, isDigital):
+def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, skipPadding, skipEndMatter, isDigital):
 	if outputFormat != "":
 		renderParams = {
 			"fileId": outputFile,
 			"seed": seed,
 			"doFront": doFront,
-			"padding": padding,
+			"skipPadding": skipPadding,
+			"skipEndMatter": skipEndMatter,
 			"outputDir": outputDir,
 			"isDigital": isDigital
 		}

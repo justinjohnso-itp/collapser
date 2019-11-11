@@ -33,7 +33,7 @@ class RendererLatex(renderer.Renderer):
 	def makeOutputFile(self):
 		inputFileName = self.params["fileId"] + ".tex"
 		outputFileName = self.params["fileId"] + ".pdf"
-		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["padding"], self.params["isDigital"])
+		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["skipPadding"], self.params["skipEndMatter"], self.params["isDigital"])
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
@@ -165,7 +165,8 @@ This is the one you have.""" % seedPrinted
 
 
 
-def outputPDF(outputDir, inputFile, outputFile, padding, isDigital):
+def outputPDF(outputDir, inputFile, outputFile, skipPadding, skipEndMatter, isDigital):
+	PADDED_PAGES = 232
 	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (outputDir, inputFile))
 	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
 	latexLooksGood = postLatexSanityCheck(result["output"])
@@ -175,8 +176,8 @@ def outputPDF(outputDir, inputFile, outputFile, padding, isDigital):
 	else:
 		stats = getStats(result["output"])
 		print "Success! Generated %d page PDF." % stats["numPages"]
-		if padding is not -1:
-			addPadding(outputFile, stats["numPages"], padding)
+		if not skipPadding:
+			addPadding(outputFile, stats["numPages"], PADDED_PAGES)
 		if isDigital:
 			print "isDigital, so adding cover"
 			addCover(outputFile, "fragments/cover.pdf")
@@ -219,6 +220,7 @@ def getStats(latexLog):
 
 def addPadding(outputFile, reportedPages, desiredPageCount):
 
+	print "Adding padding..."
 	numPDFPages = countPages("output/combined.pdf")
 	if numPDFPages != reportedPages:
 		print "*** Latex reported generating %d page PDF, but pdftk reported the output was %d pages instead. Aborting." % (reportedPages, numPDFPages)
@@ -232,8 +234,11 @@ def addPadding(outputFile, reportedPages, desiredPageCount):
 
 	if numPDFPages < desiredPageCount:
 		addBlankPages("output/combined.pdf", "output/combined-padded.pdf", desiredPageCount - numPDFPages)
-		numCombinedPages = countPages("output/combined-padded.pdf")
-		if numCombinedPages != desiredPageCount:
+		terminal.rename("output/combined-padded.pdf", "output/combined.pdf")
+		numCombinedPages = countPages("output/combined.pdf")
+		if numCombinedPages == desiredPageCount:
+			print "Successfully padded to %d pages." % desiredPageCount
+		else:
 			print "*** Tried to pad output PDF to %d pages but result was %d pages instead." % (desiredPageCount, numPDFPages)
 			sys.exit()
 
