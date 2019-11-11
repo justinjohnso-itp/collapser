@@ -148,13 +148,13 @@ def latexWrapper(text, seed, includeFrontMatter):
 
 	frontMatterMsg = ""
 	if seed == -1:
-		frontMatterMsg = """This is a special Advance Reader Copy of \\textsc{Subcutanean}. In the final version, each printing of the book will be unique, generated from a specific seed. Words, sentences, or whole scenes may appear in some printings but not in others, or vice versa. No two copies will be alike.
+		frontMatterMsg = """This is a special Advance Reader Copy of \\textsc{Subcutanean}. In the final version, each printing of the book will be unique, generated from a specific seed. Words, sentences, or whole scenes may appear in this printing that do not appear in another. No two copies will be alike.
 
 For now, each Advance Reader Copy in this printing shares the seed %s, and the same text.""" % seedPrinted
 	else:
 		frontMatterMsg = """The book you're holding is unique. There is no other exactly like it.
 
-Each printing of \\textsc{Subcutanean} is different. This is the one and only version generated from seed %s. Words, sentences, or whole scenes may appear in this printing but not in others, or vice versa. No two copies are alike.
+Each printing of \\textsc{Subcutanean} is different. This is the one and only version generated from seed %s. Words, sentences, or whole scenes may appear in some printings that do not appear in others. No two copies are alike.
 
 But all of them are the same story, more or less. Don't worry about what's in the other versions. It doesn't matter. This is the one that's happening to you.
 

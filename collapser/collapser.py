@@ -178,7 +178,7 @@ def main():
 		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, skipPadding, skipEndMatter, isDigital)
 
 	else:
-		if strategy is not "random" and strategy is not "skipbanned":
+		if strategy != "random" and strategy != "skipbanned":
 			print "Ignoring seed (b/c strategy = %s)" % strategy
 		elif randSeed:
 			seed = chooser.randomSeed()
