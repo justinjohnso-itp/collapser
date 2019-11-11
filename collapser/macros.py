@@ -68,11 +68,11 @@ def handleDefs(tokens, params):
 		index += 1
 		token = tokens[index]
 		assert token.type == "TEXT"
-		if __m.isMacro(token.value):
+		macroKey = token.value.lower()
+		if __m.isMacro(macroKey):
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Macro '%s' is defined twice." % token.value, params.originalText, token.lexpos)
+			badResult.flagBad("Macro '%s' is defined twice." % macroKey, params.originalText, token.lexpos)
 			raise result.ParseException(badResult)
-		macroKey = token.value
 		if index+3 > len(tokens) or tokens[index+1].type != "CTRLEND" or tokens[index+2].type != "CTRLBEGIN":
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, token.lexpos)
@@ -107,7 +107,7 @@ def expand(text, params, haltOnBadMacros=True):
 	while startPos != -1:
 		# Get macro name
 		endPos = text.find(mEnd, startPos+1)
-		key = text[startPos+1:endPos]
+		key = text[startPos+1:endPos].lower()
 
 		# Expand the macro
 		rendered = __m.render(key, params)

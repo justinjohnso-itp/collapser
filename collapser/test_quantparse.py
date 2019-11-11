@@ -455,6 +455,19 @@ def test_sticky_macro():
 # 	for i in range(10):
 # 		assert parse(text) == "I love to eat at McDonalds."
 
+def test_macros_not_case_sensitive():
+	text = '''Text [alpha {niko and i}|beta {niko and i}][MACRO niko and I][~was gone]'''
+	result = parse(text)
+	assert result in ["Text alpha was gone", "Text beta was gone"]
+
+	text = '''Text [alpha {niko and I}|beta {niko and i}][MACRO niko and I][~was gone]'''
+	result = parse(text)
+	assert result in ["Text alpha was gone", "Text beta was gone"]
+
+	text = '''Text [alpha {niko and I}|beta {niko and I}][MACRO niko and i][~was gone]'''
+	result = parse(text)
+	assert result in ["Text alpha was gone", "Text beta was gone"]
+
 
 def test_alt_choose_strategies():
 	text = '''[A|B|The longest possible option] is [A|definitely absolutely the longest|pretty long] and [this is the longest for sure|also pretty long, really|not so long].'''
