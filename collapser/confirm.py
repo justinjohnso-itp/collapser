@@ -88,6 +88,7 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 	print "\n\n"
 	print "#################################################################"
 	print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
+	print "#################################################################"
 	for v in variants.alts:
 		print '''************************************'''
 		pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList)

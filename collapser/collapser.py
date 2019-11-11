@@ -55,7 +55,7 @@ Arguments:
                  Preface with ^ to negate
   --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
   --pickAuthorChance=x		Likelihood to pick author-preferred at random
-  --padding=x		Pad the output PDF to the given number of pages
+  --padding=x		Pad the output PDF to the given number of pages (232)
 """
 
 
