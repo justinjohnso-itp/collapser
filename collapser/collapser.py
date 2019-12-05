@@ -71,7 +71,8 @@ def main():
 
 	print """Collapser\n"""
 
-	inputFile = "chapters/full-book-manifest.txt"
+	inputFile = "full-book-manifest.txt"
+	inputFileDir = "chapters/"
 	outputFile = ""
 	inputText = ""
 	outputText = ""
@@ -179,7 +180,7 @@ def main():
 		seed = chooser.nextSeed()
 		for x in range(tries):
 			seeds.append(seed)
-			texts.append(collapseInputText(inputFile, params))
+			texts.append(collapseInputText(inputFile, inputFileDir, params))
 			seed = chooser.nextSeed()
 		leastSimilarPair = differ.getTwoLeastSimilar(texts)
 		text0 = texts[leastSimilarPair[0]]
@@ -205,7 +206,7 @@ def main():
 				chooser.setSeed(thisSeed)
 				print "Seed (requested): %d" % thisSeed
 
-			collapsedText = collapseInputText(inputFile, params)
+			collapsedText = collapseInputText(inputFile, inputFileDir, params)
 			collapsedFileName = outputDir + "collapsed.txt"
 
 			fileio.writeOutputFile(collapsedFileName, collapsedText)
@@ -254,14 +255,13 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, sk
 
 
 
-def collapseInputText(inputFile, params):
+def collapseInputText(inputFile, inputFileDir, params):
 	files = []
-	inputText = fileio.readInputFile(inputFile)
+	inputText = fileio.readInputFile(inputFileDir + inputFile)
 	if inputText[:10] == "# MANIFEST":
-		path = inputFile.split('/')[0] + "/"
 		print "Reading manifest '%s'" % inputFile
 		fileList = fileio.getFilesFromManifest(inputText)
-		files = fileio.loadManifestFromFileList(path, fileList)
+		files = fileio.loadManifestFromFileList(inputFileDir, fileList)
 	else:
 		print "Reading file '%s'" % inputFile
 		fileHeader = fileio.getFileId(inputFile)
