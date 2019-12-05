@@ -71,10 +71,11 @@ __confirms = {}
 __kfname = "confirms.dat"
 __newconfirms = {}
 
-def startConfirmKeys():
+def startConfirmKeys(fileSetKey):
 	global __keyfile
 	global __confirms
 	global __kfname
+	print "fileio.startConfirmKeys(%s)" % fileSetKey
 	if os.path.exists(__kfname):
 		file = readInputFile(__kfname)
 		try:

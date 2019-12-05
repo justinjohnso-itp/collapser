@@ -14,13 +14,14 @@ import fileio
 
 
 # We should have a series of text and CTRLBEGIN/END sequences.
-def process(tokens, sourceText, parseParams):
+# This is called from quantparse.parse
+def process(fileSetKey, tokens, sourceText, parseParams):
 	parseParams.discourseVarChance = 0
 	MAX_PER_SESSION = 5
 	
 	sequenceList = SequenceList(tokens)
 
-	fileio.startConfirmKeys()
+	fileio.startConfirmKeys(fileSetKey)
 	ctr = 0
 	for seq, endPos in sequenceList.sequences:
 		# Return -1 to halt, 0 if already confirmed, 1 if successfully confirmed, 2 if skipped. 

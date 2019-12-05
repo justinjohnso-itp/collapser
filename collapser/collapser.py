@@ -22,6 +22,7 @@ import quantparse
 import chooser
 import result
 import differ
+import hasher
 import renderer_latex
 import renderer_text
 import renderer_html
@@ -266,6 +267,8 @@ def collapseInputText(inputFile, params):
 		files = [fileHeader + inputText]
 
 	fileTexts = []
+	fileSetKey = hasher.hash(''.join(fileList))
+	params.fileSetKey = fileSetKey
 	for file in files:
 		fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)

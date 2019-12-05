@@ -18,7 +18,7 @@ class ParseParams:
 
 	VALID_STRATEGIES = ["random", "skipbanned", "author", "longest", "shortest", "pair"]
 
-	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=False, discourseVarChance=80, originalText=""):
+	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=False, discourseVarChance=80, originalText="", fileSetKey=""):
 		if chooseStrategy not in self.VALID_STRATEGIES:
 			raise ValueError("Unrecognized choose strategy '%s'" % chooseStrategy)
 		self.chooseStrategy = chooseStrategy
@@ -27,12 +27,13 @@ class ParseParams:
 		self.doConfirm = doConfirm
 		self.discourseVarChance = discourseVarChance
 		self.originalText = ""
+		self.fileSetKey = fileSetKey
 
 	def __str__(self):
 		return "chooseStrategy: %s, preferenceForAuthorsVersion: %s, setDefines: %s, discourseVarChance: %d" % (self.chooseStrategy, self.preferenceForAuthorsVersion, self.setDefines, self.discourseVarChance)
 
 	def copy(self):
-		return ParseParams(chooseStrategy=self.chooseStrategy, preferenceForAuthorsVersion=self.preferenceForAuthorsVersion, setDefines=list(self.setDefines), discourseVarChance=self.discourseVarChance, originalText=self.originalText)
+		return ParseParams(chooseStrategy=self.chooseStrategy, preferenceForAuthorsVersion=self.preferenceForAuthorsVersion, setDefines=list(self.setDefines), discourseVarChance=self.discourseVarChance, originalText=self.originalText, fileSetKey=self.fileSetKey)
 
 
 # Call with an object of type ParseParams.
@@ -102,7 +103,7 @@ def parse(tokens, sourceText, parseParams):
 		preppedTokens = handleVariablesAndMacros(tokens, sourceText, parseParams)
 		# TODO: for the above to work, we'd need to be stripping out the DEFINE and MACRO tags from sourceText also as we went.
 		if parseParams.doConfirm:
-			confirm.process(preppedTokens, sourceText, ParseParams())
+			confirm.process(parseParams.fileSetKey, preppedTokens, sourceText, ParseParams())
 		renderedString = handleParsing(preppedTokens, parseParams)
 	except result.ParseException, e:
 		print e
