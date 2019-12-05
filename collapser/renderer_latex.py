@@ -177,7 +177,7 @@ def outputPDF(outputDir, inputFile, outputFile, skipPadding, skipEndMatter, isDi
 		stats = getStats(result["output"])
 		print "Success! Generated %d page PDF." % stats["numPages"]
 		if not skipPadding:
-			addPadding(outputFile, stats["numPages"], PADDED_PAGES)
+			addPadding(outputDir, outputFile, stats["numPages"], PADDED_PAGES)
 		if isDigital:
 			print "isDigital, so adding cover"
 			addCover(outputFile, "fragments/cover.pdf")
@@ -218,10 +218,12 @@ def getStats(latexLog):
 
 
 
-def addPadding(outputFile, reportedPages, desiredPageCount):
+def addPadding(outputDir, outputFile, reportedPages, desiredPageCount):
 
 	print "Adding padding..."
-	numPDFPages = countPages("output/combined.pdf")
+	print "outputFile: '%s'" % outputFile
+	outputFn = outputDir + outputFile
+	numPDFPages = countPages(outputFn)
 	if numPDFPages != reportedPages:
 		print "*** Latex reported generating %d page PDF, but pdftk reported the output was %d pages instead. Aborting." % (reportedPages, numPDFPages)
 		sys.exit()
@@ -233,9 +235,10 @@ def addPadding(outputFile, reportedPages, desiredPageCount):
 	# If equal, no action needed. Otherwise, add padding to the desired number of pages, which must remain constant in print on demand so the cover art doesn't need to be resized.
 
 	if numPDFPages < desiredPageCount:
-		addBlankPages("output/combined.pdf", "output/combined-padded.pdf", desiredPageCount - numPDFPages)
-		terminal.rename("output/combined-padded.pdf", "output/combined.pdf")
-		numCombinedPages = countPages("output/combined.pdf")
+		tmpFn = outputDir + "padded-" + outputFile
+		addBlankPages(outputFn, tmpFn, desiredPageCount - numPDFPages)
+		terminal.rename(tmpFn, outputFn)
+		numCombinedPages = countPages(outputFn)
 		if numCombinedPages == desiredPageCount:
 			print "Successfully padded to %d pages." % desiredPageCount
 		else:

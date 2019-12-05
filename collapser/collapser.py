@@ -7,6 +7,10 @@
 
 # TODO: Need to address the problem of authoring [DEFINE @A|@B], writing [A>text1|text2] somewhere, and then adding a @C and not catching the new edge case. On the one hand we ideally want to support [A>|] as a generic "else" clause (see @ffset vs the two tube options), but I'm really worried this will lead to a mistake slipping through. (The other version is also a problem, if we have [A>text1|B>text2], still printing nothing in the case of C.)
 
+# TODO: problem with Confirm where when we adjust the manifest to change what chapters we're showing, the file gets reset. 
+
+# TODO: add a sanity check for missing end punctuation, a la "ending Then"
+
 import sys
 import getopt
 import re
@@ -45,6 +49,7 @@ Arguments:
   				 "txt", "html", "md", "epub", "mobi", "tweet"
   --noconfirm	 Skip variant confirmation
   --strategy=x   Selection strategy.
+  		N		 Make N copies with "random" strategy
   		"random": default
   		"skipbanned": random, but avoid banned alternatives
   		"author": Author's preferred
@@ -80,6 +85,7 @@ def main():
 	skipEndMatter = False
 	randSeed = False
 	isDigital = False
+	copies = 1
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
@@ -109,9 +115,13 @@ def main():
 					print "Invalid --seed parameter '%s': not an integer." % arg
 					sys.exit()
 		elif opt == "--strategy":
-			if arg not in quantparse.ParseParams.VALID_STRATEGIES:
-				print "Invalid --strategy parameter '%s': must be one of %s" % (arg, quantparse.ParseParams.VALID_STRATEGIES)
-			strategy = arg
+			try:
+				copies = int(arg)
+				strategy = "random"
+			except:
+				if arg not in quantparse.ParseParams.VALID_STRATEGIES:
+					print "Invalid --strategy parameter '%s': must be one of %s" % (arg, quantparse.ParseParams.VALID_STRATEGIES)
+				strategy = arg
 		elif opt == "--output":
 			if arg != "" and arg not in VALID_OUTPUTS:
 				print "Invalid --output parameter '%s': must be one of %s" % (arg, VALID_OUTPUTS)
@@ -178,22 +188,34 @@ def main():
 		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, skipPadding, skipEndMatter, isDigital)
 
 	else:
-		if strategy != "random" and strategy != "skipbanned":
-			print "Ignoring seed (b/c strategy = %s)" % strategy
-		elif randSeed:
-			seed = chooser.randomSeed()
-			print "Seed (purely random): %d" % seed
-		elif seed is -1:
-			seed = chooser.nextSeed()
-			print "Seed (next): %d" % seed
-		else:
-			chooser.setSeed(seed)
-			print "Seed (requested): %d" % seed
+		copiesRequested = copies
+		while copies >= 1:
+			thisSeed = seed
+			if strategy != "random" and strategy != "skipbanned":
+				print "Ignoring seed (b/c strategy = %s)" % strategy
+			elif randSeed:
+				thisSeed = chooser.randomSeed()
+				print "Seed (purely random): %d" % thisSeed
+			elif seed is -1:
+				thisSeed = chooser.nextSeed()
+				print "Seed (next): %d" % thisSeed
+			else:
+				chooser.setSeed(thisSeed)
+				print "Seed (requested): %d" % thisSeed
 
-		collapsedText = collapseInputText(inputFile, params)
-		fileio.writeOutputFile(collapsedFileName, collapsedText)
+			collapsedText = collapseInputText(inputFile, params)
+			collapsedFileName = outputDir + "collapsed.txt"
 
-		render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, skipPadding, skipEndMatter, isDigital)
+			fileio.writeOutputFile(collapsedFileName, collapsedText)
+
+			thisOutputFile = outputFile
+			if copiesRequested > 1:
+				thisOutputFile = "%s-%s" % (outputFile, thisSeed)
+			render(outputFormat, collapsedText, outputDir, thisOutputFile, thisSeed, doFront, skipPadding, skipEndMatter, isDigital)
+
+			copies -= 1
+			if copies > 0:
+				print "%d cop%s left to generate." % (copies, "y" if copies is 1 else "ies")
 
 
 def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, skipPadding, skipEndMatter, isDigital):
