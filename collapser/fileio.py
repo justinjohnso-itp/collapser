@@ -68,32 +68,37 @@ def getNextSeedFromFile():
 
 __keyfile = None
 __confirms = {}
-__kfname = "confirms.dat"
+__kfpath = "confirms/"
 __newconfirms = {}
+__kfkey = ""
 
 def startConfirmKeys(fileSetKey):
 	global __keyfile
 	global __confirms
-	global __kfname
-	print "fileio.startConfirmKeys(%s)" % fileSetKey
-	if os.path.exists(__kfname):
-		file = readInputFile(__kfname)
+	global __kfpath
+	global __kfkey
+	kfname = __kfpath + fileSetKey
+	__kfkey = fileSetKey
+	if os.path.exists(kfname):
+		file = readInputFile(kfname)
 		try:
 			__confirms = pickle.loads(file)
-			print "Loaded confirms from %s" % __kfname
+			print "Loaded confirms from %s" % kfname
 		except IOError as e:
-			print "Couldn't load confirms from %s: %s" % (__kfname, e)
+			print "Couldn't load confirms from %s: %s" % (kfname, e)
 			sys.exit()
 	else:
 		__confirms = {}
 
 def finishConfirmKeys():
-	global __kfname
+	global __kfpath
 	global __newconfirms
+	global __kfkey
+	kfname = __kfpath + __kfkey
 	try:
-		writeOutputFile(__kfname, pickle.dumps(__newconfirms))
+		writeOutputFile(kfname, pickle.dumps(__newconfirms))
 	except IOError as e:
-		print "Couldn't save confirms to %s: %s" % (__kfname, e)
+		print "Couldn't save confirms to %s: %s" % (kfname, e)
 
 def confirmKey(key):
 	global __newconfirms
