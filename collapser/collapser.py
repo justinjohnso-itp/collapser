@@ -31,7 +31,6 @@ import renderer_epub
 import renderer_mobi
 import renderer_tweet
 
-manifestFile = "manifest.txt"
 outputDir = "output/"
 alternateOutputFile = outputDir + "alternate"
 collapsedFileName = outputDir + "collapsed.txt"
@@ -71,7 +70,7 @@ def main():
 
 	print """Collapser\n"""
 
-	inputFile = "full-book-manifest.txt"
+	inputFiles = ["full-book-manifest.txt"]
 	inputFileDir = "chapters/"
 	outputFile = ""
 	inputText = ""
@@ -98,7 +97,7 @@ def main():
 		sys.exit()
 	for opt, arg in opts:
 		if opt == "--input":
-			inputFile = arg
+			inputFiles = arg.split(',')
 		elif opt == "-o":
 			if len(re.findall(r"(\/|(\.(pdf|tex|txt)))", arg)) > 0:
 				print "Please do not include paths or file extensions in output file (use --output to specify format)."
@@ -180,7 +179,7 @@ def main():
 		seed = chooser.nextSeed()
 		for x in range(tries):
 			seeds.append(seed)
-			texts.append(collapseInputText(inputFile, inputFileDir, params))
+			texts.append(collapseInputText(inputFiles, inputFileDir, params))
 			seed = chooser.nextSeed()
 		leastSimilarPair = differ.getTwoLeastSimilar(texts)
 		text0 = texts[leastSimilarPair[0]]
@@ -206,7 +205,7 @@ def main():
 				chooser.setSeed(thisSeed)
 				print "Seed (requested): %d" % thisSeed
 
-			collapsedText = collapseInputText(inputFile, inputFileDir, params)
+			collapsedText = collapseInputText(inputFiles, inputFileDir, params)
 			collapsedFileName = outputDir + "collapsed.txt"
 
 			fileio.writeOutputFile(collapsedFileName, collapsedText)
@@ -255,18 +254,13 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, sk
 
 
 
-def collapseInputText(inputFile, inputFileDir, params):
+def collapseInputText(inputFiles, inputFileDir, params):
 	files = []
-	inputText = fileio.readInputFile(inputFileDir + inputFile)
-	if inputText[:10] == "# MANIFEST":
-		print "Reading manifest '%s'" % inputFile
-		fileList = fileio.getFilesFromManifest(inputText)
-		files = fileio.loadManifestFromFileList(inputFileDir, fileList)
-	else:
-		print "Reading file '%s'" % inputFile
-		fileHeader = fileio.getFileId(inputFile)
-		fileList = [inputFile]
-		files = [fileHeader + inputText]
+	fileList = []
+	for iFile in inputFiles:
+		result = readManifestOrFile(iFile, inputFileDir, params)
+		files = files + result["files"]
+		fileList = fileList + result["fileList"]
 
 	fileTexts = []
 	fileSetKey = hasher.hash(''.join(fileList))
@@ -280,7 +274,23 @@ def collapseInputText(inputFile, inputFileDir, params):
 
 	return collapsedText
 
-
+def readManifestOrFile(inputFile, inputFileDir, params):
+	inputText = fileio.readInputFile(inputFileDir + inputFile)
+	fileList = []
+	files = []
+	if inputText[:10] == "# MANIFEST":
+		print "Reading manifest '%s'" % inputFile
+		fileList = fileio.getFilesFromManifest(inputText)
+		files = fileio.loadManifestFromFileList(inputFileDir, fileList)
+	else:
+		print "Reading file '%s'" % inputFile
+		fileHeader = fileio.getFileId(inputFile)
+		fileList = [inputFile]
+		files = [fileHeader + inputText]
+	return {
+		"fileList": fileList,
+		"files": files
+	}
 
 
 
