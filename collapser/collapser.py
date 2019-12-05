@@ -39,7 +39,7 @@ collapsedFileName = outputDir + "collapsed.txt"
 
 
 def showUsage():
-	print """Usage: collapser -i <INPUT> -o <OUTPUT_KEY> options
+	print """Usage: collapser -o <OUTPUT_KEY> options
 Arguments:
   --help         Show this message
   --front		 Include frontmatter
@@ -57,6 +57,7 @@ Arguments:
   		"pair": Two versions optimizing for difference
   		"longest"
   		"shortest"
+  --input=		 An alternate manifest file to load (default: full-book-manifest.txt)
   --set=x,y,z	 A list of variables to set true for this run.
                  Preface with ^ to negate
   --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
@@ -68,9 +69,9 @@ Arguments:
 
 def main():
 
-	print """Collapser 0.1\n"""
+	print """Collapser\n"""
 
-	inputFile = ""
+	inputFile = "chapters/full-book-manifest.txt"
 	outputFile = ""
 	inputText = ""
 	outputText = ""
@@ -90,12 +91,12 @@ def main():
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "skipPadding", "skipEndMatter"])
+	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "skipPadding", "skipEndMatter", "input="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
 	for opt, arg in opts:
-		if opt == "-i":
+		if opt == "--input":
 			inputFile = arg
 		elif opt == "-o":
 			if len(re.findall(r"(\/|(\.(pdf|tex|txt)))", arg)) > 0:
@@ -155,8 +156,8 @@ def main():
 		elif opt == "--skipEndMatter":
 			skipEndMatter = True
 
-	if inputFile == "" or outputFile == "":
-		print "*** Missing input or output file. ***\n"
+	if outputFile == "":
+		print "*** Missing output file. ***\n"
 		showUsage()
 		sys.exit()
 
@@ -256,14 +257,15 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, sk
 def collapseInputText(inputFile, params):
 	files = []
 	inputText = fileio.readInputFile(inputFile)
-	if inputFile[-12:] == manifestFile:
-		path = inputFile[:-12]
+	if inputText[:10] == "# MANIFEST":
+		path = inputFile.split('/')[0] + "/"
 		print "Reading manifest '%s'" % inputFile
 		fileList = fileio.getFilesFromManifest(inputText)
 		files = fileio.loadManifestFromFileList(path, fileList)
 	else:
 		print "Reading file '%s'" % inputFile
 		fileHeader = fileio.getFileId(inputFile)
+		fileList = [inputFile]
 		files = [fileHeader + inputText]
 
 	fileTexts = []
