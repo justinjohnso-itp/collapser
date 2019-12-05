@@ -16,19 +16,25 @@ def writeOutputFile(outputFile, outputText):
 		fileObject.write(outputText)
 		print "\nWrote to '%s'.\n" % outputFile
 
-
-def loadManifest(path, manifest):
+def getFilesFromManifest(manifest):
 	# We expect this to be a list of filenames, one per line.
 	# Ignore any line that begins with "#"
-	# We should return an array of texts, the contents of the files in order.
-	contents = []
+	fileList = []
 	lines = manifest.split('\n')
 	for line in lines:
 		if len(line) == 0 or line[0] == "#" or line.strip() == "":
 			continue
-		print " > Reading '%s'" % line
-		file = readInputFile(path + line)
-		contents.append(getFileId(line) + file)
+		fileList.append(line)
+	return fileList
+
+def loadManifestFromFileList(path, fileList):
+	# Concatenate the contents of a list of files, with an identifier comment dividing the chunks.
+	contents = []
+	for file in fileList:
+		fileWithPath = path + file
+		print " > Reading '%s'" % fileWithPath
+		fileContents = readInputFile(fileWithPath)
+		contents.append(getFileId(file) + fileContents)
 	return contents
 
 def getFileId(fn):

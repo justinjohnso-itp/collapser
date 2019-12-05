@@ -258,7 +258,8 @@ def collapseInputText(inputFile, params):
 	if inputFile[-12:] == manifestFile:
 		path = inputFile[:-12]
 		print "Reading manifest '%s'" % inputFile
-		files = fileio.loadManifest(path, inputText)
+		fileList = fileio.getFilesFromManifest(inputText)
+		files = fileio.loadManifestFromFileList(path, fileList)
 	else:
 		print "Reading file '%s'" % inputFile
 		fileHeader = fileio.getFileId(inputFile)
