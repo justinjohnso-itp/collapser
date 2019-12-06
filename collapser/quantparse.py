@@ -18,7 +18,7 @@ class ParseParams:
 
 	VALID_STRATEGIES = ["random", "skipbanned", "author", "longest", "shortest", "pair"]
 
-	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=False, discourseVarChance=80, originalText="", fileSetKey=""):
+	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=False, discourseVarChance=80, originalText="", fileSetKey="", onlyShow=[]):
 		if chooseStrategy not in self.VALID_STRATEGIES:
 			raise ValueError("Unrecognized choose strategy '%s'" % chooseStrategy)
 		self.chooseStrategy = chooseStrategy
@@ -28,12 +28,13 @@ class ParseParams:
 		self.discourseVarChance = discourseVarChance
 		self.originalText = ""
 		self.fileSetKey = fileSetKey
+		self.onlyShow = onlyShow
 
 	def __str__(self):
 		return "chooseStrategy: %s, preferenceForAuthorsVersion: %s, setDefines: %s, discourseVarChance: %d" % (self.chooseStrategy, self.preferenceForAuthorsVersion, self.setDefines, self.discourseVarChance)
 
 	def copy(self):
-		return ParseParams(chooseStrategy=self.chooseStrategy, preferenceForAuthorsVersion=self.preferenceForAuthorsVersion, setDefines=list(self.setDefines), discourseVarChance=self.discourseVarChance, originalText=self.originalText, fileSetKey=self.fileSetKey)
+		return ParseParams(chooseStrategy=self.chooseStrategy, preferenceForAuthorsVersion=self.preferenceForAuthorsVersion, setDefines=list(self.setDefines), discourseVarChance=self.discourseVarChance, originalText=self.originalText, fileSetKey=self.fileSetKey, onlyShow=self.onlyShow)
 
 
 # Call with an object of type ParseParams.

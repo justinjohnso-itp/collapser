@@ -7,8 +7,6 @@
 
 # TODO: Need to address the problem of authoring [DEFINE @A|@B], writing [A>text1|text2] somewhere, and then adding a @C and not catching the new edge case. On the one hand we ideally want to support [A>|] as a generic "else" clause (see @ffset vs the two tube options), but I'm really worried this will lead to a mistake slipping through. (The other version is also a problem, if we have [A>text1|B>text2], still printing nothing in the case of C.)
 
-# TODO: problem with Confirm where when we adjust the manifest to change what chapters we're showing, the file gets reset. 
-
 # TODO: add a sanity check for missing end punctuation, a la "ending Then"
 
 import sys
@@ -57,6 +55,7 @@ Arguments:
   		"longest"
   		"shortest"
   --input=		 An alternate manifest file to load (default: full-book-manifest.txt)
+  --only=x,y,z	 A list of files to render from the set loaded. 
   --set=x,y,z	 A list of variables to set true for this run.
                  Preface with ^ to negate
   --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
@@ -88,10 +87,11 @@ def main():
 	randSeed = False
 	isDigital = False
 	copies = 1
+	onlyShow = []
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "skipPadding", "skipEndMatter", "input="])
+	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "skipPadding", "skipEndMatter", "input=", "only="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -139,6 +139,9 @@ def main():
 			doFront = True
 		elif opt == "--set":
 			setDefines = arg.split(',')
+		elif opt == "--only":
+			onlyShow = arg.split(',')
+			print "Setting onlyShow: %s" % onlyShow
 		elif opt == "--discourseVarChance":
 			try:
 				discourseVarChance = int(arg)
@@ -169,7 +172,8 @@ def main():
 		print "*** You set seed to %d but also set variables %s; you need to do one or the other ***\n" % (seed, setDefines)
 		sys.exit()
 
-	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance)
+	print "onlyShow: %s" % onlyShow
+	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow)
 
 	if strategy == "pair":
 		# TODO make this work with new output format.
@@ -265,8 +269,10 @@ def collapseInputText(inputFiles, inputFileDir, params):
 	fileTexts = []
 	fileSetKey = hasher.hash(''.join(fileList))
 	params.fileSetKey = fileSetKey
-	for file in files:
-		fileTexts.append(file)
+	for pos, file in enumerate(files):
+		if len(params.onlyShow) == 0 or fileList[pos] in params.onlyShow or fileList[pos] == "globals.txt":
+			print "Appending %s" % fileList[pos]
+			fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)
 	collapsedText = collapse.go(joinedFileTexts, params)
 	if collapsedText == "":
