@@ -1,6 +1,7 @@
 
 import ctrlseq
 import result
+import re
 
 # TODO: Doesn't seem to be checking that StickyMacro isn't defined twice?
 # TODO: Sticky Macros aren't honoring author prefered mark. See test_author_preferred_sticky_macro
@@ -93,12 +94,17 @@ def handleDefs(tokens, params):
 formatting_codes = ["section_break", "chapter", "part", "end_part_page", "verse", "verse_inline", "epigraph", "pp", "i", "vspace"]
 
 def getNextMacro(text, pos, params):
-	mStart = '''{'''
-	mEnd = '''}'''
-	startPos = text.find(mStart)
-	if startPos == -1:
+	# A macro can be in the form {this thing} or *that (one word). 
+	# startPos = text.find(mStart)
+	found = re.search(r"[\{\*]", text)
+	if not found:
 		return [-1, -1]
-	endPos = text.find(mEnd, startPos+1)
+	startPos = found.start()
+	typeStart = text[startPos]
+	endChar = "}"
+	if typeStart == "*":
+		endChar = " "
+	endPos = text.find(endChar, startPos+1)
 	if endPos - startPos == 1:
 		badResult = result.Result(result.PARSE_RESULT)
 		badResult.flagBad("Can't have empty macro sequence {}", params.originalText, startPos)
