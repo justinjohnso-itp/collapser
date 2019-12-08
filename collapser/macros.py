@@ -94,17 +94,25 @@ def handleDefs(tokens, params):
 formatting_codes = ["section_break", "chapter", "part", "end_part_page", "verse", "verse_inline", "epigraph", "pp", "i", "vspace"]
 
 def getNextMacro(text, pos, params):
+	print "getNextMacro! %s" % text
 	# A macro can be in the form {this thing} or *that (one word). 
-	# startPos = text.find(mStart)
-	found = re.search(r"[\{\*]", text)
+	# TODO we're not using pos.
+	found = re.search(r"[\{\$]", text)
 	if not found:
+		print "not found!"
 		return [-1, -1]
 	startPos = found.start()
 	typeStart = text[startPos]
-	endChar = "}"
-	if typeStart == "*":
-		endChar = " "
-	endPos = text.find(endChar, startPos+1)
+	if typeStart == "{":
+		endPos = text.find("}", startPos+1)
+	else:
+		endFound = re.search(r"[^\w]", text[startPos+1:])
+		print "startPos: %d" % startPos
+		print "endFound.start(): %d" % endFound.start()
+		if endFound:
+			endPos = endFound.start() + startPos + 1
+		else:
+			endPos = len(text) - 1
 	if endPos - startPos == 1:
 		badResult = result.Result(result.PARSE_RESULT)
 		badResult.flagBad("Can't have empty macro sequence {}", params.originalText, startPos)

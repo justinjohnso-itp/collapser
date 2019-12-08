@@ -62,6 +62,10 @@ def test_macro_expansions():
 	text = '''[MACRO a1][50>alpha|25>cappa]{a1}'''
 	verifyEachIsFound(["alpha", "cappa", ""], text)
 
+def test_alt_macro_syntax():
+	text = '''Some text and $junk  here.[MACRO junk][~this is stuff]'''
+	result = parse(text)
+	assert result == "Some text and this is stuff here."
 
 def test_nested_macros():
 	text = '''[DEFINE ^@alpha][@alpha>{mactest}][MACRO mactest][~beta]'''
