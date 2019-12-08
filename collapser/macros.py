@@ -107,13 +107,13 @@ def getNextMacro(text, pos, params):
 
 
 def expand(text, params, haltOnBadMacros=True):
-	MAX_MACRO_DEPTH = 6
 	global __m
-	nextMacro = getNextMacro(text, 0, params)
-	startPos = nextMacro[0]
-	endPos = nextMacro[1]
+	MAX_MACRO_DEPTH = 6
 	renderHadMoreMacrosCtr = 0
-	while startPos != -1:
+	nextMacro = getNextMacro(text, 0, params)
+	while nextMacro[0] != -1:
+		startPos = nextMacro[0]
+		endPos = nextMacro[1]
 		# Get macro name
 		key = text[startPos+1:endPos].lower()
 
@@ -123,18 +123,11 @@ def expand(text, params, haltOnBadMacros=True):
 		# If unrecognized, see if it's a formatting code; fail otherwise.
 		if rendered == None:
 			parts = key.split('/')
-			if parts[0] in formatting_codes:
-				nextMacro = getNextMacro(text, startPos+1, params)
-				startPos = nextMacro[0]
-				endPos = nextMacro[1]
-				continue
-			if haltOnBadMacros:
+			if parts[0] not in formatting_codes and haltOnBadMacros:
 				badResult = result.Result(result.PARSE_RESULT)
 				badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
 				raise result.ParseException(badResult)
 			nextMacro = getNextMacro(text, startPos+1, params)
-			startPos = nextMacro[0]
-			endPos = nextMacro[1]
 			continue
 
 		# If the expansion itself contains macros, check for recursion then set the start position for the next loop iteration.
@@ -150,7 +143,5 @@ def expand(text, params, haltOnBadMacros=True):
 		text = text[:startPos] + rendered + text[endPos+1:]
 		oldStartPos = startPos
 		nextMacro = getNextMacro(text, startPos+1, params)
-		startPos = nextMacro[0]
-		endPos = nextMacro[1]
 
 	return text
