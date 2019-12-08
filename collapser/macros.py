@@ -92,21 +92,29 @@ def handleDefs(tokens, params):
 
 formatting_codes = ["section_break", "chapter", "part", "end_part_page", "verse", "verse_inline", "epigraph", "pp", "i", "vspace"]
 
-def expand(text, params, haltOnBadMacros=True):
+def getNextMacro(text, pos, params):
 	mStart = '''{'''
 	mEnd = '''}'''
+	startPos = text.find(mStart)
+	if startPos == -1:
+		return [-1, -1]
+	endPos = text.find(mEnd, startPos+1)
+	if endPos - startPos == 1:
+		badResult = result.Result(result.PARSE_RESULT)
+		badResult.flagBad("Can't have empty macro sequence {}", params.originalText, startPos)
+		raise result.ParseException(badResult)
+	return [startPos, endPos]
+
+
+def expand(text, params, haltOnBadMacros=True):
 	MAX_MACRO_DEPTH = 6
 	global __m
-	emptyPos = text.find(mStart + mEnd)
-	if emptyPos != -1:
-		badResult = result.Result(result.PARSE_RESULT)
-		badResult.flagBad("Can't have empty macro sequence {}", params.originalText, emptyPos)
-		raise result.ParseException(badResult)
-	startPos = text.find(mStart)
+	nextMacro = getNextMacro(text, 0, params)
+	startPos = nextMacro[0]
+	endPos = nextMacro[1]
 	renderHadMoreMacrosCtr = 0
 	while startPos != -1:
 		# Get macro name
-		endPos = text.find(mEnd, startPos+1)
 		key = text[startPos+1:endPos].lower()
 
 		# Expand the macro
@@ -116,17 +124,21 @@ def expand(text, params, haltOnBadMacros=True):
 		if rendered == None:
 			parts = key.split('/')
 			if parts[0] in formatting_codes:
-				startPos = text.find(mStart, startPos+1)
+				nextMacro = getNextMacro(text, startPos+1, params)
+				startPos = nextMacro[0]
+				endPos = nextMacro[1]
 				continue
 			if haltOnBadMacros:
 				badResult = result.Result(result.PARSE_RESULT)
 				badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
 				raise result.ParseException(badResult)
-			startPos = text.find(mStart, startPos+1)
+			nextMacro = getNextMacro(text, startPos+1, params)
+			startPos = nextMacro[0]
+			endPos = nextMacro[1]
 			continue
 
 		# If the expansion itself contains macros, check for recursion then set the start position for the next loop iteration.
-		if rendered.find(mStart) >= 0:
+		if getNextMacro(rendered, 0, params)[0] >= 0:
 			renderHadMoreMacrosCtr += 1
 		else:
 			renderHadMoreMacrosCtr = 0
@@ -137,6 +149,8 @@ def expand(text, params, haltOnBadMacros=True):
 
 		text = text[:startPos] + rendered + text[endPos+1:]
 		oldStartPos = startPos
-		startPos = text.find(mStart, startPos)
+		nextMacro = getNextMacro(text, startPos+1, params)
+		startPos = nextMacro[0]
+		endPos = nextMacro[1]
 
 	return text
