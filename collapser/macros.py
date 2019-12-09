@@ -150,6 +150,10 @@ def expand(text, params):
 			badResult.flagBad("Possibly recursive macro loop near here", text[startPos:startPos+20], startPos)
 			raise result.ParseException(badResult)
 
+		# For {this} format, we're trimming the final character; for $this one, we want to keep the final character.
+		if text[endPos] != '}':
+			endPos -= 1
+			
 		text = text[:startPos] + rendered + text[endPos+1:]
 		nextMacro = getNextMacro(text, startPos, params)
 

@@ -67,11 +67,11 @@ def test_macro_expansions():
 	verifyEachIsFound(["alpha", "cappa", ""], text)
 
 def test_alt_macro_syntax():
-	text = '''Some text and $junk  here.[MACRO junk][~this is stuff]'''
+	text = '''Some text and $junk here.[MACRO junk][~this is stuff]'''
 	result = parse(text)
 	assert result == "Some text and this is stuff here."
 
-	text = '''Some text and $junk  here. Want to make sure this still $works  even with multiple $junk .[MACRO junk][~this is stuff][MACRO works][~functions and $junk .]'''
+	text = '''Some text and $junk here. Want to make sure this still $works even with multiple $junk.[MACRO junk][~this is stuff][MACRO works][~functions and $junk.]'''
 	result = parse(text)
 	assert result == "Some text and this is stuff here. Want to make sure this still functions and this is stuff. even with multiple this is stuff."
 
