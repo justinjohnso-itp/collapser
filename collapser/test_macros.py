@@ -70,10 +70,16 @@ def test_alt_macro_syntax():
 	text = '''Some text and $junk here.[MACRO junk][~this is stuff]'''
 	result = parse(text)
 	assert result == "Some text and this is stuff here."
-
 	text = '''Some text and $junk here. Want to make sure this still $works even with multiple $junk.[MACRO junk][~this is stuff][MACRO works][~functions and $junk.]'''
 	result = parse(text)
 	assert result == "Some text and this is stuff here. Want to make sure this still functions and this is stuff. even with multiple this is stuff."
+	text = '''[MACRO stuffs][~el stufes]$stuffs'''
+	result = parse(text)
+	assert result == "el stufes"
+	text = '''$stuffs[MACRO stuffs][~el stufes]'''
+	result = parse(text)
+	assert result == "el stufes"
+
 
 def test_nested_macros():
 	text = '''[DEFINE ^@alpha][@alpha>{mactest}][MACRO mactest][~beta]'''

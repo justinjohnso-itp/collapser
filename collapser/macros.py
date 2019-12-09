@@ -108,7 +108,7 @@ def getNextMacro(text, pos, params):
 		if endFound:
 			endPos = endFound.start() + startPos + 1
 		else:
-			endPos = len(text) - 1
+			endPos = len(text)
 	if endPos - startPos == 1:
 		badResult = result.Result(result.PARSE_RESULT)
 		badResult.flagBad("Can't have empty macro sequence {}", params.originalText, startPos)
@@ -151,7 +151,7 @@ def expand(text, params):
 			raise result.ParseException(badResult)
 
 		# For {this} format, we're trimming the final character; for $this one, we want to keep the final character.
-		if text[endPos] != '}':
+		if endPos < len(text) and text[endPos] != '}':
 			endPos -= 1
 			
 		text = text[:startPos] + rendered + text[endPos+1:]
