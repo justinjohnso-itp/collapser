@@ -109,6 +109,10 @@ def getNextMacro(text, pos, params):
 			endPos = endFound.start() + startPos + 1
 		else:
 			endPos = len(text)
+	if endPos == -1:
+		badResult = result.Result(result.PARSE_RESULT)
+		badResult.flagBad("Incomplete macro sequence", params.originalText, startPos)
+		raise result.ParseException(badResult)
 	if endPos - startPos == 1:
 		badResult = result.Result(result.PARSE_RESULT)
 		badResult.flagBad("Can't have empty macro sequence {}", params.originalText, startPos)
@@ -135,7 +139,7 @@ def expand(text, params):
 			parts = key.split('/')
 			if parts[0] not in formatting_codes:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
+				badResult.flagBad("Unrecognized macro {%s}" % (key, text, startPos))
 				raise result.ParseException(badResult)
 			nextMacro = getNextMacro(text, startPos+1, params)
 			continue
