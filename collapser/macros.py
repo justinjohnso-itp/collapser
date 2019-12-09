@@ -94,12 +94,10 @@ def handleDefs(tokens, params):
 formatting_codes = ["section_break", "chapter", "part", "end_part_page", "verse", "verse_inline", "epigraph", "pp", "i", "vspace"]
 
 def getNextMacro(text, pos, params):
-	print "getNextMacro! %s" % text
 	# A macro can be in the form {this thing} or *that (one word). 
-	# TODO we're not using pos.
+	text = text[pos:]
 	found = re.search(r"[\{\$]", text)
 	if not found:
-		print "not found!"
 		return [-1, -1]
 	startPos = found.start()
 	typeStart = text[startPos]
@@ -107,8 +105,6 @@ def getNextMacro(text, pos, params):
 		endPos = text.find("}", startPos+1)
 	else:
 		endFound = re.search(r"[^\w]", text[startPos+1:])
-		print "startPos: %d" % startPos
-		print "endFound.start(): %d" % endFound.start()
 		if endFound:
 			endPos = endFound.start() + startPos + 1
 		else:
@@ -117,10 +113,10 @@ def getNextMacro(text, pos, params):
 		badResult = result.Result(result.PARSE_RESULT)
 		badResult.flagBad("Can't have empty macro sequence {}", params.originalText, startPos)
 		raise result.ParseException(badResult)
-	return [startPos, endPos]
+	return [startPos + pos, endPos + pos]
 
 
-def expand(text, params, haltOnBadMacros=True):
+def expand(text, params):
 	global __m
 	MAX_MACRO_DEPTH = 6
 	renderHadMoreMacrosCtr = 0
@@ -137,7 +133,7 @@ def expand(text, params, haltOnBadMacros=True):
 		# If unrecognized, see if it's a formatting code; fail otherwise.
 		if rendered == None:
 			parts = key.split('/')
-			if parts[0] not in formatting_codes and haltOnBadMacros:
+			if parts[0] not in formatting_codes:
 				badResult = result.Result(result.PARSE_RESULT)
 				badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
 				raise result.ParseException(badResult)
@@ -155,7 +151,6 @@ def expand(text, params, haltOnBadMacros=True):
 			raise result.ParseException(badResult)
 
 		text = text[:startPos] + rendered + text[endPos+1:]
-		oldStartPos = startPos
-		nextMacro = getNextMacro(text, startPos+1, params)
+		nextMacro = getNextMacro(text, startPos, params)
 
 	return text

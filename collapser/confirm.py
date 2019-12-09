@@ -134,7 +134,7 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  parseParams):
 
 	# Expand macros.
-	variant = macros.expand(variant, parseParams, haltOnBadMacros=False)
+	variant = macros.expand(variant, parseParams)
 
 	# Don't show very long excerpts in their entirety.
 	if len(variant) > maxLineLength * 5:
@@ -200,7 +200,7 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceLi
 				prevCtrlSeqStartPos = 0
 			pre = pre[:prevCtrlSeqStartPos] + variantTxt + pre[prevCtrlSeqEndPos+1:]
 	pre = cleanContext(pre)
-	pre = macros.expand(pre, parseParams, haltOnBadMacros=False)
+	pre = macros.expand(pre, parseParams)
 	# truncate again
 	preBufferLen = 60
 	pre = pre[-1*preBufferLen:]
@@ -219,7 +219,7 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen
 				nextCtrlSeqEndPos = len(post)
 			post = post[:nextCtrlSeqStartPos] + variantTxt + post[nextCtrlSeqEndPos+1:]
 	post = cleanContext(post)
-	post = macros.expand(post, parseParams, haltOnBadMacros=False)
+	post = macros.expand(post, parseParams)
 	# truncate again
 	postBufferLen = 60
 	post = post[:postBufferLen]
@@ -270,7 +270,7 @@ def cleanFinal(text, parseParams):
 	text = re.sub(r"  +", " ", text)
 
 	# Expand macros.
-	text = macros.expand(text, parseParams, haltOnBadMacros=False)
+	text = macros.expand(text, parseParams)
 
 	return text
 

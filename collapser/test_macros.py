@@ -40,14 +40,18 @@ def test_macro_expansion():
 	result = parse(text)
 	assert result == "Night, and dream."	
 
-# Now we want to leave these to go forward to latexifier.
-# def test_macro_never_defined():
-# 	text = '''Thank you, and {goodnight}'''
-# 	with pytest.raises(Exception) as e_info:
-# 		parse(text)
-# 	text = '''[MACRO goodnigh][~A]Thank you, and {goodnight}'''
-# 	with pytest.raises(Exception) as e_info:
-# 		parse(text)
+def test_macro_never_defined():
+	text = '''Thank you, and {goodnight}'''
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+	text = '''[MACRO goodnigh][~A]Thank you, and {goodnight}'''
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
+def test_formatting_codes_okay():
+	text = '''It was a {i/wonderful} night, {friend}.[MACRO friend][~Cal]'''
+	result = parse(text)
+	assert result == "It was a {i/wonderful} night, Cal."
 
 def test_macro_bad():
 	text = '''Thank you {} and whatever.'''
@@ -66,6 +70,10 @@ def test_alt_macro_syntax():
 	text = '''Some text and $junk  here.[MACRO junk][~this is stuff]'''
 	result = parse(text)
 	assert result == "Some text and this is stuff here."
+
+	text = '''Some text and $junk  here. Want to make sure this still $works  even with multiple $junk .[MACRO junk][~this is stuff][MACRO works][~functions and $junk .]'''
+	result = parse(text)
+	assert result == "Some text and this is stuff here. Want to make sure this still functions and this is stuff. even with multiple this is stuff."
 
 def test_nested_macros():
 	text = '''[DEFINE ^@alpha][@alpha>{mactest}][MACRO mactest][~beta]'''
