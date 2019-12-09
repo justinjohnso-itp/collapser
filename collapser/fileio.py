@@ -90,6 +90,15 @@ def startConfirmKeys(fileSetKey):
 	else:
 		__confirms = {}
 
+def confirmKey(key):
+	global __newconfirms
+	__newconfirms[key] = True
+
+def reconfirmAll():
+	global __newconfirms
+	for key in __confirms:
+		confirmKey(key)
+
 def finishConfirmKeys():
 	global __kfpath
 	global __newconfirms
@@ -100,9 +109,8 @@ def finishConfirmKeys():
 	except IOError as e:
 		print "Couldn't save confirms to %s: %s" % (kfname, e)
 
-def confirmKey(key):
-	global __newconfirms
-	__newconfirms[key] = True
+
+
 
 def isKeyConfirmed(key):
 	global __confirms

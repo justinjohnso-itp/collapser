@@ -15,25 +15,31 @@ import fileio
 
 # We should have a series of text and CTRLBEGIN/END sequences.
 # This is called from quantparse.parse
-def process(fileSetKey, tokens, sourceText, parseParams):
+def process(fileSetKey, onlyShow, tokens, sourceText, parseParams):
+	global SESSION_CTR
 	parseParams.discourseVarChance = 0
-	MAX_PER_SESSION = 5
+	abortFlag = False
+	SESSION_CTR = 0
 	
 	sequenceList = SequenceList(tokens)
 
 	fileio.startConfirmKeys(fileSetKey)
-	ctr = 0
+
+	# If we're just rendering an excerpt, keep all the current confirm keys.
+	if len(onlyShow) > 0:
+		fileio.reconfirmAll()
+
 	for seq, endPos in sequenceList.sequences:
-		# Return -1 to halt, 0 if already confirmed, 1 if successfully confirmed, 2 if skipped. 
+		# Return 1 if newly confirmed, 0 otherwise; or -1 to abort further execution.
 		result = confirmCtrlSeq(seq, sequenceList, sourceText, parseParams, endPos)
 		sequenceList.pos += 1
+		if result == 1:
+			SESSION_CTR += 1
 		if result == -1:
-			break
-		if result == 1 or result == 2:
-			ctr += 1
-		if ctr >= MAX_PER_SESSION:
-			break	
+			abortFlag = True
 	fileio.finishConfirmKeys()
+	if abortFlag:
+		sys.exit()
 
 
 class SequenceList:
@@ -69,9 +75,14 @@ class SequenceList:
 				self.sequences.append([ctrl_contents, token.lexpos])
 			index += 1
 
-def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos):
+MAX_PER_SESSION = 5
+SESSION_CTR = 0
 
-	# Return -1 to halt, 0 if already confirmed, 1 if successfully confirmed, 2 if skipped, 3 if requesting regeneration.
+def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos):
+	global MAX_PER_SESSION
+	global SESSION_CTR
+
+	# Return 1 if newly confirmed, 0 otherwise; or -1 to abort further execution.
 
 	maxLineLength = 80
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
@@ -84,6 +95,9 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 	if fileio.isKeyConfirmed(key) == True:
 		fileio.confirmKey(key)
 		return 0
+
+	if SESSION_CTR > MAX_PER_SESSION:
+		return 2
 
 	lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)
 	lineColumn = result.find_column(sourceText, ctrlStartPos)
@@ -109,19 +123,19 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 			return 1
 		elif choice == "2":
 			print "2\n >>> Skipping."
-			return 2
+			return 0
 		elif choice == "3":
 			print "3\n >>> Regenerating."
-			confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos)
-			return 3
+			res = confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos)
+			return res
 		elif choice == "4":
 			print "4\n >>> Done Confirming."
-			fileio.finishConfirmKeys()
-			return -1
+			SESSION_CTR = MAX_PER_SESSION + 1
+			return 0
 		elif choice == "5":
 			print "5\n >>> Quit."
-			fileio.finishConfirmKeys()
-			sys.exit(0)
+			SESSION_CTR = MAX_PER_SESSION + 1
+			return -1
 
 
 def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):

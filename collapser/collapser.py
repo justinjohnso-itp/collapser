@@ -172,7 +172,6 @@ def main():
 		print "*** You set seed to %d but also set variables %s; you need to do one or the other ***\n" % (seed, setDefines)
 		sys.exit()
 
-	print "onlyShow: %s" % onlyShow
 	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow)
 
 	if strategy == "pair":

@@ -104,7 +104,7 @@ def parse(tokens, sourceText, parseParams):
 		preppedTokens = handleVariablesAndMacros(tokens, sourceText, parseParams)
 		# TODO: for the above to work, we'd need to be stripping out the DEFINE and MACRO tags from sourceText also as we went.
 		if parseParams.doConfirm:
-			confirm.process(parseParams.fileSetKey, preppedTokens, sourceText, ParseParams())
+			confirm.process(parseParams.fileSetKey, parseParams.onlyShow, preppedTokens, sourceText, ParseParams())
 		renderedString = handleParsing(preppedTokens, parseParams)
 	except result.ParseException, e:
 		print e
