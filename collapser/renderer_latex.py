@@ -161,6 +161,9 @@ But all of them are the same story, more or less. Don't worry about what's in th
 This is the one you have.""" % seedPrinted
 	output = output.replace("FRONT_MATTER_MSG", "%s" % frontMatterMsg)
 
+	# Special fix for half-space.
+	output = output.replace("TROUBLEHALFSPACE", "trouble\\hspace{0.1em}s")
+
 	return output
 
 
