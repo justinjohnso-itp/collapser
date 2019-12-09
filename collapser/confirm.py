@@ -82,6 +82,7 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 	truncStart = "..."
 	truncEnd = "..."
 	if fileio.isKeyConfirmed(key) == True:
+		fileio.confirmKey(key)
 		return 0
 
 	lineNumber = result.find_line_number_for_file(sourceText, ctrlStartPos)

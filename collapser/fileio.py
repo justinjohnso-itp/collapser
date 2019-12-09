@@ -107,9 +107,6 @@ def confirmKey(key):
 def isKeyConfirmed(key):
 	global __confirms
 	global __newconfirms
-	if key in __confirms and __confirms[key] == True:
-		confirmKey(key)
-		return True
-	return False
+	return key in __confirms and __confirms[key] == True
 
 
