@@ -72,7 +72,7 @@ class RendererLatex(renderer.Renderer):
 			text = contents[1]
 			return template_vspace[0] + text + template_vspace[1]
 
-		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, codeSeq)) 
+		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, contents)) 
 
 
 
