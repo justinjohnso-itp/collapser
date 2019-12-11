@@ -166,10 +166,10 @@ def expand(text, params):
 				badResult = result.Result(result.PARSE_RESULT)
 				badResult.flagBad("Invalid GOTO: labelId '%s' is not defined." % key)
 				raise result.ParseException(badResult)
-			labelPos = text.lower().find("[label " + labelId + "]")
+			labelPos = text.lower().find("[label " + labelId + "]", startPos)
 			if labelPos == -1:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Found {JUMP %s} but no [LABEL %s]." % labelId, labelId)
+				badResult.flagBad("Found {JUMP %s} but no [LABEL %s] after this point, probably because you're trying to jump backward (only forward jumps are allowed)." % labelId, labelId)
 				raise result.ParseException(badResult)
 			postLabelPos = labelPos + len("[LABEL %s]" % labelId)
 			text = text[:startPos] + text[postLabelPos:]

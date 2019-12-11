@@ -34,7 +34,7 @@ def test_cant_jump_to_undefined_label():
 	with pytest.raises(Exception) as e_info:
 		parse(text)
 
-# def test_cant_jump_backwards():
-# 	text = "[LABEL myTestLabel]This comes first. {JUMP myTestLabel}"
-# 	with pytest.raises(Exception) as e_info:
-# 		parse(text)
+def test_cant_jump_backwards():
+	text = "[LABEL myTestLabel]This comes first. {JUMP myTestLabel}"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
