@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # coding=utf-8
 
-# TODO: Make an abstraction that holds the tokens for the book and rendered text in parallel, so you can say "show me the rendered text(s) for this particular control sequence", interrogate the control sequence at a specific position in the rendered text, etc.
-
 # TODO: Proof 01915 has Part 3 starting on the wrong page. 
 
 # TODO: Need to address the problem of authoring [DEFINE @A|@B], writing [A>text1|text2] somewhere, and then adding a @C and not catching the new edge case. On the one hand we ideally want to support [A>|] as a generic "else" clause (see @ffset vs the two tube options), but I'm really worried this will lead to a mistake slipping through. (The other version is also a problem, if we have [A>text1|B>text2], still printing nothing in the case of C.)

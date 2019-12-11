@@ -38,3 +38,19 @@ def test_cant_jump_backwards():
 	text = "[LABEL myTestLabel]This comes first. {JUMP myTestLabel}"
 	with pytest.raises(Exception) as e_info:
 		parse(text)
+
+def test_jump_to_very_end():
+	text = "{JUMP theVeryEnd}  None of this text should ever be printed at all, in fact, we should print nothing, even if there are {JUMP bit2} some intermediary [LABEL bit2] bits in between. [LABEL theVeryEnd]"
+	result = parse(text)
+	assert result == ""
+
+def test_jumps_work_within_conditions():
+	text = "[DEFINE @alpha|@omega]Intro. [@alpha>{JUMP alphaBit}|@omega>{JUMP omegaBit}]. Disregard. [LABEL alphaBit]This is the alpha bit.{JUMP end}  [LABEL omegaBit]This is the omega bit.[LABEL end]"
+	for i in range(10):
+		assert parse(text) in ["Intro. This is the alpha bit.", "Intro. This is the omega bit."]
+
+def test_jumps_work_within_macros():
+	text = "Well that's a fine {howdoyado}. [MACRO howdoyado][~How do ya {JUMP finalDo}]    poopy    [LABEL finalDo]dooo."
+	result = parse(text)
+	assert result == "Well that's a fine How do ya dooo."
+
