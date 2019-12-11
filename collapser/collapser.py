@@ -9,6 +9,8 @@
 
 # TODO: add a sanity check for missing end punctuation, a la "ending Then". How to distinguish this from "following Niko" or "the Grapple" or "of Dhalgren"?
 
+# TODO: add a confirm check for the pattern [MACRO x][y] (because generally with a macro like this we always want to print it.)
+
 import sys
 import getopt
 import re

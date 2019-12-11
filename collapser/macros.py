@@ -94,7 +94,7 @@ def handleDefs(tokens, params):
 formatting_codes = ["section_break", "chapter", "part", "end_part_page", "verse", "verse_inline", "epigraph", "pp", "i", "vspace"]
 
 def getNextMacro(text, pos, params):
-	# A macro can be in the form {this thing} or *that (one word). 
+	# A macro can be in the form {this thing} or $that (one word). 
 	text = text[pos:]
 	found = re.search(r"[\{\$]", text)
 	if not found:
