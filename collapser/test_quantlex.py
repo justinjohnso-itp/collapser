@@ -424,5 +424,15 @@ def test_lex_banned():
 	assert toks[2].type == "BANNED"
 	assert toks[3].value == "text1"
 
-
+def test_lex_labels():
+	text = "[LABEL labelName]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.package
+	assert len(toks) == 4
+	assert toks[0].type == "CTRLBEGIN"
+	assert toks[1].type == "LABEL"
+	assert toks[2].type == "TEXT"
+	assert toks[2].value == "labelName"
+	assert toks[3].type == "CTRLEND"
 

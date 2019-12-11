@@ -23,6 +23,7 @@ tokens = (
    'DEFINE',
    'VARIABLE',
    'MACRO',
+   'LABEL',
    'BANNED',
    'ERROR_LONE_GT',
    'ERROR_LONE_VAR'
@@ -65,6 +66,10 @@ def t_ERROR_LONE_GT(t):
 def t_MACRO(t):
 	r'(MACRO|STICKY_MACRO)\s*'
 	t.value = t.value.rstrip()
+	return t
+
+def t_LABEL(t):
+	r'LABEL\s*'
 	return t
 
 def t_DEFINE(t):
@@ -183,6 +188,8 @@ def lex(text):
 				break;
 			if prevTok.type == "MACRO" and tok.type != "TEXT":
 				result.flagBad("MACRO must be followed by text.", text, tok.lexpos)
+			if prevTok.type == "LABEL" and tok.type != "TEXT":
+				result.flagBad("LABEL must be followed by text.", text, tok.lexpos)
 			if prevTok.type == "BANNED" and tok.type != "TEXT" and tok.type != "VARIABLE":
 				result.flagBad("The banned symbol must come immediately before either text or a variable.", text, tok.lexpos) 
 				break;
