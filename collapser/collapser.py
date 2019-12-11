@@ -61,7 +61,6 @@ Arguments:
   --set=x,y,z	 A list of variables to set true for this run.
                  Preface with ^ to negate
   --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
-  --pickAuthorChance=x		Likelihood to pick author-preferred at random
   --skipPadding		Skip padding to 232 pages
   --skipEndMatter	Don't add end matter in padding
 """
@@ -83,7 +82,6 @@ def main():
 	doConfirm = True
 	setDefines = []
 	discourseVarChance = 80
-	preferenceForAuthorsVersion = 20
 	skipPadding = False
 	skipEndMatter = False
 	randSeed = False
@@ -93,7 +91,7 @@ def main():
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "pickAuthorChance=", "skipPadding", "skipEndMatter", "input=", "only="])
+	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "skipPadding", "skipEndMatter", "input=", "only="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -150,12 +148,6 @@ def main():
 			except:
 				print "Invalid --discourseVarChance parameter '%s': not an integer." % arg
 				sys.exit()
-		elif opt == "--pickAuthorChance":
-			try:
-				preferenceForAuthorsVersion = int(arg)
-			except:
-				print "Invalid --pickAuthorChance parameter '%s': not an integer." % arg
-				sys.exit()
 		elif opt == "--skipPadding":
 			skipPadding = True
 		elif opt == "--skipEndMatter":
@@ -174,7 +166,7 @@ def main():
 		print "*** You set seed to %d but also set variables %s; you need to do one or the other ***\n" % (seed, setDefines)
 		sys.exit()
 
-	params = quantparse.ParseParams(chooseStrategy = strategy, preferenceForAuthorsVersion = preferenceForAuthorsVersion, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow)
+	params = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow)
 
 	if strategy == "pair":
 		# TODO make this work with new output format.

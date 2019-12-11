@@ -223,7 +223,7 @@ def handleDefs(tokens, params):
 			elif params.chooseStrategy == "author" and len(alts) == 1 and not foundAuthorPreferred:
 				varPicked = alts.getAuthorPreferred()
 				__v.set(groupName, varPicked, False)
-			elif params.chooseStrategy == "author" or chooser.percent(params.preferenceForAuthorsVersion):
+			elif params.chooseStrategy == "author":
 				varPicked = alts.getAuthorPreferred()
 				__v.set(groupName, varPicked)
 			elif len(alts) == 1:

@@ -18,11 +18,10 @@ class ParseParams:
 
 	VALID_STRATEGIES = ["random", "skipbanned", "author", "longest", "shortest", "pair"]
 
-	def __init__(self, chooseStrategy="random", preferenceForAuthorsVersion=25, setDefines=[], doConfirm=False, discourseVarChance=80, originalText="", fileSetKey="", onlyShow=[]):
+	def __init__(self, chooseStrategy="random", setDefines=[], doConfirm=False, discourseVarChance=80, originalText="", fileSetKey="", onlyShow=[]):
 		if chooseStrategy not in self.VALID_STRATEGIES:
 			raise ValueError("Unrecognized choose strategy '%s'" % chooseStrategy)
 		self.chooseStrategy = chooseStrategy
-		self.preferenceForAuthorsVersion = preferenceForAuthorsVersion
 		self.setDefines = setDefines
 		self.doConfirm = doConfirm
 		self.discourseVarChance = discourseVarChance
@@ -31,10 +30,10 @@ class ParseParams:
 		self.onlyShow = onlyShow
 
 	def __str__(self):
-		return "chooseStrategy: %s, preferenceForAuthorsVersion: %s, setDefines: %s, discourseVarChance: %d" % (self.chooseStrategy, self.preferenceForAuthorsVersion, self.setDefines, self.discourseVarChance)
+		return "chooseStrategy: %s, setDefines: %s, discourseVarChance: %d" % (self.chooseStrategy, self.setDefines, self.discourseVarChance)
 
 	def copy(self):
-		return ParseParams(chooseStrategy=self.chooseStrategy, preferenceForAuthorsVersion=self.preferenceForAuthorsVersion, setDefines=list(self.setDefines), discourseVarChance=self.discourseVarChance, originalText=self.originalText, fileSetKey=self.fileSetKey, onlyShow=self.onlyShow)
+		return ParseParams(chooseStrategy=self.chooseStrategy, setDefines=list(self.setDefines), discourseVarChance=self.discourseVarChance, originalText=self.originalText, fileSetKey=self.fileSetKey, onlyShow=self.onlyShow)
 
 
 # Call with an object of type ParseParams.
@@ -55,7 +54,6 @@ def parse(tokens, sourceText, parseParams):
 		tempTokens = variables.handleDefs(tempTokens, parseParams)
 		tempTokens = macros.handleDefs(tempTokens, parseParams)
 		parseParamsCopy = parseParams.copy()
-		parseParamsCopy.preferenceForAuthorsVersion = 0
 		chooser.setSeed(chooser.number(100000))
 
 		# Now for each option in a define group, see which one is best.
