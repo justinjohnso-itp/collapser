@@ -131,6 +131,24 @@ def expand(text, params):
 		# Get macro name
 		key = text[startPos+1:endPos].lower()
 
+		# Handle GOTOs
+		gotoKey = key.split(" ")
+		if gotoKey[0] == "jump":
+			if len(gotoKey) is not 2:
+				badResult = result.Result(result.PARSE_RESULT)
+				badResult.flagBad("Invalid GOTO: expected {JUMP labelToJumpTo}, found '%s'" % key)
+				raise result.ParseException(badResult)
+			labelId = gotoKey[1]
+			labelPos = text.lower().find("[label " + labelId + "]")
+			if labelPos == -1:
+				badResult = result.Result(result.PARSE_RESULT)
+				badResult.flagBad("Found {JUMP %s} but no [LABEL %s]." % labelId, labelId)
+				raise result.ParseException(badResult)
+			postLabelPos = labelPos + len("[LABEL %s]" % labelId)
+			text = text[:startPos] + text[postLabelPos:]
+			nextMacro = getNextMacro(text, startPos, params)
+			continue
+
 		# Expand the macro
 		rendered = __m.render(key, params)
 

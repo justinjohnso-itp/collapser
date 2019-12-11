@@ -24,10 +24,10 @@ def test_label_defs_are_recognized_and_stripped():
 # 	with pytest.raises(Exception) as e_info:
 # 		parse(text)
 
-# def test_labels_work():
-# 	text = "Text: {JUMP myTestLabel}we should never see this   [LABEL myTestLabel]Instead we should see this."
-# 	result = parse(text)
-# 	assert result == "Text: Instead we should see this."	
+def test_labels_work():
+	text = "Text: {JUMP myTestLabel}we should never see this   [LABEL myTestLabel]Instead we should see this."
+	result = parse(text)
+	assert result == "Text: Instead we should see this."	
 
 # def test_cant_jump_backwards():
 # 	text = "[LABEL myTestLabel]This comes first. {JUMP myTestLabel}"
