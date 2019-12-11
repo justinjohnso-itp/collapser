@@ -161,4 +161,9 @@ def expand(text, params):
 		text = text[:startPos] + rendered + text[endPos+1:]
 		nextMacro = getNextMacro(text, startPos, params)
 
+	# Remove any unused labels.
+	print "text: '%s'" % text
+	text = re.sub(r"\[LABEL .*\]", "", text)
+	print "text: '%s'" % text
+
 	return text

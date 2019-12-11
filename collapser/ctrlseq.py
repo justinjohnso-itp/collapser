@@ -145,6 +145,10 @@ def renderAll(tokens, params, showAllVars=False):
 
 def render(tokens, params):
 
+	# Leave labels intact; we'll remove them during macro processing.
+	if tokens[0].type == "LABEL":
+		return "[LABEL %s]" % tokens[1].value
+
 	alts = renderAll(tokens, params)
 	if len(alts) == 0:
 		return ""
