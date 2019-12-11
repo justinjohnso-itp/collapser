@@ -162,6 +162,10 @@ def expand(text, params):
 				badResult.flagBad("Invalid GOTO: expected {JUMP labelToJumpTo}, found '%s'" % key)
 				raise result.ParseException(badResult)
 			labelId = gotoKey[1]
+			if not __m.isLabel(labelId):
+				badResult = result.Result(result.PARSE_RESULT)
+				badResult.flagBad("Invalid GOTO: labelId '%s' is not defined." % key)
+				raise result.ParseException(badResult)
 			labelPos = text.lower().find("[label " + labelId + "]")
 			if labelPos == -1:
 				badResult = result.Result(result.PARSE_RESULT)

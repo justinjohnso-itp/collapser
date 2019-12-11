@@ -29,6 +29,11 @@ def test_labels_work():
 	result = parse(text)
 	assert result == "Text: Instead we should see this."	
 
+def test_cant_jump_to_undefined_label():
+	text = "Text: {JUMP fake_label} blah."
+	with pytest.raises(Exception) as e_info:
+		parse(text)
+
 # def test_cant_jump_backwards():
 # 	text = "[LABEL myTestLabel]This comes first. {JUMP myTestLabel}"
 # 	with pytest.raises(Exception) as e_info:
