@@ -19,10 +19,10 @@ def test_label_defs_are_recognized_and_stripped():
 	result = parse(text)
 	assert result == "always show this"
 
-# def test_labels_cant_be_defined_twice():
-# 	text = "[LABEL test label] text [LABEL another label] more text [LABEL test label]"
-# 	with pytest.raises(Exception) as e_info:
-# 		parse(text)
+def test_labels_cant_be_defined_twice():
+	text = "[LABEL test label] text [LABEL another label] more text [LABEL test label]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 
 def test_labels_work():
 	text = "Text: {JUMP myTestLabel}we should never see this   [LABEL myTestLabel]Instead we should see this."

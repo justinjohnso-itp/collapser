@@ -9,11 +9,19 @@ import re
 class Macros:
 	def __init__(self):
 		self.macros = {}
+		self.labels = {}
 		self.sticky_macro_originals = {}
 		self.sticky_macro_rendered = {}
 
 	def isMacro(self, key):
 		return key in self.macros or key in self.sticky_macro_originals
+
+	def isLabel(self, key):
+		return key in self.labels
+
+	def defineLabel(self, key):
+		print "Defining label: '%s'" % key
+		self.labels[key] = True
 
 	def define(self, isSticky, key, body):
 		if isSticky:
@@ -60,6 +68,21 @@ def handleDefs(tokens, params):
 			continue
 		index += 1
 		token = tokens[index]
+		if token.type == "LABEL":
+			output.append(tokens[index-1])
+			output.append(token)
+			index += 1
+			token = tokens[index]
+			assert token.type == "TEXT"
+			labelKey = token.value.lower()
+			if __m.isLabel(labelKey):
+				badResult = result.Result(result.PARSE_RESULT)
+				badResult.flagBad("Label '%s' is defined twice." % labelKey, params.originalText, token.lexpos)
+				raise result.ParseException(badResult)
+			__m.defineLabel(labelKey)
+			output.append(token)
+			index += 1
+			continue
 		if token.type != "MACRO":
 			output.append(tokens[index-1])
 			output.append(token)
