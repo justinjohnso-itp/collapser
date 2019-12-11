@@ -144,6 +144,16 @@ Conditional logic is not yet supported, but you can use macros to get around thi
 		[MACRO orLostKeys][@lostKeys>{txt}]
 		[MACRO txt][~I'm wordy or confused!]
 
+** Gotos **
+
+You can jump to a later point in the text by invoking a macro beginning with the word "jump" followed by a label.
+
+	{JUMP myLabel}
+
+You can then later have a label: the text will continue afterwards.
+
+	[LABEL myLabel]
+
 
 ** Banned Options **
 
