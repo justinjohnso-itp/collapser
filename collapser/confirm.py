@@ -139,8 +139,9 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 
 
 def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
-	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)
-	post = getRawPost(sourceText, ctrlEndPos)
+	KEY_PADDING_LEN = 60
+	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)[-60:]
+	post = getRawPost(sourceText, ctrlEndPos)[:60]
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
 	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
 	return key
@@ -193,14 +194,14 @@ def getRawPre(sourceText, ctrlStartPos, ctrlEndPos, preBufferLen = DEFAULT_BUFFE
 		preBufferLen = ctrlStartPos
 	pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
 	pre = cleanContext(pre)
-	return pre[-60:]
+	return pre
 
 def getRawPost(sourceText, ctrlEndPos, postBufferLen = DEFAULT_BUFFER_LEN):
 	if ctrlEndPos + postBufferLen > len(sourceText):
 		postBufferLen = len(sourceText) - ctrlEndPos
 	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
 	post = cleanContext(post)
-	return post[:60]
+	return post
 
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos, bufferLen)
