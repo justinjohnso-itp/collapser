@@ -36,14 +36,6 @@ class TokenStream:
 		badResult.flagBad("Unexpected token type found '%s'" % tok.type, "", tok.lexpos)
 		raise result.ParseException(badResult)
 
-	def nextCtrlSeq(self):
-		nextBit = self.next()
-		while nextBit is not None and type(nextBit) == str:
-			nextBit = self.next()
-		if nextBit is None:
-			return None
-		return nextBit
-
 
 # Abstraction over an array of parsed tokens when we only care about the control sequences, including the ability to get the ones before and after the current one we're considering.
 
