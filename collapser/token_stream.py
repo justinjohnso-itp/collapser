@@ -45,7 +45,7 @@ class TokenStream:
 	def reset(self):
 		self.pos = 0
 
-	def next(self):
+	def nextTextOrCtrlSeq(self):
 		if self.pos >= len(self.tokens):
 			return None
 		tok = self.tokens[self.pos]
@@ -65,5 +65,13 @@ class TokenStream:
 		badResult = result.Result(result.PARSE_RESULT)
 		badResult.flagBad("Unexpected token type found '%s'" % tok.type, "", tok.lexpos)
 		raise result.ParseException(badResult)
+
+	def nextCtrlSeq(self):
+		nextBit = self.nextTextOrCtrlSeq()
+		while nextBit is not None and type(nextBit) == str:
+			nextBit = self.nextTextOrCtrlSeq()
+		if nextBit is None:
+			return None
+		return nextBit
 
 
