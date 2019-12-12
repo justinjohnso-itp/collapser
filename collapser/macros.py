@@ -76,22 +76,25 @@ def registerAndStripMacros(tokens, params):
 		if ctrlParam != "MACRO":
 			output += nextToken
 			continue
+
 		assert len(nextToken) == 4
-		isSticky = nextToken[1].value == "STICKY_MACRO"
 		macroKey = nextToken[2].value.lower()
 		if __m.isMacro(macroKey):
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Macro '%s' is defined twice." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
+		isSticky = nextToken[1].value == "STICKY_MACRO"
 		nextToken = ts.next()
 		if nextToken is None or ts.wasText():
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
+
 		__m.define(isSticky, macroKey, nextToken[1:len(nextToken)-1])
+
 	return output
 
-# Register any label definitions and remove them from the array.
+# Register any label definitions but leave them in the array (they'll get stripped at the time we process the JUMP commands.)
 def registerLabels(tokens, params):
 	output = []
 	ts = token_stream.TokenStream(tokens, returnRawTokens = True)

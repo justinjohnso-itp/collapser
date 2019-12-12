@@ -6,6 +6,7 @@ import result
 
 class TokenStream:
 
+	# TODO When I'm less tired, I think we can probably refactor out the returnRawTokens complication.
 	def __init__(self, tokens, returnRawTokens = False):
 		self.reset()
 		self.returnRawTokens = returnRawTokens
