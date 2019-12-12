@@ -60,6 +60,9 @@ def test_macro_bad():
 	text = '''Thank you {} and whatever.'''
 	with pytest.raises(Exception) as e_info:
 		parse(text)
+	text = '''[MACRO testtest][~A]We have to {testtest finish a macro when we start it'''
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 
 def test_macro_expansions():
 	text = '''[MACRO options][alpha|beta|gamma|]{options}'''

@@ -115,7 +115,7 @@ def handleDefs(tokens, params):
 
 formatting_codes = ["section_break", "chapter", "part", "end_part_page", "verse", "verse_inline", "epigraph", "pp", "i", "vspace"]
 
-def getNextMacro(text, pos, params):
+def getNextMacro(text, pos, params, isPartialText):
 	# A macro can be in the form {this thing} or $that (one word). 
 	text = text[pos:]
 	found = re.search(r"[\{\$]", text)
@@ -132,9 +132,12 @@ def getNextMacro(text, pos, params):
 		else:
 			endPos = len(text)
 	if endPos == -1:
-		badResult = result.Result(result.PARSE_RESULT)
-		badResult.flagBad("Incomplete macro sequence", params.originalText, startPos)
-		raise result.ParseException(badResult)
+		if isPartialText:
+			return [-1, -1]
+		else:
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Incomplete macro sequence in text '%s'" % text, params.originalText, pos)
+			raise result.ParseException(badResult)
 	if endPos - startPos == 1:
 		badResult = result.Result(result.PARSE_RESULT)
 		badResult.flagBad("Can't have empty macro sequence {}", params.originalText, startPos)
@@ -142,11 +145,11 @@ def getNextMacro(text, pos, params):
 	return [startPos + pos, endPos + pos]
 
 
-def expand(text, params, ignoreJumpErrs = False):
+def expand(text, params, isPartialText = False):
 	global __m
 	MAX_MACRO_DEPTH = 6
 	renderHadMoreMacrosCtr = 0
-	nextMacro = getNextMacro(text, 0, params)
+	nextMacro = getNextMacro(text, 0, params, isPartialText)
 	while nextMacro[0] != -1:
 		startPos = nextMacro[0]
 		endPos = nextMacro[1]
@@ -167,13 +170,16 @@ def expand(text, params, ignoreJumpErrs = False):
 				raise result.ParseException(badResult)
 			searchBit = "[label %s]" % labelId
 			labelPos = text.lower().find(searchBit, startPos)
-			if labelPos == -1 and not ignoreJumpErrs:
-				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Found {JUMP %s} but no [LABEL %s] after this point, probably because you're trying to jump backward (only forward jumps are allowed)." % (labelId, labelId), text, startPos)
-				raise result.ParseException(badResult)
+			if labelPos == -1:
+				if not isPartialText:
+					badResult = result.Result(result.PARSE_RESULT)
+					badResult.flagBad("Found {JUMP %s} but no [LABEL %s] after this point, probably because you're trying to jump backward (only forward jumps are allowed)." % (labelId, labelId), text, startPos)
+					raise result.ParseException(badResult)
+				else:
+					return text[:startPos] + text[startPos + len("[LABEL %s]" % labelId):]
 			postLabelPos = labelPos + len("[LABEL %s]" % labelId)
 			text = text[:startPos] + text[postLabelPos:]
-			nextMacro = getNextMacro(text, startPos, params)
+			nextMacro = getNextMacro(text, startPos, params, isPartialText)
 			continue
 
 		# Expand the macro
@@ -184,13 +190,13 @@ def expand(text, params, ignoreJumpErrs = False):
 			parts = key.split('/')
 			if parts[0] not in formatting_codes:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Unrecognized macro {%s}" % (key, text, startPos))
+				badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
 				raise result.ParseException(badResult)
-			nextMacro = getNextMacro(text, startPos+1, params)
+			nextMacro = getNextMacro(text, startPos+1, params, isPartialText)
 			continue
 
 		# If the expansion itself contains macros, check for recursion then set the start position for the next loop iteration.
-		if getNextMacro(rendered, 0, params)[0] >= 0:
+		if getNextMacro(rendered, 0, params, isPartialText)[0] >= 0:
 			renderHadMoreMacrosCtr += 1
 		else:
 			renderHadMoreMacrosCtr = 0
@@ -204,7 +210,7 @@ def expand(text, params, ignoreJumpErrs = False):
 			endPos -= 1
 			
 		text = text[:startPos] + rendered + text[endPos+1:]
-		nextMacro = getNextMacro(text, startPos, params)
+		nextMacro = getNextMacro(text, startPos, params, isPartialText)
 
 	# Remove any unused labels.
 	text = re.sub(r"\[LABEL .*\]", "", text)
