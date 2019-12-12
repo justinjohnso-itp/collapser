@@ -66,29 +66,29 @@ def registerAndStripMacros(tokens, params):
 	output = []
 	ts = token_stream.TokenStream(tokens, returnRawTokens = True)
 	while True:
-		nextBit = ts.next()
-		if nextBit is None:
+		nextToken = ts.next()
+		if nextToken is None:
 			break
 		if ts.wasText():
-			output += nextBit
+			output += nextToken
 			continue
-		ctrlParam = nextBit[1].type
+		ctrlParam = nextToken[1].type
 		if ctrlParam != "MACRO":
-			output += nextBit
+			output += nextToken
 			continue
-		assert len(nextBit) == 4
-		isSticky = nextBit[1].value == "STICKY_MACRO"
-		macroKey = nextBit[2].value.lower()
+		assert len(nextToken) == 4
+		isSticky = nextToken[1].value == "STICKY_MACRO"
+		macroKey = nextToken[2].value.lower()
 		if __m.isMacro(macroKey):
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Macro '%s' is defined twice." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
-		nextBit = ts.next()
-		if nextBit is None or ts.wasText():
+		nextToken = ts.next()
+		if nextToken is None or ts.wasText():
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
-		__m.define(isSticky, macroKey, nextBit[1:len(nextBit)-1])
+		__m.define(isSticky, macroKey, nextToken[1:len(nextToken)-1])
 	return output
 
 # Register any label definitions and remove them from the array.
@@ -96,13 +96,13 @@ def registerLabels(tokens, params):
 	output = []
 	ts = token_stream.TokenStream(tokens, returnRawTokens = True)
 	while True:
-		nextBit = ts.next()
-		if nextBit is None:
+		nextToken = ts.next()
+		if nextToken is None:
 			break
-		output += nextBit
-		if not ts.wasText() and nextBit[1].type == "LABEL":
-			assert len(nextBit) == 4
-			labelKey = nextBit[2].value.lower()
+		output += nextToken
+		if not ts.wasText() and nextToken[1].type == "LABEL":
+			assert len(nextToken) == 4
+			labelKey = nextToken[2].value.lower()
 			if __m.isLabel(labelKey):
 				badResult = result.Result(result.PARSE_RESULT)
 				badResult.flagBad("Label '%s' is defined twice." % labelKey, params.originalText, token.lexpos)

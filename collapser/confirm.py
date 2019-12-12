@@ -29,15 +29,15 @@ def process(fileSetKey, onlyShow, tokens, sourceText, parseParams):
 		fileio.reconfirmAll()
 
 	sequenceList = token_stream.SequenceStream(tokens)
-	nextBit, endPos = sequenceList.next()
-	while nextBit is not None:
+	nextCtrlSeq, endPos = sequenceList.next()
+	while nextCtrlSeq is not None:
 		# Return 1 if newly confirmed, 0 otherwise; or -1 to abort further execution.
-		result = confirmCtrlSeq(nextBit, sequenceList, sourceText, parseParams, endPos)
+		result = confirmCtrlSeq(nextCtrlSeq, sequenceList, sourceText, parseParams, endPos)
 		if result == 1:
 			SESSION_CTR += 1
 		if result == -1:
 			abortFlag = True
-		nextBit, endPos = sequenceList.next()
+		nextCtrlSeq, endPos = sequenceList.next()
 	fileio.finishConfirmKeys()
 	if abortFlag:
 		sys.exit()

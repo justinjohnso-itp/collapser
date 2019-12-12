@@ -58,11 +58,11 @@ class SequenceStream:
 
 	def parseCtrlSeqs(self, tokens):
 		ts = TokenStream(tokens)
-		nextBit = ts.next()
-		while nextBit is not None:
+		nextToken = ts.next()
+		while nextToken is not None:
 			if not ts.wasText():
-				self.sequences.append([nextBit, ts.lastLexPos])
-			nextBit = ts.next()
+				self.sequences.append([nextToken, ts.lastLexPos])
+			nextToken = ts.next()
 
 	def reset(self):
 		self.pos = 0
