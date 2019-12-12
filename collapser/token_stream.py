@@ -2,50 +2,54 @@
 import result
 
 
-class SequenceList:
+class SequenceStream:
 
 	def __init__(self, tokens):
+		self.reset()
 		self.sequences = []
-		self.pos = 0
-		self.preprocessTokens(tokens)
+		self.parseCtrlSeqs(tokens)
 
-	def previous(self):
+	def parseCtrlSeqs(self, tokens):
+		ts = TokenStream(tokens)
+		nextBit = ts.next()
+		while nextBit is not None:
+			if type(nextBit) != str:
+				self.sequences.append([nextBit, ts.lastLexPos])
+			nextBit = ts.next()
+
+	def reset(self):
+		self.pos = 0
+
+	def preceding(self):
 		if self.pos <= 0:
-			return None
+			return [None, None]
 		return self.sequences[self.pos-1]
 	
 	def next(self):
+		if self.pos >= len(self.sequences):
+			return [None, None]
+		nextSeq = self.sequences[self.pos]
+		self.pos += 1
+		return nextSeq
+
+	def following(self):
 		if self.pos >= len(self.sequences) - 1:
-			return None
+			return [None, None]
 		return self.sequences[self.pos+1]
 
-	def preprocessTokens(self, tokens):
-		index = 0
-		self.sequences = []
-		while index < len(tokens):
-			token = tokens[index]
-			if token.type == "CTRLBEGIN":
-				ctrl_contents = []
-				index += 1
-				token = tokens[index]
-				while token.type != "CTRLEND":
-					ctrl_contents.append(token)
-					index += 1
-					token = tokens[index]
-				self.sequences.append([ctrl_contents, token.lexpos])
-			index += 1
 
 
 class TokenStream:
 
 	def __init__(self, tokens):
-		self.pos = 0
+		self.reset()
 		self.tokens = tokens
 
 	def reset(self):
 		self.pos = 0
+		self.lastLexPos = -1
 
-	def nextTextOrCtrlSeq(self):
+	def next(self):
 		if self.pos >= len(self.tokens):
 			return None
 		tok = self.tokens[self.pos]
@@ -60,6 +64,7 @@ class TokenStream:
 				ctrl_contents.append(tok)
 				self.pos += 1
 				tok = self.tokens[self.pos]
+			self.lastLexPos = tok.lexpos
 			self.pos += 1
 			return ctrl_contents
 		badResult = result.Result(result.PARSE_RESULT)
@@ -67,9 +72,9 @@ class TokenStream:
 		raise result.ParseException(badResult)
 
 	def nextCtrlSeq(self):
-		nextBit = self.nextTextOrCtrlSeq()
+		nextBit = self.next()
 		while nextBit is not None and type(nextBit) == str:
-			nextBit = self.nextTextOrCtrlSeq()
+			nextBit = self.next()
 		if nextBit is None:
 			return None
 		return nextBit

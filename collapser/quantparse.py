@@ -135,7 +135,7 @@ def process(tokens, parseParams):
 	output = []
 	discourseVars.resetStats()
 	tokenStream = token_stream.TokenStream(tokens)
-	nextBit = tokenStream.nextTextOrCtrlSeq()
+	nextBit = tokenStream.next()
 	while nextBit is not None:
 		rendered = ""
 		if type(nextBit) == str:
@@ -144,7 +144,7 @@ def process(tokens, parseParams):
 			rendered = ctrlseq.render(nextBit, parseParams)
 
 		output.append(rendered)
-		nextBit = tokenStream.nextTextOrCtrlSeq()
+		nextBit = tokenStream.next()
 		
 	discourseVars.showStats(variables)
 	return output

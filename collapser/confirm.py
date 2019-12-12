@@ -22,22 +22,22 @@ def process(fileSetKey, onlyShow, tokens, sourceText, parseParams):
 	abortFlag = False
 	SESSION_CTR = 0
 	
-	sequenceList = token_stream.SequenceList(tokens)
-
 	fileio.startConfirmKeys(fileSetKey)
 
 	# If we're just rendering an excerpt, keep all the current confirm keys.
 	if len(onlyShow) > 0:
 		fileio.reconfirmAll()
 
-	for seq, endPos in sequenceList.sequences:
+	sequenceList = token_stream.SequenceStream(tokens)
+	nextBit, endPos = sequenceList.next()
+	while nextBit is not None:
 		# Return 1 if newly confirmed, 0 otherwise; or -1 to abort further execution.
-		result = confirmCtrlSeq(seq, sequenceList, sourceText, parseParams, endPos)
-		sequenceList.pos += 1
+		result = confirmCtrlSeq(nextBit, sequenceList, sourceText, parseParams, endPos)
 		if result == 1:
 			SESSION_CTR += 1
 		if result == -1:
 			abortFlag = True
+		nextBit, endPos = sequenceList.next()
 	fileio.finishConfirmKeys()
 	if abortFlag:
 		sys.exit()
@@ -176,7 +176,7 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceLi
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos, bufferLen)
 	prevCtrlSeqEndPos = pre.rfind("]")
 	if prevCtrlSeqEndPos >= 0:
-		prevCtrlSeq = sequenceList.previous()
+		prevCtrlSeq = sequenceList.preceding()
 		if prevCtrlSeq is not None:
 			prevVariants = ctrlseq.renderAll(prevCtrlSeq[0], parseParams, showAllVars=True)
 			variantTxt = chooser.oneOf(prevVariants.alts, pure=True).txt
@@ -195,7 +195,7 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen
 	post = getRawPost(sourceText, ctrlEndPos, bufferLen)
 	nextCtrlSeqStartPos = post.find("[")
 	if nextCtrlSeqStartPos >= 0:
-		nextCtrlSeq = sequenceList.next()
+		nextCtrlSeq = sequenceList.following()
 		if nextCtrlSeq is not None:
 			nextVariants = ctrlseq.renderAll(nextCtrlSeq[0], parseParams, showAllVars=True)
 			variantTxt = chooser.oneOf(nextVariants.alts, pure=True).txt
