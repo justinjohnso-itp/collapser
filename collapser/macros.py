@@ -143,7 +143,7 @@ def getNextMacro(text, pos, params):
 	return [startPos + pos, endPos + pos]
 
 
-def expand(text, params):
+def expand(text, params, ignoreJumpErrs = False):
 	global __m
 	MAX_MACRO_DEPTH = 6
 	renderHadMoreMacrosCtr = 0
@@ -159,17 +159,18 @@ def expand(text, params):
 		if gotoKey[0] == "jump":
 			if len(gotoKey) is not 2:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Invalid GOTO: expected {JUMP labelToJumpTo}, found '%s'" % key)
+				badResult.flagBad("Invalid GOTO: expected {JUMP labelToJumpTo}, found '%s'" % key, text, startPos)
 				raise result.ParseException(badResult)
-			labelId = gotoKey[1]
+			labelId = gotoKey[1].lower()
 			if not __m.isLabel(labelId):
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Invalid GOTO: labelId '%s' is not defined." % key)
+				badResult.flagBad("Invalid GOTO: labelId '%s' is not defined." % key, text, startPos)
 				raise result.ParseException(badResult)
-			labelPos = text.lower().find("[label " + labelId + "]", startPos)
-			if labelPos == -1:
+			searchBit = "[label %s]" % labelId
+			labelPos = text.lower().find(searchBit, startPos)
+			if labelPos == -1 and not ignoreJumpErrs:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Found {JUMP %s} but no [LABEL %s] after this point, probably because you're trying to jump backward (only forward jumps are allowed)." % labelId, labelId)
+				badResult.flagBad("Found {JUMP %s} but no [LABEL %s] after this point, probably because you're trying to jump backward (only forward jumps are allowed)." % (labelId, labelId), text, startPos)
 				raise result.ParseException(badResult)
 			postLabelPos = labelPos + len("[LABEL %s]" % labelId)
 			text = text[:startPos] + text[postLabelPos:]
