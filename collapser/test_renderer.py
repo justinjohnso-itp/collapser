@@ -27,75 +27,75 @@ class AbstractRenderer(renderer.Renderer):
 			return "*" + code + "*"
 
 
-def test_getNextCtrlSeq_Basic():
+def test_getNextFormattingSeq_Basic():
 	text = '''This is a test of {i/emphasis} and {epigraph/A quotation/Rand Miller} other stuff.'''
 	emptyParams = {}
 	ar = AbstractRenderer(text, emptyParams)
-	ar.resetCtrlSeqPos()
+	ar.resetFormattingSeqPos()
 	assert ar.seqPos == 0
-	result = ar.getNextCtrlSeq()
+	result = ar.getNextFormatSeq()
 	assert result[0] == "This is a test of "
 	assert result[1] == "i"
 	assert result[2] == "emphasis"
 	assert ar.seqPos == 30
-	result = ar.getNextCtrlSeq()	
+	result = ar.getNextFormatSeq()	
 	assert result[0] == " and "
 	assert result[1] == "epigraph"
 	assert result[2] == "A quotation"
 	assert result[3] == "Rand Miller"
 	assert ar.seqPos == 69
-	result = ar.getNextCtrlSeq()
+	result = ar.getNextFormatSeq()
 	assert result is None
-	result = ar.getNextCtrlSeq()
-	result = ar.getNextCtrlSeq()
-	result = ar.getNextCtrlSeq()
+	result = ar.getNextFormatSeq()
+	result = ar.getNextFormatSeq()
+	result = ar.getNextFormatSeq()
 	assert result is None
-	ar.resetCtrlSeqPos()
+	ar.resetFormattingSeqPos()
 	assert ar.seqPos == 0
-	result = ar.getNextCtrlSeq()
+	result = ar.getNextFormatSeq()
 	assert result[0] == "This is a test of "
 	assert result[1] == "i"
 	assert result[2] == "emphasis"
 	assert ar.seqPos == 30
 
-def test_getNextCtrlSeq_EdgeCases():
+def test_getNextFormatSeq_EdgeCases():
 	text = '''No control seqs here.'''
 	emptyParams = {}
 	ar = AbstractRenderer(text, emptyParams)
-	ar.resetCtrlSeqPos()
-	result = ar.getNextCtrlSeq()
+	ar.resetFormattingSeqPos()
+	result = ar.getNextFormatSeq()
 	assert result is None
 
 	text = '''{i/Starts} with a control sequence.'''
 	ar = AbstractRenderer(text, emptyParams)
-	ar.resetCtrlSeqPos()
-	result = ar.getNextCtrlSeq()
+	ar.resetFormattingSeqPos()
+	result = ar.getNextFormatSeq()
 	assert result[0] == ""
 	assert result[1] == "i"
 	assert result[2] == "Starts"
-	result = ar.getNextCtrlSeq()
+	result = ar.getNextFormatSeq()
 	assert result is None
 
 	text = '''Control sequence at the {i/end}'''
 	ar = AbstractRenderer(text, emptyParams)
-	ar.resetCtrlSeqPos()
-	result = ar.getNextCtrlSeq()
+	ar.resetFormattingSeqPos()
+	result = ar.getNextFormatSeq()
 	assert result[0] == "Control sequence at the "
 	assert result[1] == "i"
 	assert result[2] == "end"
-	result = ar.getNextCtrlSeq()
+	result = ar.getNextFormatSeq()
 	assert result is None
 
 	text = '''{i/adjacent}{i/sequences}'''
 	ar = AbstractRenderer(text, emptyParams)
-	ar.resetCtrlSeqPos()
-	result = ar.getNextCtrlSeq()
+	ar.resetFormattingSeqPos()
+	result = ar.getNextFormatSeq()
 	assert result[0] == ""
 	assert result[2] == "adjacent"
-	result = ar.getNextCtrlSeq()
+	result = ar.getNextFormatSeq()
 	assert result[0] == ""
 	assert result[2] == "sequences"
-	result = ar.getNextCtrlSeq()
+	result = ar.getNextFormatSeq()
 	assert result is None
 
 

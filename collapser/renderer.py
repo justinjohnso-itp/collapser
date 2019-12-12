@@ -41,25 +41,25 @@ class Renderer(object):
 
 
 	def renderFormattingSequences(self):
-		self.resetCtrlSeqPos()
-		ctrlSeq = self.getNextCtrlSeq()
+		self.resetFormattingSeqPos()
+		fSeq = self.getNextFormatSeq()
 		output = []
-		while ctrlSeq is not None:
-			leadingText = ctrlSeq[0]
-			seqParams = ctrlSeq[1:]
+		while fSeq is not None:
+			leadingText = fSeq[0]
+			seqParams = fSeq[1:]
 			rendered = self.renderFormattingSequence(seqParams)
 			output.append(leadingText)
 			output.append(rendered)
-			ctrlSeq = self.getNextCtrlSeq()
+			fSeq = self.getNextFormatSeq()
 		output.append(self.collapsedText[self.seqPos:])
 		return ''.join(output)
 
 
-	def resetCtrlSeqPos(self):
+	def resetFormattingSeqPos(self):
 		self.seqPos = 0
 
 	# Returns an array [contentSinceLast, parts] with all the content since the previous control sequence in position 0, and the parts of the control sequence found in subsequent positions.
-	def getNextCtrlSeq(self):
+	def getNextFormatSeq(self):
 		startPos = self.collapsedText.find("{", self.seqPos)
 		if startPos is -1:
 			return None
