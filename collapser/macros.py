@@ -59,16 +59,16 @@ def isMacro(key):
 def handleDefs(tokens, params):
 	output = []
 	ts = token_stream.TokenStream(tokens, returnRawTokens = True)
-	nextBit = ts.next()
-	while nextBit is not None:
+	while True:
+		nextBit = ts.next()
+		if nextBit is None:
+			break
 		if type(nextBit) != list:
 			output.append(nextBit)
-			nextBit = ts.next()
 			continue
 		ctrlParam = nextBit[1].type
 		if ctrlParam != "MACRO":
 			output += nextBit
-			nextBit = ts.next()
 			continue
 		assert len(nextBit) == 4
 		isSticky = nextBit[1].value == "STICKY_MACRO"
@@ -83,7 +83,6 @@ def handleDefs(tokens, params):
 			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
 		__m.define(isSticky, macroKey, nextBit[1:len(nextBit)-1])
-		nextBit = ts.next()
 	return output
 		
 
