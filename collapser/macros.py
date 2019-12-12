@@ -2,6 +2,7 @@
 import ctrlseq
 import result
 import re
+import token_stream
 
 
 class Macros:
@@ -53,63 +54,98 @@ def isMacro(key):
 	global __m
 	return __m.isMacro(key)
 
+
+
 def handleDefs(tokens, params):
 	output = []
-	index = 0
-	global __m
-	while index < len(tokens):
-		token = tokens[index]
-		if token.type != "CTRLBEGIN":
-			output.append(token)
-			index += 1
+	ts = token_stream.TokenStream(tokens, returnRawTokens = True)
+	nextBit = ts.next()
+	while nextBit is not None:
+		if type(nextBit) != list:
+			output.append(nextBit)
+			nextBit = ts.next()
 			continue
-		index += 1
-		token = tokens[index]
-		if token.type == "LABEL":
-			output.append(tokens[index-1])
-			output.append(token)
-			index += 1
-			token = tokens[index]
-			assert token.type == "TEXT"
-			labelKey = token.value.lower()
-			if __m.isLabel(labelKey):
-				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Label '%s' is defined twice." % labelKey, params.originalText, token.lexpos)
-				raise result.ParseException(badResult)
-			__m.defineLabel(labelKey)
-			output.append(token)
-			index += 1
+		ctrlParam = nextBit[1].type
+		if ctrlParam != "MACRO":
+			output += nextBit
+			nextBit = ts.next()
 			continue
-		if token.type != "MACRO":
-			output.append(tokens[index-1])
-			output.append(token)
-			index += 1
-			continue
-		isSticky = token.value == "STICKY_MACRO"
-		index += 1
-		token = tokens[index]
-		assert token.type == "TEXT"
-		macroKey = token.value.lower()
+		assert len(nextBit) == 4
+		isSticky = nextBit[1].value == "STICKY_MACRO"
+		macroKey = nextBit[2].value.lower()
 		if __m.isMacro(macroKey):
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Macro '%s' is defined twice." % macroKey, params.originalText, token.lexpos)
+			badResult.flagBad("Macro '%s' is defined twice." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
-		if index+3 > len(tokens) or tokens[index+1].type != "CTRLEND" or tokens[index+2].type != "CTRLBEGIN":
+		nextBit = ts.next()
+		if nextBit is None or type(nextBit) != list:
 			badResult = result.Result(result.PARSE_RESULT)
-			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, token.lexpos)
+			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
-		index += 3
-		token = tokens[index]
-		macroBody = []
-		while token.type != "CTRLEND":
-			macroBody.append(token)
-			index += 1
-			token = tokens[index]
-
-		__m.define(isSticky, macroKey, macroBody)
-		index += 1 # skip over final CTRLEND
-
+		__m.define(isSticky, macroKey, nextBit[1:len(nextBit)-1])
+		nextBit = ts.next()
 	return output
+		
+
+# Take in an array of tokens, register any macro definitions and the following control sequence, validate that they're being used correctly, and remove them both from the array before returning it. 
+# Also register any label definitions and remove them from the array.
+# def handleDefs(tokens, params):
+# 	output = []
+# 	index = 0
+# 	global __m
+# 	while index < len(tokens):
+# 		token = tokens[index]
+# 		if token.type != "CTRLBEGIN":
+# 			output.append(token)
+# 			index += 1
+# 			continue
+# 		index += 1
+# 		token = tokens[index]
+# 		if token.type == "LABEL":
+# 			output.append(tokens[index-1])
+# 			output.append(token)
+# 			index += 1
+# 			token = tokens[index]
+# 			assert token.type == "TEXT"
+# 			labelKey = token.value.lower()
+# 			if __m.isLabel(labelKey):
+# 				badResult = result.Result(result.PARSE_RESULT)
+# 				badResult.flagBad("Label '%s' is defined twice." % labelKey, params.originalText, token.lexpos)
+# 				raise result.ParseException(badResult)
+# 			__m.defineLabel(labelKey)
+# 			output.append(token)
+# 			index += 1
+# 			continue
+# 		if token.type != "MACRO":
+# 			output.append(tokens[index-1])
+# 			output.append(token)
+# 			index += 1
+# 			continue
+# 		isSticky = token.value == "STICKY_MACRO"
+# 		index += 1
+# 		token = tokens[index]
+# 		assert token.type == "TEXT"
+# 		macroKey = token.value.lower()
+# 		if __m.isMacro(macroKey):
+# 			badResult = result.Result(result.PARSE_RESULT)
+# 			badResult.flagBad("Macro '%s' is defined twice." % macroKey, params.originalText, token.lexpos)
+# 			raise result.ParseException(badResult)
+# 		if index+3 > len(tokens) or tokens[index+1].type != "CTRLEND" or tokens[index+2].type != "CTRLBEGIN":
+# 			badResult = result.Result(result.PARSE_RESULT)
+# 			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, token.lexpos)
+# 			raise result.ParseException(badResult)
+# 		index += 3
+# 		token = tokens[index]
+# 		macroBody = []
+# 		while token.type != "CTRLEND":
+# 			macroBody.append(token)
+# 			index += 1
+# 			token = tokens[index]
+
+# 		__m.define(isSticky, macroKey, macroBody)
+# 		index += 1 # skip over final CTRLEND
+
+# 	return output
 
 formatting_codes = ["section_break", "chapter", "part", "end_part_page", "verse", "verse_inline", "epigraph", "pp", "i", "vspace"]
 

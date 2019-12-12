@@ -6,8 +6,9 @@ import result
 
 class TokenStream:
 
-	def __init__(self, tokens):
+	def __init__(self, tokens, returnRawTokens = False):
 		self.reset()
+		self.returnRawTokens = returnRawTokens
 		self.tokens = tokens
 
 	def reset(self):
@@ -20,9 +21,11 @@ class TokenStream:
 		tok = self.tokens[self.pos]
 		if tok.type == "TEXT":
 			self.pos += 1
-			return tok.value
+			return tok if self.returnRawTokens else tok.value
 		if tok.type == "CTRLBEGIN":
 			ctrl_contents = []
+			if self.returnRawTokens:
+				ctrl_contents.append(tok)
 			self.pos += 1
 			tok = self.tokens[self.pos]
 			while tok.type != "CTRLEND":
@@ -30,6 +33,8 @@ class TokenStream:
 				self.pos += 1
 				tok = self.tokens[self.pos]
 			self.lastLexPos = tok.lexpos
+			if self.returnRawTokens:
+				ctrl_contents.append(tok)
 			self.pos += 1
 			return ctrl_contents
 		badResult = result.Result(result.PARSE_RESULT)
