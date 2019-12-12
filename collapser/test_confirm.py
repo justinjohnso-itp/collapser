@@ -5,6 +5,7 @@ import quantlex
 import quantparse
 import ctrlseq
 import confirm
+import token_stream
 
 def parseResult(text, params = None):
 	lexed = quantlex.lex(text)
@@ -40,7 +41,7 @@ def parseAndGetAlts(text):
 
 def confirmRenderVariant(text, ctrlSeqPos, variantPos, trunc, maxWidth, prePostBuffer=850):
 	tokens = parseResult(text)
-	sequenceList = confirm.SequenceList(tokens)
+	sequenceList = token_stream.SequenceList(tokens)
 	sequenceList.pos = ctrlSeqPos
 	ctrlcontents = sequenceList.sequences[ctrlSeqPos]
 	parseParams = quantparse.ParseParams()
