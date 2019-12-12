@@ -3,7 +3,6 @@ import ctrlseq
 import result
 import re
 
-# TODO: Sticky Macros aren't honoring author prefered mark. See test_author_preferred_sticky_macro
 
 class Macros:
 	def __init__(self):
@@ -19,7 +18,6 @@ class Macros:
 		return key in self.labels
 
 	def defineLabel(self, key):
-		print "Defining label: '%s'" % key
 		self.labels[key] = True
 
 	def define(self, isSticky, key, body):
