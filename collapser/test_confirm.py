@@ -19,20 +19,8 @@ def parseResult(text, params = None):
 	return preppedTokens
 
 def getFirstCtrlSeq(tokens):
-	index = 0
-	while index < len(tokens):
-		token = tokens[index]
-		if token.type == "CTRLBEGIN":
-			ctrl_contents = []
-			index += 1
-			token = tokens[index]
-			while token.type != "CTRLEND":
-				ctrl_contents.append(token)
-				index += 1
-				token = tokens[index]
-			return [ctrl_contents, token.lexpos]
-		index += 1
-	return []
+	ts = token_stream.SequenceStream(tokens)
+	return ts.next() or []
 
 def parseAndGetAlts(text):
 	tokens = parseResult(text)
