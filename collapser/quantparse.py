@@ -138,7 +138,7 @@ def process(tokens, parseParams):
 	nextBit = tokenStream.next()
 	while nextBit is not None:
 		rendered = ""
-		if type(nextBit) == str:
+		if tokenStream.wasText():
 			rendered = nextBit
 		else:
 			rendered = ctrlseq.render(nextBit, parseParams)

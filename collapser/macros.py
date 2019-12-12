@@ -63,7 +63,7 @@ def handleDefs(tokens, params):
 		nextBit = ts.next()
 		if nextBit is None:
 			break
-		if type(nextBit) != list:
+		if ts.wasText():
 			output.append(nextBit)
 			continue
 		ctrlParam = nextBit[1].type
@@ -78,7 +78,7 @@ def handleDefs(tokens, params):
 			badResult.flagBad("Macro '%s' is defined twice." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
 		nextBit = ts.next()
-		if nextBit is None or type(nextBit) != list:
+		if nextBit is None or ts.wasText():
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)

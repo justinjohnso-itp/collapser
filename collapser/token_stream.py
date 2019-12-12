@@ -15,6 +15,11 @@ class TokenStream:
 		self.pos = 0
 		self.lastLexPos = -1
 
+	def wasText(self):
+		if self.pos == 0:
+			return False
+		return self.tokens[self.pos-1].type == "TEXT"
+
 	def next(self):
 		if self.pos >= len(self.tokens):
 			return None
@@ -55,7 +60,7 @@ class SequenceStream:
 		ts = TokenStream(tokens)
 		nextBit = ts.next()
 		while nextBit is not None:
-			if type(nextBit) != str:
+			if not ts.wasText():
 				self.sequences.append([nextBit, ts.lastLexPos])
 			nextBit = ts.next()
 
