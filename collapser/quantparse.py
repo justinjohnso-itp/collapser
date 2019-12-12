@@ -10,6 +10,7 @@ import chooser
 import result
 import confirm
 import discourseVars
+import token_stream
 
 import sys
 
@@ -132,27 +133,19 @@ def handleParsing(tokens, params):
 # The lexer should have guaranteed that we have a series of TEXT tokens interspersed with sequences of others nested between CTRLBEGIN and CTRLEND with no issues with nesting or incomplete tags.
 def process(tokens, parseParams):
 	output = []
-	index = 0
 	discourseVars.resetStats()
-	while index < len(tokens):
-		token = tokens[index]
+	tokenStream = token_stream.TokenStream(tokens)
+	nextBit = tokenStream.next()
+	while nextBit is not None:
 		rendered = ""
-		if token.type == "TEXT":
-			rendered = token.value
-		elif token.type == "CTRLBEGIN":
-			ctrl_contents = []
-			index += 1
-			token = tokens[index]
-			while token.type != "CTRLEND":
-				ctrl_contents.append(token)
-				index += 1
-				token = tokens[index]
-			rendered = ctrlseq.render(ctrl_contents, parseParams)
+		if type(nextBit) == str:
+			rendered = nextBit
+		else:
+			rendered = ctrlseq.render(nextBit, parseParams)
 
 		output.append(rendered)
+		nextBit = tokenStream.next()
 		
-		index += 1
-
 	discourseVars.showStats(variables)
 	return output
 
