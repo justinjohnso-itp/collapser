@@ -25,6 +25,9 @@ def test_invalid_macro_def():
 	text = "[MACRO test][20>always|50>never] doubly defined [MACRO test][~whatever]"
 	with pytest.raises(Exception) as e_info:
 		parse(text)
+	text = "[STICKY_MACRO test][20>always|50>never] doubly defined [STICKY_MACRO test][~whatever]"
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 	text = "Any macro {actually used} must exist."
 	with pytest.raises(Exception) as e_info:
 		parse(text)

@@ -3,7 +3,6 @@ import ctrlseq
 import result
 import re
 
-# TODO: Doesn't seem to be checking that StickyMacro isn't defined twice?
 # TODO: Sticky Macros aren't honoring author prefered mark. See test_author_preferred_sticky_macro
 
 class Macros:
