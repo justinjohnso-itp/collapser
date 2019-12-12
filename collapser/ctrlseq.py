@@ -194,6 +194,8 @@ def parseItem(altBits, params, variablesAllowed=True):
 			prob = token.value
 		elif token.type == "BANNED":
 			banned = True
+		elif token.type == "LABEL":
+			pass
 		else:
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Unhandled token %s: '%s'" % (token.type, token.value), params.originalText, token.lexpos)
