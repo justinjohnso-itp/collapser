@@ -70,7 +70,7 @@ def registerAndStripMacros(tokens, params):
 		if nextBit is None:
 			break
 		if ts.wasText():
-			output.append(nextBit)
+			output += nextBit
 			continue
 		ctrlParam = nextBit[1].type
 		if ctrlParam != "MACRO":
@@ -99,10 +99,7 @@ def registerLabels(tokens, params):
 		nextBit = ts.next()
 		if nextBit is None:
 			break
-		if ts.wasText():
-			output.append(nextBit)
-		else:
-			output += nextBit
+		output += nextBit
 		if not ts.wasText() and nextBit[1].type == "LABEL":
 			assert len(nextBit) == 4
 			labelKey = nextBit[2].value.lower()

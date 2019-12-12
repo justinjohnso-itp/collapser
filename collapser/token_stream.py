@@ -26,7 +26,7 @@ class TokenStream:
 		tok = self.tokens[self.pos]
 		if tok.type == "TEXT":
 			self.pos += 1
-			return tok if self.returnRawTokens else tok.value
+			return [tok] if self.returnRawTokens else tok.value
 		if tok.type == "CTRLBEGIN":
 			ctrl_contents = []
 			if self.returnRawTokens:
