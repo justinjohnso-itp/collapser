@@ -152,8 +152,11 @@ def expand(text, params, isPartialText = False):
 	global __m
 	MAX_MACRO_DEPTH = 6
 	renderHadMoreMacrosCtr = 0
-	nextMacro = getNextMacro(text, 0, params, isPartialText)
-	while nextMacro is not None:
+	startPos = 0
+	while True:
+		nextMacro = getNextMacro(text, startPos, params, isPartialText)
+		if nextMacro is None:
+			break
 		startPos = nextMacro[0]
 		endPos = nextMacro[1]
 		# Get macro name
@@ -182,7 +185,6 @@ def expand(text, params, isPartialText = False):
 					return text[:startPos] + text[startPos + len("[LABEL %s]" % labelId):]
 			postLabelPos = labelPos + len("[LABEL %s]" % labelId)
 			text = text[:startPos] + text[postLabelPos:]
-			nextMacro = getNextMacro(text, startPos, params, isPartialText)
 			continue
 
 		# Expand the macro
@@ -195,7 +197,7 @@ def expand(text, params, isPartialText = False):
 				badResult = result.Result(result.PARSE_RESULT)
 				badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
 				raise result.ParseException(badResult)
-			nextMacro = getNextMacro(text, startPos+1, params, isPartialText)
+			startPos += 1
 			continue
 
 		# If the expansion itself contains macros, check for recursion then set the start position for the next loop iteration.
@@ -213,7 +215,6 @@ def expand(text, params, isPartialText = False):
 			endPos -= 1
 			
 		text = text[:startPos] + rendered + text[endPos+1:]
-		nextMacro = getNextMacro(text, startPos, params, isPartialText)
 
 	# Remove any unused labels.
 	text = re.sub(r"\[LABEL .*\]", "", text)
