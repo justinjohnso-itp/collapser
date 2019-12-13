@@ -6,9 +6,8 @@ import result
 
 class TokenStream:
 
-	def __init__(self, tokens, returnCtrlSeqWithWrapping):
+	def __init__(self, tokens):
 		self.reset()
-		self.returnCtrlSeqWithWrapping = returnCtrlSeqWithWrapping
 		self.tokens = tokens
 
 	def reset(self):
@@ -29,8 +28,7 @@ class TokenStream:
 			return [tok]
 		if tok.type == "CTRLBEGIN":
 			ctrl_contents = []
-			if self.returnCtrlSeqWithWrapping:
-				ctrl_contents.append(tok)
+			ctrl_contents.append(tok)
 			self.pos += 1
 			tok = self.tokens[self.pos]
 			while tok.type != "CTRLEND":
@@ -38,8 +36,7 @@ class TokenStream:
 				self.pos += 1
 				tok = self.tokens[self.pos]
 			self.lastLexPos = tok.lexpos
-			if self.returnCtrlSeqWithWrapping:
-				ctrl_contents.append(tok)
+			ctrl_contents.append(tok)
 			self.pos += 1
 			return ctrl_contents
 		badResult = result.Result(result.PARSE_RESULT)
@@ -57,7 +54,7 @@ class SequenceStream:
 		self.parseCtrlSeqs(tokens)
 
 	def parseCtrlSeqs(self, tokens):
-		ts = TokenStream(tokens, returnCtrlSeqWithWrapping = True)
+		ts = TokenStream(tokens)
 		nextToken = ts.next()
 		while nextToken is not None:
 			if not ts.wasText():
