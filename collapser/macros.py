@@ -212,13 +212,13 @@ def handleGoto(key, text, startPos, isPartialText):
 		raise result.ParseException(badResult)
 	searchBit = "[label %s]" % labelId
 	labelPos = text.lower().find(searchBit, startPos)
+	labelLen = len("[LABEL %s]" % labelId) 
 	if labelPos == -1:
 		if not isPartialText:
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Found {JUMP %s} but no [LABEL %s] after this point, probably because you're trying to jump backward (only forward jumps are allowed)." % (labelId, labelId), text, startPos)
 			raise result.ParseException(badResult)
 		else:
-			return text[:startPos] + text[startPos + len("[LABEL %s]" % labelId):]
-	postLabelPos = labelPos + len("[LABEL %s]" % labelId)
-	text = text[:startPos] + text[postLabelPos:]
-	return text
+			return text[:startPos] + text[startPos + labelLen:]
+	postLabelPos = labelPos + labelLen
+	return text[:startPos] + text[postLabelPos:]
