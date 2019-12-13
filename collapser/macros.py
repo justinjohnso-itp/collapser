@@ -122,7 +122,7 @@ def getNextMacro(text, pos, params, isPartialText):
 	text = text[pos:]
 	found = re.search(r"[\{\$]", text)
 	if not found:
-		return [-1, -1]
+		return None
 	startPos = found.start()
 	firstChar = text[startPos]
 	if firstChar == "{":
@@ -136,7 +136,7 @@ def getNextMacro(text, pos, params, isPartialText):
 	if endPos == -1:
 		if isPartialText:
 			# In the case of rendering a truncated excerpt, don't freak out if it ends in the middle of a macro.
-			return [-1, -1]
+			return None
 		else:
 			badResult = result.Result(result.PARSE_RESULT)
 			badResult.flagBad("Incomplete macro sequence in text '%s'" % text, params.originalText, pos)
@@ -147,13 +147,13 @@ def getNextMacro(text, pos, params, isPartialText):
 		raise result.ParseException(badResult)
 	return [startPos + pos, endPos + pos]
 
-
+# For a given text (possible truncated), return it with all the macros it contains expanded.
 def expand(text, params, isPartialText = False):
 	global __m
 	MAX_MACRO_DEPTH = 6
 	renderHadMoreMacrosCtr = 0
 	nextMacro = getNextMacro(text, 0, params, isPartialText)
-	while nextMacro[0] != -1:
+	while nextMacro is not None:
 		startPos = nextMacro[0]
 		endPos = nextMacro[1]
 		# Get macro name
@@ -199,7 +199,7 @@ def expand(text, params, isPartialText = False):
 			continue
 
 		# If the expansion itself contains macros, check for recursion then set the start position for the next loop iteration.
-		if getNextMacro(rendered, 0, params, isPartialText)[0] >= 0:
+		if getNextMacro(rendered, 0, params, isPartialText) is not None:
 			renderHadMoreMacrosCtr += 1
 		else:
 			renderHadMoreMacrosCtr = 0
