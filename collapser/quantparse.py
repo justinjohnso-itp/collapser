@@ -135,16 +135,16 @@ def process(tokens, parseParams):
 	output = []
 	discourseVars.resetStats()
 	tokenStream = token_stream.TokenStream(tokens)
-	nextToken = tokenStream.next()
-	while nextToken is not None:
+	nextSection = tokenStream.next()
+	while nextSection is not None:
 		rendered = ""
 		if tokenStream.wasText():
-			rendered = nextToken[0].value
+			rendered = nextSection[0].value
 		else:
-			rendered = ctrlseq.render(nextToken, parseParams)
+			rendered = ctrlseq.render(nextSection, parseParams)
 
 		output.append(rendered)
-		nextToken = tokenStream.next()
+		nextSection = tokenStream.next()
 		
 	discourseVars.showStats(variables)
 	return output

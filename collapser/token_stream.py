@@ -56,11 +56,11 @@ class SequenceStream:
 
 	def parseCtrlSeqs(self, tokens):
 		ts = TokenStream(tokens)
-		nextToken = ts.next()
-		while nextToken is not None:
+		nextSection = ts.next()
+		while nextSection is not None:
 			if not ts.wasText():
-				self.addSequence(nextToken, ts.lastLexPos)
-			nextToken = ts.next()
+				self.addSequence(nextSection, ts.lastLexPos)
+			nextSection = ts.next()
 
 	def addSequence(self, tokens, lastLexPos):
 		# Strip begin/end tokens if present.
