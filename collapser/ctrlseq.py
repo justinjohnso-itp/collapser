@@ -145,6 +145,10 @@ def renderAll(tokens, params, showAllVars=False):
 
 def render(tokens, params):
 
+	# Strip begin/end tokens if present.
+	if tokens[0].type == "CTRLBEGIN":
+		tokens = tokens[1:len(tokens)-1]
+
 	# Leave labels intact; we'll remove them during macro processing.
 	if tokens[0].type == "LABEL":
 		return "[LABEL %s]" % tokens[1].value
