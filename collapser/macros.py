@@ -77,7 +77,7 @@ def registerAndStripMacros(tokens, params):
 			output += nextSection
 			continue
 
-		assert len(nextSection) == 4
+		assert len(nextSection) == 4 # CTRLBEGIN, MACRO, macroKey, CTRLEND
 		macroKey = nextSection[2].value.lower()
 		if __m.isMacro(macroKey):
 			badResult = result.Result(result.PARSE_RESULT)
@@ -90,7 +90,8 @@ def registerAndStripMacros(tokens, params):
 			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
 
-		__m.defineMacro(isSticky, macroKey, nextSection[1:len(nextSection)-1])
+		macroBody = nextSection[1:len(nextSection)-1] # Strip begin/end tags
+		__m.defineMacro(isSticky, macroKey, macroBody)
 
 	return output
 
@@ -104,7 +105,7 @@ def registerLabels(tokens, params):
 			break
 		output += nextSection
 		if not ts.wasText() and nextSection[1].type == "LABEL":
-			assert len(nextSection) == 4
+			assert len(nextSection) == 4 # CTRLBEGIN, LABEL, id, CTRLEND
 			labelKey = nextSection[2].value.lower()
 			if __m.isLabel(labelKey):
 				badResult = result.Result(result.PARSE_RESULT)
@@ -123,8 +124,8 @@ def getNextMacro(text, pos, params, isPartialText):
 	if not found:
 		return [-1, -1]
 	startPos = found.start()
-	typeStart = text[startPos]
-	if typeStart == "{":
+	firstChar = text[startPos]
+	if firstChar == "{":
 		endPos = text.find("}", startPos+1)
 	else:
 		endFound = re.search(r"[^\w]", text[startPos+1:])
@@ -134,6 +135,7 @@ def getNextMacro(text, pos, params, isPartialText):
 			endPos = len(text)
 	if endPos == -1:
 		if isPartialText:
+			# In the case of rendering a truncated excerpt, don't freak out if it ends in the middle of a macro.
 			return [-1, -1]
 		else:
 			badResult = result.Result(result.PARSE_RESULT)
