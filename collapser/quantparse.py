@@ -134,7 +134,7 @@ def handleParsing(tokens, params):
 def process(tokens, parseParams):
 	output = []
 	discourseVars.resetStats()
-	tokenStream = token_stream.TokenStream(tokens)
+	tokenStream = token_stream.TokenStream(tokens, returnTextAsToken = False, returnCtrlSeqWithWrapping = False)
 	nextToken = tokenStream.next()
 	while nextToken is not None:
 		rendered = ""

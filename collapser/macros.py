@@ -64,7 +64,7 @@ def handleDefs(tokens, params):
 # Take in an array of tokens, register any macro definitions and the following control sequence, validate that they're being used correctly, and remove them both from the array before returning it. 
 def registerAndStripMacros(tokens, params):
 	output = []
-	ts = token_stream.TokenStream(tokens, returnRawTokens = True)
+	ts = token_stream.TokenStream(tokens, returnTextAsToken = True, returnCtrlSeqWithWrapping = True)
 	while True:
 		nextToken = ts.next()
 		if nextToken is None:
@@ -97,7 +97,7 @@ def registerAndStripMacros(tokens, params):
 # Register any label definitions but leave them in the array (they'll get stripped at the time we process the JUMP commands.)
 def registerLabels(tokens, params):
 	output = []
-	ts = token_stream.TokenStream(tokens, returnRawTokens = True)
+	ts = token_stream.TokenStream(tokens, returnTextAsToken = True, returnCtrlSeqWithWrapping = True)
 	while True:
 		nextToken = ts.next()
 		if nextToken is None:

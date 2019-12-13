@@ -6,10 +6,10 @@ import result
 
 class TokenStream:
 
-	# TODO When I'm less tired, I think we can probably refactor out the returnRawTokens complication.
-	def __init__(self, tokens, returnRawTokens = False):
+	def __init__(self, tokens, returnTextAsToken, returnCtrlSeqWithWrapping):
 		self.reset()
-		self.returnRawTokens = returnRawTokens
+		self.returnTextAsToken = returnTextAsToken
+		self.returnCtrlSeqWithWrapping = returnCtrlSeqWithWrapping
 		self.tokens = tokens
 
 	def reset(self):
@@ -27,10 +27,10 @@ class TokenStream:
 		tok = self.tokens[self.pos]
 		if tok.type == "TEXT":
 			self.pos += 1
-			return [tok] if self.returnRawTokens else tok.value
+			return [tok] if self.returnTextAsToken else tok.value
 		if tok.type == "CTRLBEGIN":
 			ctrl_contents = []
-			if self.returnRawTokens:
+			if self.returnCtrlSeqWithWrapping:
 				ctrl_contents.append(tok)
 			self.pos += 1
 			tok = self.tokens[self.pos]
@@ -39,7 +39,7 @@ class TokenStream:
 				self.pos += 1
 				tok = self.tokens[self.pos]
 			self.lastLexPos = tok.lexpos
-			if self.returnRawTokens:
+			if self.returnCtrlSeqWithWrapping:
 				ctrl_contents.append(tok)
 			self.pos += 1
 			return ctrl_contents
@@ -58,7 +58,7 @@ class SequenceStream:
 		self.parseCtrlSeqs(tokens)
 
 	def parseCtrlSeqs(self, tokens):
-		ts = TokenStream(tokens)
+		ts = TokenStream(tokens, returnTextAsToken = False, returnCtrlSeqWithWrapping = False)
 		nextToken = ts.next()
 		while nextToken is not None:
 			if not ts.wasText():
