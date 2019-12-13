@@ -58,7 +58,7 @@ class SequenceStream:
 		self.parseCtrlSeqs(tokens)
 
 	def parseCtrlSeqs(self, tokens):
-		ts = TokenStream(tokens, returnTextAsToken = False, returnCtrlSeqWithWrapping = False)
+		ts = TokenStream(tokens, returnTextAsToken = True, returnCtrlSeqWithWrapping = False)
 		nextToken = ts.next()
 		while nextToken is not None:
 			if not ts.wasText():

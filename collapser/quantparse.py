@@ -134,12 +134,12 @@ def handleParsing(tokens, params):
 def process(tokens, parseParams):
 	output = []
 	discourseVars.resetStats()
-	tokenStream = token_stream.TokenStream(tokens, returnTextAsToken = False, returnCtrlSeqWithWrapping = False)
+	tokenStream = token_stream.TokenStream(tokens, returnTextAsToken = True, returnCtrlSeqWithWrapping = False)
 	nextToken = tokenStream.next()
 	while nextToken is not None:
 		rendered = ""
 		if tokenStream.wasText():
-			rendered = nextToken
+			rendered = nextToken[0].value
 		else:
 			rendered = ctrlseq.render(nextToken, parseParams)
 
