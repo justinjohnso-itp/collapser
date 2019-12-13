@@ -19,6 +19,7 @@ class TokenStream:
 			return False
 		return self.tokens[self.pos-1].type == "TEXT"
 
+	# Get an array of either a single text token (in which case calling wasText will be true) or an array consisting of a complete control sequence, from a CTRLBEGIN tag to a CTRLEND tag.
 	def next(self):
 		if self.pos >= len(self.tokens):
 			return None
@@ -35,8 +36,8 @@ class TokenStream:
 				ctrl_contents.append(tok)
 				self.pos += 1
 				tok = self.tokens[self.pos]
-			self.lastLexPos = tok.lexpos
 			ctrl_contents.append(tok)
+			self.lastLexPos = tok.lexpos
 			self.pos += 1
 			return ctrl_contents
 		badResult = result.Result(result.PARSE_RESULT)
@@ -58,9 +59,14 @@ class SequenceStream:
 		nextToken = ts.next()
 		while nextToken is not None:
 			if not ts.wasText():
-				nextToken = nextToken[1:len(nextToken)-1]
-				self.sequences.append([nextToken, ts.lastLexPos])
+				self.addSequence(nextToken, ts.lastLexPos)
 			nextToken = ts.next()
+
+	def addSequence(self, tokens, lastLexPos):
+		# Strip begin/end tokens if present.
+		if tokens[0].type == "CTRLBEGIN":
+			tokens = tokens[1:len(tokens)-1]
+		self.sequences.append([tokens, lastLexPos])
 
 	def reset(self):
 		self.pos = 0
