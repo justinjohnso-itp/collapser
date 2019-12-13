@@ -159,23 +159,21 @@ def expand(text, params, isPartialText = False):
 			break
 		startPos = nextMacro[0]
 		endPos = nextMacro[1]
-		# Get macro name
-		key = text[startPos+1:endPos].lower()
+		macroName = text[startPos+1:endPos].lower()
 
-		# Handle GOTOs
-		if key.split(" ")[0] == "jump":
-			text = handleGoto(key, text, startPos, isPartialText)
+		if macroName.split(" ")[0] == "jump":
+			text = handleGoto(macroName, text, startPos, isPartialText)
 			continue
 
 		# Expand the macro
-		rendered = __m.render(key, params)
+		rendered = __m.render(macroName, params)
 
 		# If unrecognized, see if it's a formatting code; fail otherwise.
 		if rendered == None:
-			parts = key.split('/')
+			parts = macroName.split('/')
 			if parts[0] not in formatting_codes:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Unrecognized macro {%s}" % key, text, startPos)
+				badResult.flagBad("Unrecognized macro {%s}" % macroName, text, startPos)
 				raise result.ParseException(badResult)
 			startPos += 1
 			continue
