@@ -163,28 +163,8 @@ def expand(text, params, isPartialText = False):
 		key = text[startPos+1:endPos].lower()
 
 		# Handle GOTOs
-		gotoKey = key.split(" ")
-		if gotoKey[0] == "jump":
-			if len(gotoKey) is not 2:
-				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Invalid GOTO: expected {JUMP labelToJumpTo}, found '%s'" % key, text, startPos)
-				raise result.ParseException(badResult)
-			labelId = gotoKey[1].lower()
-			if not __m.isLabel(labelId):
-				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Invalid GOTO: labelId '%s' is not defined." % key, text, startPos)
-				raise result.ParseException(badResult)
-			searchBit = "[label %s]" % labelId
-			labelPos = text.lower().find(searchBit, startPos)
-			if labelPos == -1:
-				if not isPartialText:
-					badResult = result.Result(result.PARSE_RESULT)
-					badResult.flagBad("Found {JUMP %s} but no [LABEL %s] after this point, probably because you're trying to jump backward (only forward jumps are allowed)." % (labelId, labelId), text, startPos)
-					raise result.ParseException(badResult)
-				else:
-					return text[:startPos] + text[startPos + len("[LABEL %s]" % labelId):]
-			postLabelPos = labelPos + len("[LABEL %s]" % labelId)
-			text = text[:startPos] + text[postLabelPos:]
+		if key.split(" ")[0] == "jump":
+			text = handleGoto(key, text, startPos, isPartialText)
 			continue
 
 		# Expand the macro
@@ -219,4 +199,28 @@ def expand(text, params, isPartialText = False):
 	# Remove any unused labels.
 	text = re.sub(r"\[LABEL .*\]", "", text)
 
+	return text
+
+def handleGoto(key, text, startPos, isPartialText):
+	keyParts = key.split(" ")
+	if len(keyParts) is not 2:
+		badResult = result.Result(result.PARSE_RESULT)
+		badResult.flagBad("Invalid GOTO: expected {JUMP labelToJumpTo}, found '%s'" % key, text, startPos)
+		raise result.ParseException(badResult)
+	labelId = keyParts[1].lower()
+	if not __m.isLabel(labelId):
+		badResult = result.Result(result.PARSE_RESULT)
+		badResult.flagBad("Invalid GOTO: labelId '%s' is not defined." % key, text, startPos)
+		raise result.ParseException(badResult)
+	searchBit = "[label %s]" % labelId
+	labelPos = text.lower().find(searchBit, startPos)
+	if labelPos == -1:
+		if not isPartialText:
+			badResult = result.Result(result.PARSE_RESULT)
+			badResult.flagBad("Found {JUMP %s} but no [LABEL %s] after this point, probably because you're trying to jump backward (only forward jumps are allowed)." % (labelId, labelId), text, startPos)
+			raise result.ParseException(badResult)
+		else:
+			return text[:startPos] + text[startPos + len("[LABEL %s]" % labelId):]
+	postLabelPos = labelPos + len("[LABEL %s]" % labelId)
+	text = text[:startPos] + text[postLabelPos:]
 	return text
