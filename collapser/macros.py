@@ -21,7 +21,7 @@ class Macros:
 	def defineLabel(self, key):
 		self.labels[key] = True
 
-	def define(self, isSticky, key, body):
+	def defineMacro(self, isSticky, key, body):
 		if isSticky:
 			self.sticky_macro_originals[key] = body
 		else:
@@ -90,7 +90,7 @@ def registerAndStripMacros(tokens, params):
 			badResult.flagBad("Macro '%s' must be immediately followed by a control sequence." % macroKey, params.originalText, ts.lastLexPos)
 			raise result.ParseException(badResult)
 
-		__m.define(isSticky, macroKey, nextToken[1:len(nextToken)-1])
+		__m.defineMacro(isSticky, macroKey, nextToken[1:len(nextToken)-1])
 
 	return output
 
