@@ -36,7 +36,7 @@ def confirmRenderVariant(text, ctrlSeqPos, variantPos, trunc, maxWidth, prePostB
 	variants = ctrlseq.renderAll(ctrlcontents[0], parseParams, showAllVars=True)
 	ctrlEndPos = ctrlcontents[1]
 	ctrlStartPos = text.rfind("[", 0, ctrlEndPos)
-	firstVariant = variants.alts[variantPos].txt
+	firstVariant = variants.alts[variantPos]
 	return confirm.getContextualizedRenderedVariant(text, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, firstVariant, prePostBuffer, trunc, trunc, maxWidth)
 
 

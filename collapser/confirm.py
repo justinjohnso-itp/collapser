@@ -75,7 +75,7 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 	for v in variants.alts:
 		print '''************************************'''
-		print getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, v.txt)
+		print getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, v)
 	print "************************************"
 	return askUserAboutVariant(key, ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos)
 
@@ -89,7 +89,8 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	return key
 
 DEFAULT_BUFFER_LEN = 850
-def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, vTxt, bufferLen = DEFAULT_BUFFER_LEN, truncStart = "...", truncEnd = "...", maxLineLength = 80):
+def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, variant, bufferLen = DEFAULT_BUFFER_LEN, truncStart = "...", truncEnd = "...", maxLineLength = 80):
+	vTxt = variant.txt
 	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen)
 	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen)
 	rendered = renderVariant(truncStart, pre, vTxt, post, truncEnd, maxLineLength, parseParams)

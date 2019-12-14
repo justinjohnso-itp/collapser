@@ -133,8 +133,13 @@ def renderAll(tokens):
 	varsInGroup = []
 	while pos < len(tokens):
 		if tokens[pos].type == "TEXT":
-			assert len(varsInGroup) == 1
-			alts.add(tokens[pos].value, fromVar = varsInGroup[0])
+			assert len(varsInGroup) <= 1
+			if len(varsInGroup) == 1:
+				# [DEFINE @A|@B|@C][@A>one|@B>two|three]
+				alts.add(tokens[pos].value, fromVar = varsInGroup[0])
+			else:
+				# [DEFINE @A][@A>one|not one]
+				alts.add(tokens[pos].value, fromVar = __v.getVarsInGroup(varGroupKey)[0])
 			return alts.alts
 		if tokens[pos].type == "DIVIDER":
 			pos += 1
