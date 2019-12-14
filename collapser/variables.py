@@ -30,6 +30,9 @@ class Variables:
 				return groupKey
 		return ""
 
+	def getVarsInGroup(self, key):
+		return [] + self.varGroups[key]
+
 	# [ @alpha> A ]
 	# [ @alpha> A | B ]
 	# [ @alpha> | B ]
@@ -126,20 +129,29 @@ def renderAll(tokens):
 	global __v
 	pos = 0
 	alts = ctrlseq.Alts()
+	varGroupKey = None
+	varsInGroup = []
 	while pos < len(tokens):
 		if tokens[pos].type == "TEXT":
-			alts.add(tokens[pos].value)
+			assert len(varsInGroup) == 1
+			alts.add(tokens[pos].value, fromVar = varsInGroup[0])
 			return alts.alts
 		if tokens[pos].type == "DIVIDER":
 			pos += 1
 			continue
 		assert tokens[pos].type == "VARIABLE"
 		varName = tokens[pos].value.lower()
+		if varGroupKey is None:
+			varGroupKey = __v.getGroupFromVar(varName)
+			varsInGroup = __v.getVarsInGroup(varGroupKey)
+		if varName in varsInGroup:
+			varsInGroup.remove(varName)
 		pos += 1
 		if tokens[pos].type == "TEXT":
-			alts.add(tokens[pos].value)
+			alts.add(tokens[pos].value, fromVar = varName)
 		elif tokens[pos].type == "DIVIDER":
-			alts.add("")
+			assert len(varsInGroup) == 1
+			alts.add("", fromVar = varsInGroup[0])
 		pos += 1
 	if len(alts.alts) == 1:
 		alts.add("")
