@@ -16,7 +16,7 @@ class Alts:
 	def add(self, txt, prob=None):
 		if prob == 0:
 			return
-		self.alts.append(Item(txt, prob, False, None))
+		self.alts.append(Item(txt, prob, False, None, False))
 		if prob is not None:
 			self.probabilityTotal += prob
 
@@ -59,7 +59,7 @@ class Alts:
 # Create a class for a single text item with probability.
 
 class Item:
-	def __init__(self, txt, prob, authorPreferred, fromVariable = None, banned = False):
+	def __init__(self, txt, prob, authorPreferred, fromVariable, banned):
 		self.txt = txt
 		self.prob = prob
 		self.authorPreferred = authorPreferred
