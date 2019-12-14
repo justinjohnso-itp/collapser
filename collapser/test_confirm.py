@@ -31,7 +31,7 @@ def confirmRenderVariant(text, ctrlSeqPos, variantPos, trunc, maxWidth, prePostB
 	tokens = parseResult(text)
 	sequenceList = token_stream.SequenceStream(tokens)
 	sequenceList.pos = ctrlSeqPos
-	ctrlcontents = sequenceList.sequences[ctrlSeqPos]
+	ctrlcontents = sequenceList.next()
 	parseParams = quantparse.ParseParams()
 	variants = ctrlseq.renderAll(ctrlcontents[0], parseParams, showAllVars=True)
 	ctrlEndPos = ctrlcontents[1]

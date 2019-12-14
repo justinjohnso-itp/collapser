@@ -72,9 +72,9 @@ class SequenceStream:
 		self.pos = 0
 
 	def preceding(self):
-		if self.pos <= 0:
+		if self.pos <= 1:
 			return None
-		return self.sequences[self.pos-1]
+		return self.sequences[self.pos-2]
 	
 	def next(self):
 		if self.pos >= len(self.sequences):
@@ -84,8 +84,8 @@ class SequenceStream:
 		return nextSeq
 
 	def following(self):
-		if self.pos >= len(self.sequences) - 1:
+		if self.pos >= len(self.sequences):
 			return None
-		return self.sequences[self.pos+1]
+		return self.sequences[self.pos]
 
 
