@@ -76,10 +76,7 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 	print "#################################################################"
 	for v in variants.alts:
 		print '''************************************'''
-		pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList)
-		post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList)
-		rendered = renderVariant(truncStart, pre, v.txt, post, truncEnd, maxLineLength, parseParams)
-		print rendered
+		print getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, truncStart, v.txt, truncEnd, maxLineLength)
 	print "************************************"
 
 	choice = -1
@@ -114,6 +111,12 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
 	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
 	return key
+
+def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, truncStart, vTxt, truncEnd, maxLineLength):
+	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList)
+	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList)
+	rendered = renderVariant(truncStart, pre, vTxt, post, truncEnd, maxLineLength, parseParams)
+	return rendered
 
 
 def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  parseParams):
