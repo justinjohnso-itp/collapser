@@ -91,9 +91,13 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 DEFAULT_BUFFER_LEN = 850
 def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, variant, bufferLen = DEFAULT_BUFFER_LEN, truncStart = "...", truncEnd = "...", maxLineLength = 80):
 	vTxt = variant.txt
+	fromVar = variant.fromVariable
+	oldSetDefines = parseParams.setDefines
+	parseParams.setDefines = [fromVar]
 	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen)
 	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen)
 	rendered = renderVariant(truncStart, pre, vTxt, post, truncEnd, maxLineLength, parseParams)
+	parseParams.setDefines = oldSetDefines
 	return rendered
 
 
@@ -159,7 +163,7 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceLi
 		prevCtrlSeq = sequenceList.preceding()
 		if prevCtrlSeq is not None:
 			prevVariants = ctrlseq.renderAll(prevCtrlSeq[0], parseParams, showAllVars=True)
-			variantTxt = chooser.oneOf(prevVariants.alts, pure=True).txt
+			variantTxt = prevVariants.getByFromVariable(parseParams.setDefines)
 			prevCtrlSeqStartPos = pre.rfind("[")
 			if prevCtrlSeqStartPos == -1:
 				prevCtrlSeqStartPos = 0
@@ -178,7 +182,7 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen
 		nextCtrlSeq = sequenceList.following()
 		if nextCtrlSeq is not None:
 			nextVariants = ctrlseq.renderAll(nextCtrlSeq[0], parseParams, showAllVars=True)
-			variantTxt = chooser.oneOf(nextVariants.alts, pure=True).txt
+			variantTxt = nextVariants.getByFromVariable(parseParams.setDefines)
 			nextCtrlSeqEndPos = post.find("]", nextCtrlSeqStartPos)
 			if nextCtrlSeqEndPos == -1:
 				nextCtrlSeqEndPos = len(post)

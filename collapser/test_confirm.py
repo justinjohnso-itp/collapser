@@ -204,7 +204,22 @@ def test_macro_removal_edge_cases():
 	assert rendered == """some text version a.
           ^       ^
 """
-	
+
+def test_defines_consistent():
+	text = """[DEFINE @singulars|@plurals]when we found [@singulars>a block|some legos] and played with [@singulars>it|them]"""
+	for i in range(10):
+		rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
+		assert rendered == """when we found a block and played with it
+              ^     ^
+"""
+	for i in range(10):
+		rendered = confirmRenderVariant(text, 0, 1, "", 80, 70)
+		assert rendered == """when we found some legos and played with them
+              ^        ^
+"""
+
+
+
 
 
 

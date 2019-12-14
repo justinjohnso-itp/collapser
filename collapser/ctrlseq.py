@@ -26,6 +26,12 @@ class Alts:
 	def getAuthorPreferred(self):
 		return self.alts[self.authorPreferredPos].txt
 
+	def getByFromVariable(self, setDefines):
+		for alt in self.alts:
+			if alt.fromVariable in setDefines:
+				return alt.txt
+		return self.getRandom()
+
 	def getRandom(self):
 		if self.hasProbabilities():
 			return chooser.distributedPick(self.alts)
