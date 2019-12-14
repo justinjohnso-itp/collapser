@@ -88,12 +88,13 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
 	return key
 
-def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, vTxt):
+DEFAULT_BUFFER_LEN = 850
+def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, vTxt, bufferLen = DEFAULT_BUFFER_LEN):
 	truncStart = "..."
 	truncEnd = "..."
 	maxLineLength = 80
-	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList)
-	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList)
+	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen)
+	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen)
 	rendered = renderVariant(truncStart, pre, vTxt, post, truncEnd, maxLineLength, parseParams)
 	return rendered
 
@@ -139,7 +140,6 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
 	return wrapped
 
-DEFAULT_BUFFER_LEN = 850
 def getRawPre(sourceText, ctrlStartPos, ctrlEndPos, preBufferLen = DEFAULT_BUFFER_LEN):
 	if ctrlStartPos < preBufferLen:
 		preBufferLen = ctrlStartPos
