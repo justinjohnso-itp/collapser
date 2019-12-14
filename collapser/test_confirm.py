@@ -218,7 +218,13 @@ def test_defines_consistent():
               ^        ^
 """
 
-
+def test_defines_consistent():
+	text = """[DEFINE @singulars|@plurals]when we found [@singulars>a block|some legos] under my bed, and played with {itthem}.[MACRO itthem][@singulars>it|@plurals>them]"""
+	for i in range(10):
+		rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
+		assert rendered == """when we found a block under my bed, and played with it.
+              ^     ^
+"""
 
 
 

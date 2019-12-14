@@ -85,12 +85,12 @@ class Variables:
 
 			# A variable can be followed by either text, or a divider or end of the stream. If text, return the text if that variable is true.
 			if tokens[pos].type == "TEXT":
-				if self.check(varName):
+				if varName in params.setDefines or self.check(varName):
 					return tokens[pos].value
 
 			# If it's a divider, return an empty string if the variable is true.
 			elif tokens[pos].type == "DIVIDER":
-				if self.check(varName):
+				if varName in params.setDefines or self.check(varName):
 					return ""
 
 			pos += 1

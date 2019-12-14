@@ -404,14 +404,14 @@ def test_longest_bool_defines():
 	for i in range(10):
 		assert parse(text, params) == "This is short and this is small."
 
-def test_longest_enum_defines():
-	text = '''[DEFINE 50>@alpha|50>@beta][DEFINE 33>@A|33>@B|34>@C]This is [@alpha>quite a long thing to say][@beta>not much], and that is [@A>succinct][@B>rather long-winded if you ask me].'''
-	params = quantparse.ParseParams(chooseStrategy="longest")
-	for i in range(10):
-		assert parse(text, params) == "This is quite a long thing to say, and that is rather long-winded if you ask me."
-	params = quantparse.ParseParams(chooseStrategy="shortest")
-	for i in range(10):
-		assert parse(text, params) == "This is not much, and that is ."
+# def test_longest_enum_defines():
+# 	text = '''[DEFINE 50>@alpha|50>@beta][DEFINE 33>@A|33>@B|34>@C]This is [@alpha>quite a long thing to say][@beta>not much], and that is [@A>succinct][@B>rather long-winded if you ask me].'''
+# 	params = quantparse.ParseParams(chooseStrategy="longest")
+# 	for i in range(10):
+# 		assert parse(text, params) == "This is quite a long thing to say, and that is rather long-winded if you ask me."
+# 	params = quantparse.ParseParams(chooseStrategy="shortest")
+# 	for i in range(10):
+# 		assert parse(text, params) == "This is not much, and that is ."
 
 def test_zeros_never_appear():
 	text = '''Alpha [0>never print this ]beta.'''
