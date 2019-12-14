@@ -223,7 +223,11 @@ def cleanContext(text):
 	while pos is not -1:
 		endDefPos = text.find("]", pos)
 		if endDefPos is not -1:
-			text = text[:pos-1] + text[endDefPos+1:]
+			newText = ""
+			if pos > 0:
+				newText += text[:pos-1]
+			newText += text[endDefPos+1:]
+			text = newText
 		pos = text.find("[DEFINE", pos+1)
 
 	return text
