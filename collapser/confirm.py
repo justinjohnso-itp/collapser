@@ -53,14 +53,11 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 
 	# Return 1 if newly confirmed, 0 otherwise; or -1 to abort further execution.
 
-	maxLineLength = 80
 	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 	ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)
 	filename = result.find_filename(sourceText, ctrlStartPos)
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
 	key = makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq)
-	truncStart = "..."
-	truncEnd = "..."
 	if fileio.isKeyConfirmed(key) == True:
 		fileio.confirmKey(key)
 		return 0
@@ -76,7 +73,7 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 	print "#################################################################"
 	for v in variants.alts:
 		print '''************************************'''
-		print getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, truncStart, v.txt, truncEnd, maxLineLength)
+		print getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, v.txt)
 	print "************************************"
 
 	choice = -1
@@ -112,7 +109,10 @@ def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
 	return key
 
-def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, truncStart, vTxt, truncEnd, maxLineLength):
+def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, vTxt):
+	truncStart = "..."
+	truncEnd = "..."
+	maxLineLength = 80
 	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList)
 	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList)
 	rendered = renderVariant(truncStart, pre, vTxt, post, truncEnd, maxLineLength, parseParams)
