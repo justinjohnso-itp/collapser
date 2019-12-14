@@ -13,10 +13,10 @@ class Alts:
 		self.authorPreferredPos = 0
 		self.probabilityTotal = 0
 
-	def add(self, txt, prob=None):
+	def add(self, txt, prob=None, fromVar=None):
 		if prob == 0:
 			return
-		self.alts.append(Item(txt, prob, False, None, False))
+		self.alts.append(Item(txt, prob, False, fromVar, False))
 		if prob is not None:
 			self.probabilityTotal += prob
 
