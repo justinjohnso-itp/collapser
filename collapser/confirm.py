@@ -55,7 +55,6 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 
 	# Return 1 if newly confirmed, 0 otherwise; or -1 to abort further execution.
 
-	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 	ctrlStartPos = sourceText.rfind("[", 0, ctrlEndPos)
 	filename = result.find_filename(sourceText, ctrlStartPos)
 	originalCtrlSeq = sourceText[ctrlStartPos:ctrlEndPos+1]
@@ -73,34 +72,12 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 	print "#################################################################"
 	print "VARIANT FOUND IN %s LINE %d COL %d:\n%s" % (filename, lineNumber, lineColumn, originalCtrlSeq)
 	print "#################################################################"
+	variants = ctrlseq.renderAll(ctrl_contents, parseParams, showAllVars=True)
 	for v in variants.alts:
 		print '''************************************'''
 		print getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, v.txt)
 	print "************************************"
-
-	choice = -1
-	while choice is not "1" and choice is not "2" and choice is not "3" and choice is not "4" and choice is not "5":
-		sys.stdout.write("\n1) Confirm, 2) Skip, 3) Regen, 4) Done Confirming, 5) Quit > ")
-		choice = getch.getch()
-		if choice == "1":
-			print "1\n >>> Confirmed."
-			fileio.confirmKey(key)
-			return 1
-		elif choice == "2":
-			print "2\n >>> Skipping."
-			return 0
-		elif choice == "3":
-			print "3\n >>> Regenerating."
-			res = confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos)
-			return res
-		elif choice == "4":
-			print "4\n >>> Done Confirming."
-			SESSION_CTR = MAX_PER_SESSION + 1
-			return 0
-		elif choice == "5":
-			print "5\n >>> Quit."
-			SESSION_CTR = MAX_PER_SESSION + 1
-			return -1
+	return askUserAboutVariant(key, ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos)
 
 
 def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
@@ -270,3 +247,32 @@ def wrap(text, maxLineLength):
 	for line in text.split('\n'):
 		output += textwrap.fill(line, maxLineLength) + "\n"
 	return output
+
+
+def askUserAboutVariant(key, ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos):
+	global MAX_PER_SESSION
+	global SESSION_CTR
+	choice = -1
+	while choice is not "1" and choice is not "2" and choice is not "3" and choice is not "4" and choice is not "5":
+		sys.stdout.write("\n1) Confirm, 2) Skip, 3) Regen, 4) Done Confirming, 5) Quit > ")
+		choice = getch.getch()
+		if choice == "1":
+			print "1\n >>> Confirmed."
+			fileio.confirmKey(key)
+			return 1
+		elif choice == "2":
+			print "2\n >>> Skipping."
+			return 0
+		elif choice == "3":
+			print "3\n >>> Regenerating."
+			res = confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos)
+			return res
+		elif choice == "4":
+			print "4\n >>> Done Confirming."
+			SESSION_CTR = MAX_PER_SESSION + 1
+			return 0
+		elif choice == "5":
+			print "5\n >>> Quit."
+			SESSION_CTR = MAX_PER_SESSION + 1
+			return -1
+
