@@ -6,6 +6,7 @@ import quantparse
 import ctrlseq
 import confirm
 import token_stream
+import pytest
 
 def parseResult(text, params = None):
 	lexed = quantlex.lex(text)
@@ -226,7 +227,65 @@ def test_defines_consistent():
               ^     ^
 """
 
+def test_getCharsBefore():
+	text = "This is 31 characters of text. Then some more comes here."
+	assert confirm.getCharsBefore(text, 31, 1) == " "
+	assert confirm.getCharsBefore(text, 31, 10) == " of text. "
+	assert confirm.getCharsBefore(text, 31, 31) == "This is 31 characters of text. "
+	assert confirm.getCharsBefore(text, 31, 300) == "This is 31 characters of text. "
+	assert confirm.getCharsBefore(text, 1, 1) == "T"
+	assert confirm.getCharsBefore(text, 1, 2) == "T"
+	assert confirm.getCharsBefore(text, 0, 1) == ""
+	assert confirm.getCharsBefore(text, 0, 2) == ""
+	assert confirm.getCharsBefore(text, 56, 75) == "This is 31 characters of text. Then some more comes here"
 
+def test_bad_getCharsBefore():
+	text = "This is 31 characters of text. Then some more comes here."
+	with pytest.raises(Exception) as e_info:
+		confirm.getCharsBefore(text, 31, 0)
+	with pytest.raises(Exception) as e_info:
+		confirm.getCharsBefore(text, 31, -1)
+	with pytest.raises(Exception) as e_info:
+		confirm.getCharsBefore(text, -1, 1)
+	assert confirm.getCharsBefore("012", 2, 1) == "1"
+	with pytest.raises(Exception) as e_info:
+		confirm.getCharsBefore("012", 3, 1)
+
+def test_getCharsAfter():
+	text = "This is 31 characters of text. Then some more comes here."
+	assert confirm.getCharsAfter(text, 30, 1) == "T"
+	assert confirm.getCharsAfter(text, 30, 10) == "Then some "
+	assert confirm.getCharsAfter(text, 30, 26) == "Then some more comes here."
+	assert confirm.getCharsAfter(text, 30, 300) == "Then some more comes here."
+	assert confirm.getCharsAfter(text, 0, 300) == "his is 31 characters of text. Then some more comes here."
+	assert confirm.getCharsAfter(text, 55, 1) == "."
+	assert confirm.getCharsAfter(text, 55, 2) == "."
+	assert confirm.getCharsAfter(text, 56, 1) == ""
+	assert confirm.getCharsAfter(text, 56, 2) == ""
+
+def test_bad_getCharsAfter():
+	text = "This is 31 characters of text. Then some more comes here."
+	with pytest.raises(Exception) as e_info:
+		confirm.getCharsAfter(text, 31, 0)
+	with pytest.raises(Exception) as e_info:
+		confirm.getCharsAfter(text, 31, -1)
+	with pytest.raises(Exception) as e_info:
+		confirm.getCharsAfter(text, -1, 1)
+	assert confirm.getCharsAfter("012", 1, 1) == "2"
+	assert confirm.getCharsAfter("012", 2, 1) == ""
+	with pytest.raises(Exception) as e_info:
+		confirm.getCharsAfter("012", 3, 1)
+
+
+
+
+# def test_render_multiple_posts():
+# 	text = "[DEFINE @test1|@test2][alpha|beta] and [@test1>gamma|delta] and [@test1>epsilon|zeta] and finally [@test1>upsilon|pi]."
+# 	params = quantparse.ParseParams(setDefines=["test1"])
+# 	tokens = parseResult(text, params)
+# 	sequenceList = token_stream.SequenceStream(tokens)
+# 	rendered = confirm.getRenderedPost(text, params, 33, sequenceList)
+# 	assert rendered == " and gamma and epsilon and finally upsilon."
 
 
 

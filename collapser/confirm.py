@@ -163,14 +163,20 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos, nextCtrlSeq, bufferLen 
 	return cleanAndExpandBit(post, parseParams, False)
 
 def getCharsBefore(text, pos, count):
-	if pos < count:
+	assert count > 0
+	assert pos >= 0
+	assert pos < len(text)
+	if count > pos:
 		count = pos
 	return text[pos-count:pos]
 
 def getCharsAfter(text, pos, count):
+	assert count > 0
+	assert pos >= 0
+	assert pos < len(text)
 	if pos + count > len(text):
 		count = len(text) - pos
-	return text[pos+1:pos+count]
+	return text[pos+1:pos+count+1]
 
 def renderNearbyBit(ctrlSequence, snippet, parseParams, ctrlSeqStartPos, ctrlSeqEndPos):
 	if ctrlSequence is None:
