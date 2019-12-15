@@ -171,7 +171,9 @@ def renderContextExpansions(snippet, sequenceList, parseParams, isAfter):
 				endPos = len(snippet)
 			else:
 				break
-		snippet = renderNearbyBit(nextCtrlSeq, snippet, parseParams, startPos, endPos)
+		variants = ctrlseq.renderAll(nextCtrlSeq[0], parseParams, showAllVars=True)
+		variantTxt = variants.getByFromVariable(parseParams.setDefines)
+		snippet = snippet[:startPos] + variantTxt + snippet[endPos+1:]
 		offset += 1
 	return snippet	
 
@@ -190,13 +192,6 @@ def getCharsAfter(text, pos, count):
 	if pos + count > len(text):
 		count = len(text) - pos
 	return text[pos+1:pos+count+1]
-
-def renderNearbyBit(ctrlSequence, snippet, parseParams, ctrlSeqStartPos, ctrlSeqEndPos):
-	if ctrlSequence is None:
-		return snippet
-	variants = ctrlseq.renderAll(ctrlSequence[0], parseParams, showAllVars=True)
-	variantTxt = variants.getByFromVariable(parseParams.setDefines)
-	return snippet[:ctrlSeqStartPos] + variantTxt + snippet[ctrlSeqEndPos+1:]
 
 def cleanAndExpandBit(snippet, parseParams, isBefore, bufferLen = FINAL_BUFFER_LEN):
 	snippet = cleanContext(snippet)
