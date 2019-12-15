@@ -94,8 +94,8 @@ def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrl
 	fromVar = variant.fromVariable
 	oldSetDefines = parseParams.setDefines
 	parseParams.setDefines = [fromVar]
-	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen)
-	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen)
+	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, sequenceList.preceding(), bufferLen)
+	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList.following(), bufferLen)
 	rendered = renderVariant(truncStart, pre, vTxt, post, truncEnd, maxLineLength, parseParams)
 	parseParams.setDefines = oldSetDefines
 	return rendered
@@ -165,22 +165,20 @@ def cleanAndExpandBit(snippet, parseParams, isBefore):
 	bufferLen = 60
 	return snippet[-1*bufferLen:] if isBefore else snippet[:bufferLen]
 
-def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
+def getRenderedPre(sourceText, parseParams, ctrlStartPos, prevCtrlSeq, bufferLen = DEFAULT_BUFFER_LEN):
 	pre = getCharsBefore(sourceText, ctrlStartPos, bufferLen)
 	prevEndPos = pre.rfind("]")
 	if prevEndPos >= 0:
-		prevCtrlSeq = sequenceList.preceding()
 		prevStartPos = pre.rfind("[")
 		if prevStartPos == -1:
 			prevStartPos = 0
 		pre = renderNearbyBit(prevCtrlSeq, pre, parseParams, prevStartPos, prevEndPos)
 	return cleanAndExpandBit(pre, parseParams, True)
 
-def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
+def getRenderedPost(sourceText, parseParams, ctrlEndPos, nextCtrlSeq, bufferLen = DEFAULT_BUFFER_LEN):
 	post = getCharsAfter(sourceText, ctrlEndPos, bufferLen)
 	nextStartPos = post.find("[")
 	if nextStartPos >= 0:
-		nextCtrlSeq = sequenceList.following()
 		nextEndPos = post.find("]", nextStartPos)
 		if nextEndPos == -1:
 			nextEndPos = len(post)
