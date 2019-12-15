@@ -279,14 +279,22 @@ def test_bad_getCharsAfter():
 
 
 
-# def test_render_multiple_posts():
-# 	text = "[DEFINE @test1|@test2][alpha|beta] and [@test1>gamma|delta] and [@test1>epsilon|zeta] and finally [@test1>upsilon|pi]."
-# 	params = quantparse.ParseParams(setDefines=["test1"])
-# 	tokens = parseResult(text, params)
-# 	sequenceList = token_stream.SequenceStream(tokens)
-# 	rendered = confirm.getRenderedPost(text, params, 33, sequenceList)
-# 	assert rendered == " and gamma and epsilon and finally upsilon."
+def test_render_multiple_posts():
+	text = "[DEFINE @test1|@test2][alpha|beta] and [@test1>gamma|delta] and [@test1>epsilon|zeta] and finally [@test1>upsilon|pi]."
+	params = quantparse.ParseParams(setDefines=["test1"])
+	tokens = parseResult(text, params)
+	sequenceList = token_stream.SequenceStream(tokens)
+	sequenceList.pos = 1
+	rendered = confirm.getRenderedPost(text, params, 33, sequenceList)
+	assert rendered == " and gamma and epsilon and finally upsilon."
 
-
+def test_render_multiple_pres():
+	text = "[DEFINE @test1|@test2]So: [@test1>gamma|delta] and [@test1>epsilon|zeta] and finally [@test1>upsilon|pi] [alpha|beta]"
+	params = quantparse.ParseParams(setDefines=["test2"])
+	tokens = parseResult(text, params)
+	sequenceList = token_stream.SequenceStream(tokens)
+	sequenceList.pos = 4
+	rendered = confirm.getRenderedPre(text, params, 105, sequenceList)
+	assert rendered == "So: delta and zeta and finally pi "
 
 

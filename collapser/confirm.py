@@ -96,8 +96,8 @@ def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrl
 	fromVar = variant.fromVariable
 	oldSetDefines = parseParams.setDefines
 	parseParams.setDefines = [fromVar]
-	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, sequenceList.preceding(), bufferLen)
-	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList.following(), bufferLen)
+	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, sequenceList, bufferLen)
+	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen)
 	rendered = renderVariant(truncStart, pre, vTxt, post, truncEnd, maxLineLength, parseParams)
 	parseParams.setDefines = oldSetDefines
 	return rendered
@@ -144,25 +144,45 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
 	return wrapped
 
-def getRenderedPre(sourceText, parseParams, ctrlStartPos, prevCtrlSeq, bufferLen = DEFAULT_BUFFER_LEN):
+def getRenderedPre(sourceText, parseParams, ctrlStartPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
 	pre = getCharsBefore(sourceText, ctrlStartPos, bufferLen)
-	prevEndPos = pre.rfind("]")
-	if prevEndPos >= 0:
+	pre = cleanAndExpandBit(pre, parseParams, True, DEFAULT_BUFFER_LEN)
+	pre = renderPreviousExpansions(pre, sequenceList, parseParams)
+	return cleanAndExpandBit(pre, parseParams, True, FINAL_BUFFER_LEN)
+
+def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
+	post = getCharsAfter(sourceText, ctrlEndPos, bufferLen)
+	post = cleanAndExpandBit(post, parseParams, False, DEFAULT_BUFFER_LEN)
+	post = renderFollowingExpansions(post, sequenceList, parseParams)
+	return cleanAndExpandBit(post, parseParams, False, FINAL_BUFFER_LEN)
+
+def renderPreviousExpansions(pre, sequenceList, parseParams):
+	offset = 0
+	while True:
+		prevCtrlSeq = sequenceList.preceding(offset)
+		prevEndPos = pre.rfind("]")
+		if prevEndPos == -1:
+			break
 		prevStartPos = pre.rfind("[")
 		if prevStartPos == -1:
 			prevStartPos = 0
 		pre = renderNearbyBit(prevCtrlSeq, pre, parseParams, prevStartPos, prevEndPos)
-	return cleanAndExpandBit(pre, parseParams, True)
+		offset += 1
+	return pre
 
-def getRenderedPost(sourceText, parseParams, ctrlEndPos, nextCtrlSeq, bufferLen = DEFAULT_BUFFER_LEN):
-	post = getCharsAfter(sourceText, ctrlEndPos, bufferLen)
-	nextStartPos = post.find("[")
-	if nextStartPos >= 0:
+def renderFollowingExpansions(post, sequenceList, parseParams):
+	offset = 0
+	while True:
+		nextCtrlSeq = sequenceList.following(offset)
+		nextStartPos = post.find("[")
+		if nextStartPos == -1:
+			break
 		nextEndPos = post.find("]", nextStartPos)
 		if nextEndPos == -1:
 			nextEndPos = len(post)
 		post = renderNearbyBit(nextCtrlSeq, post, parseParams, nextStartPos, nextEndPos)
-	return cleanAndExpandBit(post, parseParams, False)
+		offset += 1
+	return post
 
 def getCharsBefore(text, pos, count):
 	assert count > 0
