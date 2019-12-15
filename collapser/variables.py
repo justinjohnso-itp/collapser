@@ -147,6 +147,10 @@ def renderAll(tokens):
 		varName = tokens[pos].value.lower()
 		if varGroupKey is None:
 			varGroupKey = __v.getGroupFromVar(varName)
+			if varGroupKey == "":
+				badResult = result.Result(result.PARSE_RESULT)
+				badResult.flagBad("Unrecognized variable found: '%s'" % varName, "", -1)
+				raise result.ParseException(badResult)
 			varsInGroup = __v.getVarsInGroup(varGroupKey)
 		if varName in varsInGroup:
 			varsInGroup.remove(varName)
