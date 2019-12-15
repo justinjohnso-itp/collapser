@@ -152,18 +152,22 @@ def getCharsAfter(text, pos, count):
 		count = len(text) - pos
 	return text[pos+1:pos+count]
 
+def renderNearbyBit(ctrlSequence, snippet, parseParams, ctrlSeqStartPos, ctrlSeqEndPos):
+	if ctrlSequence is None:
+		return snippet
+	variants = ctrlseq.renderAll(ctrlSequence[0], parseParams, showAllVars=True)
+	variantTxt = variants.getByFromVariable(parseParams.setDefines)
+	return snippet[:ctrlSeqStartPos] + variantTxt + snippet[ctrlSeqEndPos+1:]
+
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
 	pre = getCharsBefore(sourceText, ctrlStartPos, bufferLen)
-	prevCtrlSeqEndPos = pre.rfind("]")
-	if prevCtrlSeqEndPos >= 0:
+	prevEndPos = pre.rfind("]")
+	if prevEndPos >= 0:
 		prevCtrlSeq = sequenceList.preceding()
-		if prevCtrlSeq is not None:
-			prevVariants = ctrlseq.renderAll(prevCtrlSeq[0], parseParams, showAllVars=True)
-			variantTxt = prevVariants.getByFromVariable(parseParams.setDefines)
-			prevCtrlSeqStartPos = pre.rfind("[")
-			if prevCtrlSeqStartPos == -1:
-				prevCtrlSeqStartPos = 0
-			pre = pre[:prevCtrlSeqStartPos] + variantTxt + pre[prevCtrlSeqEndPos+1:]
+		prevStartPos = pre.rfind("[")
+		if prevStartPos == -1:
+			prevStartPos = 0
+		pre = renderNearbyBit(prevCtrlSeq, pre, parseParams, prevStartPos, prevEndPos)
 	pre = cleanContext(pre)
 	pre = macros.expand(pre, parseParams, isPartialText = True)
 	# truncate again
@@ -173,16 +177,13 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceLi
 
 def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
 	post = getCharsAfter(sourceText, ctrlEndPos, bufferLen)
-	nextCtrlSeqStartPos = post.find("[")
-	if nextCtrlSeqStartPos >= 0:
+	nextStartPos = post.find("[")
+	if nextStartPos >= 0:
 		nextCtrlSeq = sequenceList.following()
-		if nextCtrlSeq is not None:
-			nextVariants = ctrlseq.renderAll(nextCtrlSeq[0], parseParams, showAllVars=True)
-			variantTxt = nextVariants.getByFromVariable(parseParams.setDefines)
-			nextCtrlSeqEndPos = post.find("]", nextCtrlSeqStartPos)
-			if nextCtrlSeqEndPos == -1:
-				nextCtrlSeqEndPos = len(post)
-			post = post[:nextCtrlSeqStartPos] + variantTxt + post[nextCtrlSeqEndPos+1:]
+		nextEndPos = post.find("]", nextStartPos)
+		if nextEndPos == -1:
+			nextEndPos = len(post)
+		post = renderNearbyBit(nextCtrlSeq, post, parseParams, nextStartPos, nextEndPos)
 	post = cleanContext(post)
 	post = macros.expand(post, parseParams, isPartialText = True)
 	# truncate again
