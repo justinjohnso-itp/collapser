@@ -147,46 +147,33 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
 	pre = getCharsBefore(sourceText, ctrlStartPos, bufferLen)
 	pre = cleanAndExpandBit(pre, parseParams, True, DEFAULT_BUFFER_LEN)
-	pre = renderPreviousExpansions(pre, sequenceList, parseParams)
+	pre = renderContextExpansions(pre, sequenceList, parseParams, False)
 	return cleanAndExpandBit(pre, parseParams, True, FINAL_BUFFER_LEN)
 
 def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
 	post = getCharsAfter(sourceText, ctrlEndPos, bufferLen)
 	post = cleanAndExpandBit(post, parseParams, False, DEFAULT_BUFFER_LEN)
-	post = renderFollowingExpansions(post, sequenceList, parseParams)
+	post = renderContextExpansions(post, sequenceList, parseParams, True)
 	return cleanAndExpandBit(post, parseParams, False, FINAL_BUFFER_LEN)
 
-def renderPreviousExpansions(pre, sequenceList, parseParams):
+def renderContextExpansions(snippet, sequenceList, parseParams, isAfter):
 	offset = 0
 	while True:
-		prevCtrlSeq = sequenceList.preceding(offset)
-		if prevCtrlSeq is None:
-			break
-		prevEndPos = pre.rfind("]")
-		if prevEndPos == -1:
-			break
-		prevStartPos = pre.rfind("[")
-		if prevStartPos == -1:
-			prevStartPos = 0
-		pre = renderNearbyBit(prevCtrlSeq, pre, parseParams, prevStartPos, prevEndPos)
-		offset += 1
-	return pre
-
-def renderFollowingExpansions(post, sequenceList, parseParams):
-	offset = 0
-	while True:
-		nextCtrlSeq = sequenceList.following(offset)
+		nextCtrlSeq = sequenceList.following(offset) if isAfter else sequenceList.preceding(offset)
 		if nextCtrlSeq is None:
 			break
-		nextStartPos = post.find("[")
-		if nextStartPos == -1:
+		startPos = snippet.find("[") if isAfter else snippet.rfind("[")
+		if startPos == -1:
 			break
-		nextEndPos = post.find("]", nextStartPos)
-		if nextEndPos == -1:
-			nextEndPos = len(post)
-		post = renderNearbyBit(nextCtrlSeq, post, parseParams, nextStartPos, nextEndPos)
+		endPos = snippet.find("]", startPos) if isAfter else snippet.rfind("]")
+		if endPos == -1:
+			if isAfter:
+				endPos = len(snippet)
+			else:
+				break
+		snippet = renderNearbyBit(nextCtrlSeq, snippet, parseParams, startPos, endPos)
 		offset += 1
-	return post
+	return snippet	
 
 def getCharsBefore(text, pos, count):
 	assert count > 0
