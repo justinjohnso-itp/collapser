@@ -226,7 +226,11 @@ def cleanOutputForTerminalPresentation(text):
 			# Couldn't find end of MACRO body
 			text = text[:pos]
 			break
-		text = text[:pos-1] + text[endBodyPos+1:]
+		newText = ""
+		if pos > 0:
+			newText += text[:pos-1]
+		newText += text[endBodyPos+1:]
+		text = newText
 		pos = text.find("[MACRO")
 
 	# remove DEFINEs.
