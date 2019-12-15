@@ -82,8 +82,8 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 
 def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	KEY_PADDING_LEN = 60
-	pre = getRawPre(sourceText, ctrlStartPos, 60)
-	post = getRawPost(sourceText, ctrlEndPos, 60)
+	pre = getCharsBefore(sourceText, ctrlStartPos, KEY_PADDING_LEN)
+	post = getCharsAfter(sourceText, ctrlEndPos, KEY_PADDING_LEN)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
 	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
 	return key
@@ -142,22 +142,18 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
 	return wrapped
 
-def getRawPre(sourceText, ctrlStartPos, bufferLen):
-	if ctrlStartPos < bufferLen:
-		bufferLen = ctrlStartPos
-	txt = sourceText[ctrlStartPos-bufferLen:ctrlStartPos]
-	txt = cleanContext(txt)
-	return txt
+def getCharsBefore(text, pos, count):
+	if pos < count:
+		count = pos
+	return text[pos-count:pos]
 
-def getRawPost(sourceText, ctrlEndPos, bufferLen):
-	if ctrlEndPos + bufferLen > len(sourceText):
-		bufferLen = len(sourceText) - ctrlEndPos
-	txt = sourceText[ctrlEndPos+1:ctrlEndPos+bufferLen]
-	txt = cleanContext(txt)
-	return txt
+def getCharsAfter(text, pos, count):
+	if pos + count > len(text):
+		count = len(text) - pos
+	return text[pos+1:pos+count]
 
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
-	pre = getRawPre(sourceText, ctrlStartPos, bufferLen)
+	pre = getCharsBefore(sourceText, ctrlStartPos, bufferLen)
 	prevCtrlSeqEndPos = pre.rfind("]")
 	if prevCtrlSeqEndPos >= 0:
 		prevCtrlSeq = sequenceList.preceding()
@@ -176,7 +172,7 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceLi
 	return pre
 
 def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
-	post = getRawPost(sourceText, ctrlEndPos, bufferLen)
+	post = getCharsAfter(sourceText, ctrlEndPos, bufferLen)
 	nextCtrlSeqStartPos = post.find("[")
 	if nextCtrlSeqStartPos >= 0:
 		nextCtrlSeq = sequenceList.following()
