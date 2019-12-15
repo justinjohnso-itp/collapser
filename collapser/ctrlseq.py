@@ -28,7 +28,7 @@ class Alts:
 
 	def getByFromVariable(self, setDefines):
 		for alt in self.alts:
-			if alt.fromVariable in setDefines:
+			if alt.fromVariable is not None and alt.fromVariable in setDefines:
 				return alt.txt
 		return self.getRandom()
 
