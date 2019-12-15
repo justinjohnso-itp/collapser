@@ -159,6 +159,11 @@ def renderNearbyBit(ctrlSequence, snippet, parseParams, ctrlSeqStartPos, ctrlSeq
 	variantTxt = variants.getByFromVariable(parseParams.setDefines)
 	return snippet[:ctrlSeqStartPos] + variantTxt + snippet[ctrlSeqEndPos+1:]
 
+def cleanAndExpandBit(snippet, parseParams):
+	snippet = cleanContext(snippet)
+	snippet = macros.expand(snippet, parseParams, isPartialText = True)	
+	return snippet
+
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
 	pre = getCharsBefore(sourceText, ctrlStartPos, bufferLen)
 	prevEndPos = pre.rfind("]")
@@ -168,8 +173,7 @@ def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceLi
 		if prevStartPos == -1:
 			prevStartPos = 0
 		pre = renderNearbyBit(prevCtrlSeq, pre, parseParams, prevStartPos, prevEndPos)
-	pre = cleanContext(pre)
-	pre = macros.expand(pre, parseParams, isPartialText = True)
+	pre = cleanAndExpandBit(pre, parseParams)
 	# truncate again
 	preBufferLen = 60
 	pre = pre[-1*preBufferLen:]
@@ -184,8 +188,7 @@ def getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen
 		if nextEndPos == -1:
 			nextEndPos = len(post)
 		post = renderNearbyBit(nextCtrlSeq, post, parseParams, nextStartPos, nextEndPos)
-	post = cleanContext(post)
-	post = macros.expand(post, parseParams, isPartialText = True)
+	post = cleanAndExpandBit(post, parseParams)
 	# truncate again
 	postBufferLen = 60
 	post = post[:postBufferLen]
