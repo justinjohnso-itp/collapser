@@ -142,19 +142,19 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
 	return wrapped
 
-def getRawPre(sourceText, ctrlStartPos, ctrlEndPos, preBufferLen = DEFAULT_BUFFER_LEN):
-	if ctrlStartPos < preBufferLen:
-		preBufferLen = ctrlStartPos
-	pre = sourceText[ctrlStartPos-preBufferLen:ctrlStartPos]
-	pre = cleanContext(pre)
-	return pre
+def getRawPre(sourceText, ctrlStartPos, ctrlEndPos, bufferLen = DEFAULT_BUFFER_LEN):
+	if ctrlStartPos < bufferLen:
+		bufferLen = ctrlStartPos
+	txt = sourceText[ctrlStartPos-bufferLen:ctrlStartPos]
+	txt = cleanContext(txt)
+	return txt
 
-def getRawPost(sourceText, ctrlEndPos, postBufferLen = DEFAULT_BUFFER_LEN):
-	if ctrlEndPos + postBufferLen > len(sourceText):
-		postBufferLen = len(sourceText) - ctrlEndPos
-	post = sourceText[ctrlEndPos+1:ctrlEndPos+postBufferLen]
-	post = cleanContext(post)
-	return post
+def getRawPost(sourceText, ctrlEndPos, bufferLen = DEFAULT_BUFFER_LEN):
+	if ctrlEndPos + bufferLen > len(sourceText):
+		bufferLen = len(sourceText) - ctrlEndPos
+	txt = sourceText[ctrlEndPos+1:ctrlEndPos+bufferLen]
+	txt = cleanContext(txt)
+	return txt
 
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
 	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos, bufferLen)
