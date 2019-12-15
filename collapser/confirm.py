@@ -82,8 +82,8 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 
 def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
 	KEY_PADDING_LEN = 60
-	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos)[-60:]
-	post = getRawPost(sourceText, ctrlEndPos)[:60]
+	pre = getRawPre(sourceText, ctrlStartPos, ctrlEndPos, 60)
+	post = getRawPost(sourceText, ctrlEndPos, 60)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
 	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
 	return key
@@ -142,14 +142,14 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
 	return wrapped
 
-def getRawPre(sourceText, ctrlStartPos, ctrlEndPos, bufferLen = DEFAULT_BUFFER_LEN):
+def getRawPre(sourceText, ctrlStartPos, ctrlEndPos, bufferLen):
 	if ctrlStartPos < bufferLen:
 		bufferLen = ctrlStartPos
 	txt = sourceText[ctrlStartPos-bufferLen:ctrlStartPos]
 	txt = cleanContext(txt)
 	return txt
 
-def getRawPost(sourceText, ctrlEndPos, bufferLen = DEFAULT_BUFFER_LEN):
+def getRawPost(sourceText, ctrlEndPos, bufferLen):
 	if ctrlEndPos + bufferLen > len(sourceText):
 		bufferLen = len(sourceText) - ctrlEndPos
 	txt = sourceText[ctrlEndPos+1:ctrlEndPos+bufferLen]
