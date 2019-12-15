@@ -160,6 +160,8 @@ def renderPreviousExpansions(pre, sequenceList, parseParams):
 	offset = 0
 	while True:
 		prevCtrlSeq = sequenceList.preceding(offset)
+		if prevCtrlSeq is None:
+			break
 		prevEndPos = pre.rfind("]")
 		if prevEndPos == -1:
 			break
@@ -174,6 +176,8 @@ def renderFollowingExpansions(post, sequenceList, parseParams):
 	offset = 0
 	while True:
 		nextCtrlSeq = sequenceList.following(offset)
+		if nextCtrlSeq is None:
+			break
 		nextStartPos = post.find("[")
 		if nextStartPos == -1:
 			break
