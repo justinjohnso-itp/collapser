@@ -194,13 +194,13 @@ def getCharsAfter(text, pos, count):
 	return text[pos+1:pos+count+1]
 
 def cleanAndExpandBit(snippet, parseParams, isBefore, bufferLen = FINAL_BUFFER_LEN):
-	snippet = cleanContext(snippet)
+	snippet = cleanOutputForTerminalPresentation(snippet)
 	snippet = macros.expand(snippet, parseParams, isPartialText = True)	
 	return snippet[-1*bufferLen:] if isBefore else snippet[:bufferLen]
 
 
 
-def cleanContext(text):
+def cleanOutputForTerminalPresentation(text):
 	# Strip comments.
 	text = re.sub(r"[#%].*\n", "\n", text)
 
