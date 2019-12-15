@@ -49,6 +49,10 @@ def process(fileSetKey, onlyShow, tokens, sourceText, parseParams):
 MAX_PER_SESSION = 5
 SESSION_CTR = 0
 
+DEFAULT_BUFFER_LEN = 850
+FINAL_BUFFER_LEN = 60
+KEY_PADDING_LEN = 60
+
 def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEndPos):
 	global MAX_PER_SESSION
 	global SESSION_CTR
@@ -81,14 +85,12 @@ def confirmCtrlSeq(ctrl_contents, sequenceList, sourceText, parseParams, ctrlEnd
 
 
 def makeKey(sourceText, filename, ctrlStartPos, ctrlEndPos, originalCtrlSeq):
-	KEY_PADDING_LEN = 60
 	pre = getCharsBefore(sourceText, ctrlStartPos, KEY_PADDING_LEN)
 	post = getCharsAfter(sourceText, ctrlEndPos, KEY_PADDING_LEN)
 	key = "%s:%s%s%s" % (filename, pre, originalCtrlSeq, post)
 	key = re.sub(r'[\W_]', '', key) # remove non-alphanums
 	return key
 
-DEFAULT_BUFFER_LEN = 850
 def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrlEndPos, sequenceList, variant, bufferLen = DEFAULT_BUFFER_LEN, truncStart = "...", truncEnd = "...", maxLineLength = 80):
 	vTxt = variant.txt
 	fromVar = variant.fromVariable
@@ -185,10 +187,9 @@ def renderNearbyBit(ctrlSequence, snippet, parseParams, ctrlSeqStartPos, ctrlSeq
 	variantTxt = variants.getByFromVariable(parseParams.setDefines)
 	return snippet[:ctrlSeqStartPos] + variantTxt + snippet[ctrlSeqEndPos+1:]
 
-def cleanAndExpandBit(snippet, parseParams, isBefore):
+def cleanAndExpandBit(snippet, parseParams, isBefore, bufferLen = FINAL_BUFFER_LEN):
 	snippet = cleanContext(snippet)
 	snippet = macros.expand(snippet, parseParams, isPartialText = True)	
-	bufferLen = 60
 	return snippet[-1*bufferLen:] if isBefore else snippet[:bufferLen]
 
 
