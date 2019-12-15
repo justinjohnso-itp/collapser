@@ -142,6 +142,26 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
 	return wrapped
 
+def getRenderedPre(sourceText, parseParams, ctrlStartPos, prevCtrlSeq, bufferLen = DEFAULT_BUFFER_LEN):
+	pre = getCharsBefore(sourceText, ctrlStartPos, bufferLen)
+	prevEndPos = pre.rfind("]")
+	if prevEndPos >= 0:
+		prevStartPos = pre.rfind("[")
+		if prevStartPos == -1:
+			prevStartPos = 0
+		pre = renderNearbyBit(prevCtrlSeq, pre, parseParams, prevStartPos, prevEndPos)
+	return cleanAndExpandBit(pre, parseParams, True)
+
+def getRenderedPost(sourceText, parseParams, ctrlEndPos, nextCtrlSeq, bufferLen = DEFAULT_BUFFER_LEN):
+	post = getCharsAfter(sourceText, ctrlEndPos, bufferLen)
+	nextStartPos = post.find("[")
+	if nextStartPos >= 0:
+		nextEndPos = post.find("]", nextStartPos)
+		if nextEndPos == -1:
+			nextEndPos = len(post)
+		post = renderNearbyBit(nextCtrlSeq, post, parseParams, nextStartPos, nextEndPos)
+	return cleanAndExpandBit(post, parseParams, False)
+
 def getCharsBefore(text, pos, count):
 	if pos < count:
 		count = pos
@@ -165,25 +185,7 @@ def cleanAndExpandBit(snippet, parseParams, isBefore):
 	bufferLen = 60
 	return snippet[-1*bufferLen:] if isBefore else snippet[:bufferLen]
 
-def getRenderedPre(sourceText, parseParams, ctrlStartPos, prevCtrlSeq, bufferLen = DEFAULT_BUFFER_LEN):
-	pre = getCharsBefore(sourceText, ctrlStartPos, bufferLen)
-	prevEndPos = pre.rfind("]")
-	if prevEndPos >= 0:
-		prevStartPos = pre.rfind("[")
-		if prevStartPos == -1:
-			prevStartPos = 0
-		pre = renderNearbyBit(prevCtrlSeq, pre, parseParams, prevStartPos, prevEndPos)
-	return cleanAndExpandBit(pre, parseParams, True)
 
-def getRenderedPost(sourceText, parseParams, ctrlEndPos, nextCtrlSeq, bufferLen = DEFAULT_BUFFER_LEN):
-	post = getCharsAfter(sourceText, ctrlEndPos, bufferLen)
-	nextStartPos = post.find("[")
-	if nextStartPos >= 0:
-		nextEndPos = post.find("]", nextStartPos)
-		if nextEndPos == -1:
-			nextEndPos = len(post)
-		post = renderNearbyBit(nextCtrlSeq, post, parseParams, nextStartPos, nextEndPos)
-	return cleanAndExpandBit(post, parseParams, False)
 
 def cleanContext(text):
 	# Strip comments.
