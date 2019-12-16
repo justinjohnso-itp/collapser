@@ -166,7 +166,7 @@ def renderContextExpansions(snippet, sequenceList, parseParams, isAfter):
 		if startPos == -1:
 			break
 		endPos = snippet.find("]", startPos) if isAfter else snippet.rfind("]")
-		if endPos == -1:
+		if endPos == -1 or endPos < startPos:
 			if isAfter:
 				endPos = len(snippet)
 			else:
