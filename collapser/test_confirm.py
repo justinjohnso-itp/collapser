@@ -237,11 +237,18 @@ def test_stripMacros():
 
 
 
-# def test_negated_defines_consistent():
-# 	text = """[DEFINE @fftube|@ffset]I looked up and regretted it. [@fftube>Tube bit. {other sequence}|@ffset>Set part. {other sequence}][MACRO other sequence][~Other sequence.] [@fftube>|This only if ffset.]"""
-# 	for i in range(10):
-# 		rendered = confirmRenderVariant(text, 0, 0, "", 80, 80)
-# 		assert rendered in ["""I looked up and regretted it. Tube bit. Other sequence. """, """I looked up and regretted it. Set part. Other sequence. This only if ffset."""]
+def test_negated_defines_consistent():
+	text = """[DEFINE @fftube|@ffset]I looked up and regretted it. [@fftube>Tube bit. {other sequence}|@ffset>Set part. {other sequence}][MACRO other sequence][~Other sequence.] [@fftube>|This only if ffset.]"""
+	for i in range(10):
+		rendered = confirmRenderVariant(text, 0, 0, "", 80, 80)
+		assert rendered == """I looked up and regretted it. Tube bit. Other sequence.
+                              ^                       ^
+"""
+	for i in range(10):
+		rendered = confirmRenderVariant(text, 0, 1, "", 80, 80)
+		assert rendered == """I looked up and regretted it. Set part. Other sequence. This only if ffset.
+                              ^                       ^
+"""		
 
 
 def test_getCharsBefore():

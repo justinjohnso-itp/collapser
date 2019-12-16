@@ -117,7 +117,6 @@ def handleVariablesAndMacros(tokens, sourceText, parseParams):
 	macros.reset()
 	tokens = variables.handleDefs(tokens, parseParams)
 	tokens = macros.handleDefs(tokens, parseParams)
-	print "vars: %s" % variables.showVars()
 	return tokens
 
 
