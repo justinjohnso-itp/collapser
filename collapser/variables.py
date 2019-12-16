@@ -152,14 +152,14 @@ def renderAll(tokens):
 				badResult.flagBad("Unrecognized variable found: '%s'" % varName, "", -1)
 				raise result.ParseException(badResult)
 			varsInGroup = __v.getVarsInGroup(varGroupKey)
-		if varName in varsInGroup:
-			varsInGroup.remove(varName)
 		pos += 1
 		if tokens[pos].type == "TEXT":
 			alts.add(tokens[pos].value, fromVar = varName)
 		elif tokens[pos].type == "DIVIDER":
 			assert len(varsInGroup) >= 1
 			alts.add("", fromVar = varsInGroup[0])
+		if varName in varsInGroup:
+			varsInGroup.remove(varName)
 		pos += 1
 	if len(alts.alts) == 1:
 		alts.add("")
