@@ -214,24 +214,7 @@ def cleanOutputForTerminalPresentation(text):
 	text = re.sub(r"”", '"', text)
 
 	# remove macro definitions.
-	pos = text.find("[MACRO")
-	while pos is not -1:
-		endDefPos = text.find("]", pos)
-		if endDefPos == -1:
-			# Couldn't find end of MACRO definition
-			text = text[:pos]
-			break
-		endBodyPos = text.find("]", endDefPos+1)
-		if endBodyPos == -1:
-			# Couldn't find end of MACRO body
-			text = text[:pos]
-			break
-		newText = ""
-		if pos > 0:
-			newText += text[:pos-1]
-		newText += text[endBodyPos+1:]
-		text = newText
-		pos = text.find("[MACRO")
+	text = stripMacros(text)
 
 	# remove DEFINEs.
 	pos = text.find("[DEFINE")
@@ -247,6 +230,26 @@ def cleanOutputForTerminalPresentation(text):
 
 	return text
 
+def stripMacros(text):
+	pos = text.find("[MACRO")
+	while pos is not -1:
+		endDefPos = text.find("]", pos)
+		if endDefPos == -1:
+			# Couldn't find end of MACRO definition
+			text = text[:pos]
+			break
+		endBodyPos = text.find("]", endDefPos+1)
+		if endBodyPos == -1:
+			# Couldn't find end of MACRO body
+			text = text[:pos]
+			break
+		newText = ""
+		if pos > 0:
+			newText += text[:pos]
+		newText += text[endBodyPos+1:]
+		text = newText
+		pos = text.find("[MACRO")
+	return text
 
 def cleanFinal(text, parseParams):
 	# Remove doubled spaces (which won't be visible post-Latex and are therefore just a distraction). 

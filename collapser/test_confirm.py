@@ -181,7 +181,7 @@ This is our story. [And no one can ever tell us that we didn't really believe in
 
 def test_macros_in_way():
 	start = """connected to us via [exploded rays of chandelier|an exploded pathway of library]. """
-	cruft = """[MACRO tube overview][@ffdropoff>a giant snake that had somehow coated itself in superglue and slithered through {tube overview end}|an immense pipe that had somehow coated itself in superglue and mugged {tube overview end}] [MACRO tube overview end][~a secondhand furniture store, encrusting itself with beds, nightstands, dressers, floor lamps (some lit), bookshelves, bureaus, trashcans, and laundry hampers. Escher's own frat house.] [MACRO set overview][~an experimental theater production set in an overstuffed and cramped bachelor pad bedroom, suspended in mid-air, furnishings cluttered together with no sensible order.] """
+	cruft = """[MACRO tube overview][@ffdropoff>a giant snake that had somehow coated itself in superglue and slithered through {tube overview end}|an immense pipe that had somehow coated itself in superglue and mugged {tube overview end}][MACRO tube overview end][~a secondhand furniture store, encrusting itself with beds, nightstands, dressers, floor lamps (some lit), bookshelves, bureaus, trashcans, and laundry hampers. Escher's own frat house.][MACRO set overview][~an experimental theater production set in an overstuffed and cramped bachelor pad bedroom, suspended in mid-air, furnishings cluttered together with no sensible order.]"""
 	end = """Holy shit, I said. He laughed. Damn straight. Okay then. Who wants to go first?"""
 	rendered = confirmRenderVariant(start + end, 0, 0, "", 70)
 	expected = """                    v
@@ -226,6 +226,23 @@ def test_defines_consistent():
 		assert rendered == """when we found a block under my bed, and played with it.
               ^     ^
 """
+
+def test_stripMacros():
+	text = """Hi![MACRO testmacro][This|or|that|or {another macro}][MACRO another macro][~Booya]Strip![MACRO blerg][@hello>yes|no]Again![MACRO final][thing|or|other thing]Bye!"""
+	stripped = confirm.stripMacros(text)
+	assert stripped == "Hi!Strip!Again!Bye!"
+	text = """[MACRO testmacro][This|or|that]one[MACRO blerg][@hello>yes|no] [MACRO blob][~yes]two[MACRO final][thing|or|other thing]"""
+	stripped = confirm.stripMacros(text)
+	assert stripped == "one two"
+
+
+
+# def test_negated_defines_consistent():
+# 	text = """[DEFINE @fftube|@ffset]I looked up and regretted it. [@fftube>Tube bit. {other sequence}|@ffset>Set part. {other sequence}][MACRO other sequence][~Other sequence.] [@fftube>|This only if ffset.]"""
+# 	for i in range(10):
+# 		rendered = confirmRenderVariant(text, 0, 0, "", 80, 80)
+# 		assert rendered in ["""I looked up and regretted it. Tube bit. Other sequence. """, """I looked up and regretted it. Set part. Other sequence. This only if ffset."""]
+
 
 def test_getCharsBefore():
 	text = "This is 31 characters of text. Then some more comes here."
