@@ -227,7 +227,7 @@ when we found some legos and played with them
               ^        ^
 """[1:]
 
-def test_defines_consistent():
+def test_defines_consistent_within_macros():
 	text = """[DEFINE @singulars|@plurals]when we found [@singulars>a block|some legos] under my bed, and played with {itthem}.[MACRO itthem][@singulars>it|@plurals>them]"""
 	for i in range(10):
 		rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
@@ -235,16 +235,6 @@ def test_defines_consistent():
 when we found a block under my bed, and played with it.
               ^     ^
 """[1:]
-
-def test_stripMacros():
-	text = """Hi![MACRO testmacro][This|or|that|or {another macro}][MACRO another macro][~Booya]Strip![MACRO blerg][@hello>yes|no]Again![MACRO final][thing|or|other thing]Bye!"""
-	stripped = confirm.stripMacros(text)
-	assert stripped == "Hi!Strip!Again!Bye!"
-	text = """[MACRO testmacro][This|or|that]one[MACRO blerg][@hello>yes|no] [MACRO blob][~yes]two[MACRO final][thing|or|other thing]"""
-	stripped = confirm.stripMacros(text)
-	assert stripped == "one two"
-
-
 
 def test_negated_defines_consistent():
 	text = """[DEFINE @fftube|@ffset]I looked up and regretted it. [@fftube>Tube bit. {other sequence}|@ffset>Set part. {other sequence}][MACRO other sequence][~Other sequence.] [@fftube>|This only if ffset.]"""
@@ -260,6 +250,14 @@ I looked up and regretted it. Tube bit. Other sequence.
 I looked up and regretted it. Set part. Other sequence. This only if ffset.
                               ^                       ^
 """[1:]
+
+def test_stripMacros():
+	text = """Hi![MACRO testmacro][This|or|that|or {another macro}][MACRO another macro][~Booya]Strip![MACRO blerg][@hello>yes|no]Again![MACRO final][thing|or|other thing]Bye!"""
+	stripped = confirm.stripMacros(text)
+	assert stripped == "Hi!Strip!Again!Bye!"
+	text = """[MACRO testmacro][This|or|that]one[MACRO blerg][@hello>yes|no] [MACRO blob][~yes]two[MACRO final][thing|or|other thing]"""
+	stripped = confirm.stripMacros(text)
+	assert stripped == "one two"
 
 
 def test_getCharsBefore():
