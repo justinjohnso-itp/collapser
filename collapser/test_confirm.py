@@ -92,12 +92,13 @@ def test_without_leading_newlines():
 	text = """
 So I inserted a lot of stuff here because what I was most interested in was the situation where [this happened and I regretted so much all the things I'd said, the people I'd hurt,|the other thing took place despite all the best laid plans of mice and men to prevent it] and it was hard to watch without knowing the way the story was going to end."""
 	rendered = confirmRenderVariant(text, 0, 0, "...", 80)
-	assert rendered == """                                                               v
+	assert rendered == """
+                                                               v
 ...cause what I was most interested in was the situation where this happened and
 I regretted so much all the things I'd said, the people I'd hurt, and it was
                                                                 ^
 hard to watch without knowing the way the story ...
-"""
+"""[1:]
 
 def test_unicode():
 	text = """
@@ -173,22 +174,25 @@ def test_pre_expansions_multi_line():
 	text = """
 This is our story. [And no one can ever tell us that we didn't really believe in what happened.|But it'll never be the same again after the things that occured to us, now will it bucko? No I absolutely don't think it will.] But it's our [amazing|real] story."""
 	rendered = confirmRenderVariant(text, 1, 0, "", 80)
-	assert rendered in ["""hat we didn't really believe in what happened. But it's our amazing story.
+	assert rendered in ["""
+hat we didn't really believe in what happened. But it's our amazing story.
                                                             ^     ^
-""", """it bucko? No I absolutely don't think it will. But it's our amazing story.
+"""[1:], """
+it bucko? No I absolutely don't think it will. But it's our amazing story.
                                                             ^     ^
-"""]
+"""[1:]]
 
 def test_macros_in_way():
 	start = """connected to us via [exploded rays of chandelier|an exploded pathway of library]. """
 	cruft = """[MACRO tube overview][@ffdropoff>a giant snake that had somehow coated itself in superglue and slithered through {tube overview end}|an immense pipe that had somehow coated itself in superglue and mugged {tube overview end}][MACRO tube overview end][~a secondhand furniture store, encrusting itself with beds, nightstands, dressers, floor lamps (some lit), bookshelves, bureaus, trashcans, and laundry hampers. Escher's own frat house.][MACRO set overview][~an experimental theater production set in an overstuffed and cramped bachelor pad bedroom, suspended in mid-air, furnishings cluttered together with no sensible order.]"""
 	end = """Holy shit, I said. He laughed. Damn straight. Okay then. Who wants to go first?"""
 	rendered = confirmRenderVariant(start + end, 0, 0, "", 70)
-	expected = """                    v
+	expected = """
+                    v
 connected to us via exploded rays of chandelier. Holy shit, I said. He
                                               ^
 laughed. Damn straight. Okay then. W
-"""
+"""[1:]
 	assert rendered == expected
 
 	rendered = confirmRenderVariant(start + cruft + end, 0, 0, "", 70)
@@ -197,35 +201,40 @@ laughed. Damn straight. Okay then. W
 def test_macro_removal_edge_cases():
 	text = """some text [version a|version b]. [MACRO asdf ahksjdk asd fjhasfhksadfhkjadhskfahksjdfh ksadfhkas dfhkas dfhkas jdfhkas dfhjk asdhjfaks dfjh sd][~asdf]"""
 	rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
-	assert rendered == """some text version a.
+	assert rendered == """
+some text version a.
           ^       ^
-"""
+"""[1:]
 	text = """some text [version a|version b]. [MACRO asdf][~ahksjdk asd fjhasfhksadfhkjadhskfahksjdfh ksadfhkas dfhkas dfhkas jdfhkas dfhjk asdhjfaks dfjh sd]"""
 	rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
-	assert rendered == """some text version a.
+	assert rendered == """
+some text version a.
           ^       ^
-"""
+"""[1:]
 
 def test_defines_consistent():
 	text = """[DEFINE @singulars|@plurals]when we found [@singulars>a block|some legos] and played with [@singulars>it|them]"""
 	for i in range(10):
 		rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
-		assert rendered == """when we found a block and played with it
+		assert rendered == """
+when we found a block and played with it
               ^     ^
-"""
+"""[1:]
 	for i in range(10):
 		rendered = confirmRenderVariant(text, 0, 1, "", 80, 70)
-		assert rendered == """when we found some legos and played with them
+		assert rendered == """
+when we found some legos and played with them
               ^        ^
-"""
+"""[1:]
 
 def test_defines_consistent():
 	text = """[DEFINE @singulars|@plurals]when we found [@singulars>a block|some legos] under my bed, and played with {itthem}.[MACRO itthem][@singulars>it|@plurals>them]"""
 	for i in range(10):
 		rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
-		assert rendered == """when we found a block under my bed, and played with it.
+		assert rendered == """
+when we found a block under my bed, and played with it.
               ^     ^
-"""
+"""[1:]
 
 def test_stripMacros():
 	text = """Hi![MACRO testmacro][This|or|that|or {another macro}][MACRO another macro][~Booya]Strip![MACRO blerg][@hello>yes|no]Again![MACRO final][thing|or|other thing]Bye!"""
@@ -241,14 +250,16 @@ def test_negated_defines_consistent():
 	text = """[DEFINE @fftube|@ffset]I looked up and regretted it. [@fftube>Tube bit. {other sequence}|@ffset>Set part. {other sequence}][MACRO other sequence][~Other sequence.] [@fftube>|This only if ffset.]"""
 	for i in range(10):
 		rendered = confirmRenderVariant(text, 0, 0, "", 80, 80)
-		assert rendered == """I looked up and regretted it. Tube bit. Other sequence.
+		assert rendered == """
+I looked up and regretted it. Tube bit. Other sequence.
                               ^                       ^
-"""
+"""[1:]
 	for i in range(10):
 		rendered = confirmRenderVariant(text, 0, 1, "", 80, 80)
-		assert rendered == """I looked up and regretted it. Set part. Other sequence. This only if ffset.
+		assert rendered == """
+I looked up and regretted it. Set part. Other sequence. This only if ffset.
                               ^                       ^
-"""		
+"""[1:]
 
 
 def test_getCharsBefore():
@@ -346,13 +357,14 @@ Take a look, he said with a grin. I'll shine the light. But"""
 	trunc = "..."
 	maxLineLength = 80
 	result = confirm.renderVariant(trunc, pre, variant1, post, trunc, maxLineLength, quantparse.ParseParams())
-	assert result == """                                                               v
+	assert result == """
+                                                               v
 ...inside and cold damp air spilled out; I could see something glittering in the
 gloom behind him. Ice?
                      ^
 
 Take a look, he said with a grin. I'll shine the light. But...
-"""
+"""[1:]
 
 def test_new_line_as_last_char():
 	pre = """whatever comes here doesn't matter. """
@@ -362,14 +374,15 @@ def test_new_line_as_last_char():
 	trunc = "..."
 	maxLineLength = 80
 	result = confirm.renderVariant(trunc, pre, variant1, post, trunc, maxLineLength, quantparse.ParseParams())
-	assert result == """                                       v
+	assert result == """
+                                       v
 ...whatever comes here doesn't matter. back no hint of answering splash.
 Cascades plunged down from above us, too. The space was filled with a cold and
 heavy mist.
 
 ^
 Stretching down from the base of the doorway in a steep...
-"""
+"""[1:]
 
 def test_no_extra_spaces_for_optional_variants():
 	pre = """whatever """
@@ -379,13 +392,15 @@ def test_no_extra_spaces_for_optional_variants():
 	trunc = "..."
 	maxLineLength = 80
 	result = confirm.renderVariant(trunc, pre, variant1, post, trunc, maxLineLength, quantparse.ParseParams())
-	assert result == """...whatever the fuck this is....
+	assert result == """
+...whatever the fuck this is....
             ^       ^
-"""	
+"""[1:]	
 	result = confirm.renderVariant(trunc, pre, variant2, post, trunc, maxLineLength, quantparse.ParseParams())
-	assert result == """...whatever this is....
+	assert result == """
+...whatever this is....
             ^^
-"""	
+"""[1:]
 
 
 # TODO: This doesn't print carets right: The [@ffset>floor of the set|tube] appeared to be [@ffset>|made of] the same scuffed, dusty hardwood floor tiles as my bedroom.
