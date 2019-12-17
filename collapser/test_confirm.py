@@ -429,7 +429,25 @@ On the next day something happened....
    ^          ^
 """[1:]
 
+def test_trailing_spaces():
+	text1 = """right at the edge of shadow."""
+	text2 = """
 
+But enough light to see [two people|a person] standing there"""
+	expected = """
+...right at the edge of shadow.
+
+But enough light to see two people standing there...
+                        ^        ^
+"""[1:]
+	rendered = confirmRenderVariant(text1 + text2, 0, 0, "...", 80, 80)
+	assert rendered == expected
+	rendered = confirmRenderVariant(text1 + " " + text2, 0, 0, "...", 80, 80)
+	assert rendered == expected
+	rendered = confirmRenderVariant(text1 + "   " + text2, 0, 0, "...", 80, 80)
+	assert rendered == expected
+
+ 	
 
 
 
