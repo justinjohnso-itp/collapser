@@ -105,16 +105,11 @@ def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrl
 
 def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  parseParams):
 
-	# Expand macros.
+	# Set up the variant text.
 	variant = macros.expand(variant, parseParams, isPartialText = True)
 	variant = fixSpacing(variant)
 	variant = fixUnicode(variant)
-
-	# Don't show very long excerpts in their entirety.
-	if len(variant) > maxLineLength * 5:
-		startTruncPos = variant.rfind(" ", 0, maxLineLength * 2)
-		endTruncPos = variant.find(" ", len(variant) - (maxLineLength * 2), len(variant))
-		variant = variant[:startTruncPos] + ".... ... ...." + variant[endTruncPos:]
+	variant = summarizeIfNecessary(variant, maxLineLength)
 
 	# Get the variant in context.
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
@@ -127,9 +122,16 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 	if numSpaces + len(variant + post + truncEnd) < maxLineLength and post.find("\n") == -1:
 		wrapped = placeSingleLineCaret(wrapped, variant, numSpaces)
 	else:
-		wrapped = placeMultiLineCaretAbove(wrapped, numSpaces, prevNL)
+		wrapped = placeMultiLineCaretAbove(wrapped, prevNL, numSpaces)
 		wrapped = placeMultiLineCaretBelow(wrapped, post, truncEnd)
 	return wrapped
+
+def summarizeIfNecessary(variant, maxLineLength):
+	if len(variant) > maxLineLength * 5:
+		startTruncPos = variant.rfind(" ", 0, maxLineLength * 2)
+		endTruncPos = variant.find(" ", len(variant) - (maxLineLength * 2), len(variant))
+		variant = variant[:startTruncPos] + ".... ... ...." + variant[endTruncPos:]
+	return variant
 
 def placeSingleLineCaret(wrapped, variant, numSpaces):
 	spaces = " " * numSpaces
@@ -137,7 +139,7 @@ def placeSingleLineCaret(wrapped, variant, numSpaces):
 	spacesBetween = " " * numSpacesBetween
 	return wrapped + spaces + "^" + spacesBetween + "^\n"
 
-def placeMultiLineCaretAbove(wrapped, numSpaces, prevNL):
+def placeMultiLineCaretAbove(wrapped, prevNL, numSpaces):
 	spaces = " " * numSpaces
 	if prevNL == 0:
 		return spaces + "v\n" + wrapped
