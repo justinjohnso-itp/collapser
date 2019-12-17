@@ -108,6 +108,7 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 	# Expand macros.
 	variant = macros.expand(variant, parseParams, isPartialText = True)
 	variant = fixSpacing(variant)
+	variant = fixUnicode(variant)
 
 	# Don't show very long excerpts in their entirety.
 	if len(variant) > maxLineLength * 5:
@@ -209,10 +210,7 @@ def cleanOutputForTerminalPresentation(text):
 	text = re.sub(r"\n{3,}", "\n\n", text) 
 
 	# Replace common Unicode chars with ascii equivalents since wrap (for terminal) can't handle them.
-	text = re.sub(r"’", "'", text)
-	text = re.sub(r"‘", "'", text)
-	text = re.sub(r"“", '"', text)
-	text = re.sub(r"”", '"', text)
+	text = fixUnicode(text)
 
 	# remove macro definitions.
 	text = stripMacros(text)
@@ -240,6 +238,13 @@ def cleanOutputForTerminalPresentation(text):
 	if lStart >= 0 and (lEnd == -1 or lStart > lEnd):
 		text = text[:lStart]
 
+	return text
+
+def fixUnicode(text):
+	text = re.sub(r"’", "'", text)
+	text = re.sub(r"‘", "'", text)
+	text = re.sub(r"“", '"', text)
+	text = re.sub(r"”", '"', text)
 	return text
 
 def stripMacros(text):
