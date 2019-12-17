@@ -337,6 +337,24 @@ def test_trimming_partial_sequences():
 	result = confirm.cleanAndExpandBit(text, params, False, 105)
 	assert result == "So, then."
 
+def test_new_lines_after_expansion_dont_move_caret():
+	pre = """inside and cold damp air spilled out; I could see something """
+	variant1 = """glittering in the gloom behind him. Ice?"""
+	post = """
+
+Take a look, he said with a grin. I'll shine the light. But"""
+	trunc = "..."
+	maxLineLength = 80
+	result = confirm.renderVariant(trunc, pre, variant1, post, trunc, maxLineLength, quantparse.ParseParams())
+	assert result == """                                                               v
+...inside and cold damp air spilled out; I could see something glittering in the
+gloom behind him. Ice?
+                     ^
+
+Take a look, he said with a grin. I'll shine the light. But...
+"""
+
+
 # This test doesn't work because pytest somehow handles the unicode quote characters differently?
 # def test_unicode_quotes_dont_mess_up_spacing():
 # 	pre = """good.”

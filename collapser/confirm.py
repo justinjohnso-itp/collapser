@@ -137,13 +137,28 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 		else:
 			wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
 		# Below
-		endVariantPos = len(wrapped) - len(post) - len(truncEnd)
-		nextNewLinePos = wrapped.find("\n", endVariantPos)
-		lastNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)
-		numSpaces = endVariantPos - lastNewLinePos - 2
-		spaces = " " * numSpaces
-		wrapped = wrapped[:nextNewLinePos+1] + spaces + "^\n" + wrapped[nextNewLinePos+1:]	
+		wrapped = placeMultiLineCaretBelow(wrapped, post, truncEnd)
 	return wrapped
+
+def placeMultiLineCaretBelow(wrapped, post, truncEnd):
+	# Get the position of the last character in the variant (the spot we want the caret to point at)
+	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
+
+	# Find the new lines before and after this spot. Since we're working with already-wrapped text, we know this should be within a single printed line's width.
+	if wrapped[endVariantPos] == "\n":
+		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos-1)
+		pivot = endVariantPos
+	else:
+		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)
+		pivot = wrapped.find("\n", endVariantPos) + 1
+
+	# Count spaces from the previous newline, then subtract the positions of both newlines.
+	numSpaces = endVariantPos - previousNewLinePos - 2
+	assert numSpaces >= 0
+	spaces = " " * numSpaces
+
+	# Insert the spaces, caret, and line break after caret.
+	return wrapped[:pivot] + spaces + "^\n" + wrapped[pivot:]
 
 def getRenderedPre(sourceText, parseParams, ctrlStartPos, sequenceList, bufferLen = DEFAULT_BUFFER_LEN):
 	pre = getCharsBefore(sourceText, ctrlStartPos, bufferLen)
