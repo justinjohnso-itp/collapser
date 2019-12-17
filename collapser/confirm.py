@@ -10,6 +10,7 @@ import textwrap
 import chooser
 import macros
 import token_stream
+import variables
 
 import fileio
 
@@ -96,10 +97,13 @@ def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrl
 	fromVar = variant.fromVariable
 	oldSetDefines = parseParams.setDefines
 	parseParams.setDefines = [fromVar]
+	oldVariables = variables.__v
+	variables.setAllTo(False)
 	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, sequenceList, bufferLen)
 	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen)
 	rendered = renderVariant(truncStart, pre, vTxt, post, truncEnd, maxLineLength, parseParams)
 	parseParams.setDefines = oldSetDefines
+	variables.__v = oldVariables
 	return rendered
 
 

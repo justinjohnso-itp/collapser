@@ -215,26 +215,40 @@ some text version a.
 def test_defines_consistent():
 	text = """[DEFINE @singulars|@plurals]when we found [@singulars>a block|some legos] and played with [@singulars>it|them]"""
 	for i in range(10):
-		rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
+		rendered = confirmRenderVariant(text, 0, 0, "", 80, 80)
 		assert rendered == """
 when we found a block and played with it
               ^     ^
 """[1:]
 	for i in range(10):
-		rendered = confirmRenderVariant(text, 0, 1, "", 80, 70)
+		rendered = confirmRenderVariant(text, 0, 1, "", 80, 80)
 		assert rendered == """
 when we found some legos and played with them
               ^        ^
 """[1:]
 
 def test_defines_consistent_within_macros():
-	text = """[DEFINE @singulars|@plurals]when we found [@singulars>a block|some legos] under my bed, and played with {itthem}.[MACRO itthem][@singulars>it|@plurals>them]"""
+	text = """[DEFINE @singulars|@plurals]when we found [@singulars>a block|some legos] under my bed, and played with {itthem}.[MACRO itthem][@singulars>it|them]"""
 	for i in range(10):
-		rendered = confirmRenderVariant(text, 0, 0, "", 80, 70)
+		rendered = confirmRenderVariant(text, 0, 0, "", 80, 80)
 		assert rendered == """
 when we found a block under my bed, and played with it.
               ^     ^
 """[1:]
+	for i in range(10):
+		rendered = confirmRenderVariant(text, 0, 1, "", 80, 80)
+		assert rendered == """
+when we found some legos under my bed, and played with them.
+              ^        ^
+"""[1:]
+
+	text = """[DEFINE @singulars|@plurals]when we found [@singulars>a block|some legos] under my bed, {and decided}.[MACRO and decided][~and {found out} where {itthey} led][MACRO found out][~found out][MACRO itthey][@singulars>it|they]"""
+	for i in range(10):
+		rendered = confirmRenderVariant(text, 0, 1, "", 80, 70)
+		assert rendered == """
+when we found some legos under my bed, and found out where they led.
+              ^        ^
+"""[1:]	
 
 def test_negated_defines_consistent():
 	text = """[DEFINE @fftube|@ffset]I looked up and regretted it. [@fftube>Tube bit. {other sequence}|@ffset>Set part. {other sequence}][MACRO other sequence][~Other sequence.] [@fftube>|This only if ffset.]"""
