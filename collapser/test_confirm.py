@@ -402,6 +402,25 @@ def test_no_extra_spaces_for_optional_variants():
             ^^
 """[1:]
 
+def test_lines_with_just_spaces():
+	text = """blurble.
+
+
+ 
+
+On [the next day|On some subsequent diem] something happened."""
+	rendered = confirmRenderVariant(text, 0, 0, "...", 80)
+	assert rendered == """
+...blurble.
+
+On the next day something happened....
+   ^          ^
+"""[1:]
+
+
+
+
+
 
 # TODO: This doesn't print carets right: The [@ffset>floor of the set|tube] appeared to be [@ffset>|made of] the same scuffed, dusty hardwood floor tiles as my bedroom.
 

@@ -238,6 +238,9 @@ def cleanOutputForTerminalPresentation(text):
 	# Strip comments.
 	text = re.sub(r"[#%].*\n", "\n", text)
 
+	# Remove lines with nothing but spaces
+	text = re.sub(r"\n\s+\n", "\n\n", text)
+
 	# Remove extra blank lines
 	text = re.sub(r"\n{3,}", "\n\n", text) 
 
