@@ -233,6 +233,11 @@ def cleanOutputForTerminalPresentation(text):
 	cEnd = text.find("]")
 	if cEnd >= 0 and (cStart == -1 or cEnd < cStart):
 		text = text[cEnd+1:]
+	# ...and end
+	lStart = text.rfind("[")
+	lEnd = text.rfind("]")
+	if lStart >= 0 and (lEnd == -1 or lStart > lEnd):
+		text = text[:lStart]
 
 	return text
 
