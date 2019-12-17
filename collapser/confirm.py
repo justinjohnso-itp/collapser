@@ -284,6 +284,10 @@ def fixUnicode(text):
 	text = re.sub(r"‘", "'", text)
 	text = re.sub(r"“", '"', text)
 	text = re.sub(r"”", '"', text)
+
+	# Show paragraph breaks.
+	text = re.sub(r"\{pp\}", "\n\n", text)
+
 	return text
 
 def stripMacros(text):
