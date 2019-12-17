@@ -147,18 +147,19 @@ def placeMultiLineCaretAbove(wrapped, prevNL, numSpaces):
 
 def placeMultiLineCaretBelow(wrapped, post, truncEnd):
 	# Get the position of the last character in the variant (the spot we want the caret to point at)
-	endVariantPos = len(wrapped) - len(post) - len(truncEnd)
+	endVariantPos = len(wrapped) - len(post) - len(truncEnd) - 2
 
 	# Find the new lines before and after this spot. Since we're working with already-wrapped text, we know this should be within a single printed line's width.
-	if wrapped[endVariantPos] == "\n":
-		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos-1)
-		pivot = endVariantPos
+	if wrapped[endVariantPos+2] == "\n":
+		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos+1)
+		pivot = endVariantPos + 2
 	else:
-		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos)
-		pivot = wrapped.find("\n", endVariantPos) + 1
+		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos + 2)
+		pivot = wrapped.find("\n", endVariantPos + 2) + 1
 
 	# Count spaces from the previous newline, then subtract the positions of both newlines.
-	numSpaces = endVariantPos - previousNewLinePos - 2
+	numSpaces = endVariantPos - previousNewLinePos
+
 	assert numSpaces >= 0
 	spaces = " " * numSpaces
 
