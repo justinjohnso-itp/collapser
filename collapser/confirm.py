@@ -107,6 +107,7 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 
 	# Expand macros.
 	variant = macros.expand(variant, parseParams, isPartialText = True)
+	variant = fixSpacing(variant)
 
 	# Don't show very long excerpts in their entirety.
 	if len(variant) > maxLineLength * 5:
@@ -116,7 +117,6 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 
 	# Get the variant in context.
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
-	rendered = cleanFinal(rendered, parseParams)
 	wrapped = wrap(rendered, maxLineLength)
 
 	# Draw the carets highlighting the variant's position.
@@ -196,6 +196,7 @@ def getCharsAfter(text, pos, count):
 def cleanAndExpandBit(snippet, parseParams, isBefore, bufferLen = FINAL_BUFFER_LEN):
 	snippet = cleanOutputForTerminalPresentation(snippet)
 	snippet = macros.expand(snippet, parseParams, isPartialText = True)	
+	snippet = fixSpacing(snippet)
 	return snippet[-1*bufferLen:] if isBefore else snippet[:bufferLen]
 
 
@@ -262,12 +263,9 @@ def stripMacros(text):
 		pos = text.find("[MACRO")
 	return text
 
-def cleanFinal(text, parseParams):
+def fixSpacing(text):
 	# Remove doubled spaces (which won't be visible post-Latex and are therefore just a distraction). 
 	text = re.sub(r"  +", " ", text)
-
-	# Expand macros.
-	text = macros.expand(text, parseParams, isPartialText = True)
 
 	return text
 
