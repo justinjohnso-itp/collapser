@@ -157,12 +157,12 @@ def placeMultiLineCaretBelow(wrapped, post, truncEnd):
 	if charAfterVariantIsNewLine:
 		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos + 1)
 		pivot = endVariantPos + 2
-	elif variantEndsWithNewLine:
-		previousNewLinePos = endVariantPos
-		pivot = wrapped.find("\n", endVariantPos) + 1
 	else:
-		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos + 2)
-		pivot = wrapped.find("\n", endVariantPos + 2) + 1
+		pivot = wrapped.find("\n", endVariantPos) + 1
+		if variantEndsWithNewLine:
+			previousNewLinePos = endVariantPos
+		else:
+			previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos + 2)
 
 	# Count spaces from the previous newline, then subtract the positions of both newlines.
 	numSpaces = endVariantPos - previousNewLinePos
