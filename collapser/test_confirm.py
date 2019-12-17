@@ -388,6 +388,8 @@ def test_no_extra_spaces_for_optional_variants():
 """	
 
 
+# TODO: This doesn't print carets right: The [@ffset>floor of the set|tube] appeared to be [@ffset>|made of] the same scuffed, dusty hardwood floor tiles as my bedroom.
+
 
 # This test doesn't work because pytest somehow handles the unicode quote characters differently?
 # def test_unicode_quotes_dont_mess_up_spacing():
