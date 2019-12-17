@@ -371,6 +371,23 @@ heavy mist.
 Stretching down from the base of the doorway in a steep...
 """
 
+def test_no_extra_spaces_for_optional_variants():
+	pre = """whatever """
+	variant1 = """the fuck """
+	variant2 = """"""
+	post = """ this is."""
+	trunc = "..."
+	maxLineLength = 80
+	result = confirm.renderVariant(trunc, pre, variant1, post, trunc, maxLineLength, quantparse.ParseParams())
+	assert result == """...whatever the fuck this is....
+            ^       ^
+"""	
+	result = confirm.renderVariant(trunc, pre, variant2, post, trunc, maxLineLength, quantparse.ParseParams())
+	assert result == """...whatever this is....
+            ^^
+"""	
+
+
 
 # This test doesn't work because pytest somehow handles the unicode quote characters differently?
 # def test_unicode_quotes_dont_mess_up_spacing():

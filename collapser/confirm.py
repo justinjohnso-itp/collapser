@@ -113,6 +113,7 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 
 	# Get the variant in context.
 	rendered = "%s%s%s%s%s" % (truncStart, pre, variant, post, truncEnd)
+	rendered = fixSpacing(rendered)
 	wrapped = wrap(rendered, maxLineLength)
 
 	# Draw the carets highlighting the variant's position.
