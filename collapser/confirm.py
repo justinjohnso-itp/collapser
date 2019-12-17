@@ -228,6 +228,12 @@ def cleanOutputForTerminalPresentation(text):
 			text = newText
 		pos = text.find("[DEFINE", pos+1)
 
+	# remove partial control sequences at beginning
+	cStart = text.find("[")
+	cEnd = text.find("]")
+	if cEnd >= 0 and (cStart == -1 or cEnd < cStart):
+		text = text[cEnd+1:]
+
 	return text
 
 def stripMacros(text):

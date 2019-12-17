@@ -321,4 +321,16 @@ def test_render_multiple_pres():
 	rendered = confirm.getRenderedPre(text, params, 105, sequenceList)
 	assert rendered == "So: delta and zeta and finally pi "
 
+def test_trimming_partial_sequences():
+	text = "[DEFINE 50>@lookieloos|25>@huskmen|25>@likenesses][MACRO double things][@lookieloos>Lookie-Loos|@huskmen>Husk-Men]So. "
+	params = quantparse.ParseParams()
+	result = confirm.cleanAndExpandBit(text, params, True, 90)
+	assert result == "So. "
+
+	text = "[DEFINE 50>@lookieloos|25>@huskmen|25>@likenesses][@huskmen>the husks|the likenesses]Ergo!"
+	params = quantparse.ParseParams()
+	result = confirm.cleanAndExpandBit(text, params, True, 90)
+	assert result == "[@huskmen>the husks|the likenesses]Ergo!"
+
+# ^^ And post
 
