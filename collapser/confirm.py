@@ -166,10 +166,12 @@ def placeMultiLineCaretBelow(wrapped, post, truncEnd):
 	# Count spaces from the previous newline, then subtract the positions of both newlines.
 	numSpaces = endVariantPos - previousNewLinePos
 
-	assert numSpaces >= 0
-	spaces = " " * numSpaces
-	if variantEndsWithNewLine:
-		spaces = "\n" + spaces
+	if numSpaces < 0:
+		spaces = ""
+	else:
+		spaces = " " * numSpaces
+		if variantEndsWithNewLine:
+			spaces = "\n" + spaces
 
 	# Insert the spaces, caret, and line break after caret.
 	return wrapped[:pivot] + spaces + "^\n" + wrapped[pivot:]
