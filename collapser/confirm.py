@@ -121,22 +121,24 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 	wrapped = wrap(rendered, maxLineLength)
 
 	# Draw the carets highlighting the variant's position.
-	prevNL = result.find_previous(wrapped, "\n", len(truncStart + pre))
-	numSpaces = len(truncStart + pre) - prevNL
-	spaces = " " * numSpaces
+	startPos = len(truncStart + pre)
+	prevNL = result.find_previous(wrapped, "\n", startPos)
+	numSpaces = startPos - prevNL
 	if numSpaces + len(variant + post + truncEnd) < maxLineLength and post.find("\n") == -1:
-		wrapped = placeSingleLineCaret(wrapped, variant, spaces)
+		wrapped = placeSingleLineCaret(wrapped, variant, numSpaces)
 	else:
-		wrapped = placeMultiLineCaretAbove(wrapped, spaces, prevNL)
+		wrapped = placeMultiLineCaretAbove(wrapped, numSpaces, prevNL)
 		wrapped = placeMultiLineCaretBelow(wrapped, post, truncEnd)
 	return wrapped
 
-def placeSingleLineCaret(wrapped, variant, spaces):
+def placeSingleLineCaret(wrapped, variant, numSpaces):
+	spaces = " " * numSpaces
 	numSpacesBetween = len(variant) - 2
 	spacesBetween = " " * numSpacesBetween
 	return wrapped + spaces + "^" + spacesBetween + "^\n"
 
-def placeMultiLineCaretAbove(wrapped, spaces, prevNL):
+def placeMultiLineCaretAbove(wrapped, numSpaces, prevNL):
+	spaces = " " * numSpaces
 	if prevNL == 0:
 		return spaces + "v\n" + wrapped
 	return wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
