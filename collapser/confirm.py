@@ -150,9 +150,15 @@ def placeMultiLineCaretBelow(wrapped, post, truncEnd):
 	endVariantPos = len(wrapped) - len(post) - len(truncEnd) - 2
 
 	# Find the new lines before and after this spot. Since we're working with already-wrapped text, we know this should be within a single printed line's width.
-	if wrapped[endVariantPos+2] == "\n":
-		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos+1)
+	variantEndsWithNewLine = wrapped[endVariantPos] == "\n"
+	charAfterVariantIsNewLine = wrapped[endVariantPos+1] == "\n"
+
+	if charAfterVariantIsNewLine:
+		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos + 1)
 		pivot = endVariantPos + 2
+	elif variantEndsWithNewLine:
+		previousNewLinePos = endVariantPos
+		pivot = wrapped.find("\n", endVariantPos) + 1
 	else:
 		previousNewLinePos = result.find_previous(wrapped, "\n", endVariantPos + 2)
 		pivot = wrapped.find("\n", endVariantPos + 2) + 1
@@ -162,6 +168,8 @@ def placeMultiLineCaretBelow(wrapped, post, truncEnd):
 
 	assert numSpaces >= 0
 	spaces = " " * numSpaces
+	if variantEndsWithNewLine:
+		spaces = "\n" + spaces
 
 	# Insert the spaces, caret, and line break after caret.
 	return wrapped[:pivot] + spaces + "^\n" + wrapped[pivot:]

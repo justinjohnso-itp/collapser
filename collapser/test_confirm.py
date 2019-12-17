@@ -354,6 +354,23 @@ gloom behind him. Ice?
 Take a look, he said with a grin. I'll shine the light. But...
 """
 
+def test_new_line_as_last_char():
+	pre = """whatever comes here doesn't matter. """
+	variant1 = """back no hint of answering splash. Cascades plunged down from above us, too. The space was filled with a cold and heavy mist.
+"""
+	post = """Stretching down from the base of the doorway in a steep"""
+	trunc = "..."
+	maxLineLength = 80
+	result = confirm.renderVariant(trunc, pre, variant1, post, trunc, maxLineLength, quantparse.ParseParams())
+	assert result == """                                       v
+...whatever comes here doesn't matter. back no hint of answering splash.
+Cascades plunged down from above us, too. The space was filled with a cold and
+heavy mist.
+
+^
+Stretching down from the base of the doorway in a steep...
+"""
+
 
 # This test doesn't work because pytest somehow handles the unicode quote characters differently?
 # def test_unicode_quotes_dont_mess_up_spacing():
