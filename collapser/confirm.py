@@ -125,20 +125,21 @@ def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  pars
 	numSpaces = len(truncStart + pre) - prevNL
 	spaces = " " * numSpaces
 	if numSpaces + len(variant + post + truncEnd) < maxLineLength and post.find("\n") == -1:
-		# Single line.
-		numSpacesBetween = len(variant) - 2
-		spacesBetween = " " * numSpacesBetween
-		wrapped = wrapped + spaces + "^" + spacesBetween + "^\n"
+		wrapped = placeSingleLineCaret(wrapped, variant, spaces)
 	else:
-		# Multi-line.
-		# Above
-		if prevNL == 0:
-			wrapped = spaces + "v\n" + wrapped
-		else:
-			wrapped = wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
-		# Below
+		wrapped = placeMultiLineCaretAbove(wrapped, spaces, prevNL)
 		wrapped = placeMultiLineCaretBelow(wrapped, post, truncEnd)
 	return wrapped
+
+def placeSingleLineCaret(wrapped, variant, spaces):
+	numSpacesBetween = len(variant) - 2
+	spacesBetween = " " * numSpacesBetween
+	return wrapped + spaces + "^" + spacesBetween + "^\n"
+
+def placeMultiLineCaretAbove(wrapped, spaces, prevNL):
+	if prevNL == 0:
+		return spaces + "v\n" + wrapped
+	return wrapped[:prevNL-1] + "\n" + spaces + "v" + wrapped[prevNL-1:]
 
 def placeMultiLineCaretBelow(wrapped, post, truncEnd):
 	# Get the position of the last character in the variant (the spot we want the caret to point at)
