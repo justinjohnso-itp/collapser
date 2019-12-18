@@ -265,6 +265,32 @@ I looked up and regretted it. Set part. Other sequence. This only if ffset.
                               ^                       ^
 """[1:]
 
+def test_even_macros_only_in_pre_post_are_consistent():
+ 	text = """[DEFINE @possibles][DEFINE @justRyan|@justNiko|@ryanAndNiko][MACRO itthemCh1][@ryanAndNiko>them|it][MACRO personCh1][@ryanAndNiko>people|person]enough light to see [@ryanAndNiko>two people|that someone was] standing there.
+
+[@possibles>I stared at the {personCh1} lost in shadows at the end of the hall and|I stared at {itthemCh1} and] tried to unsee [@ryanAndNiko>them, to resolve them|him, to resolve him] into"""
+	version1 = """
+...enough light to see two people standing there.
+
+v
+I stared at the people lost in shadows at the end of the hall and tried to unsee
+                                                                ^
+them, to resolve them into...
+"""[1:]
+	version2 = """
+...enough light to see that someone was standing there.
+
+v
+I stared at the person lost in shadows at the end of the hall and tried to unsee
+                                                                ^
+him, to resolve him into...
+"""[1:]
+	for i in range(10):
+		rendered = confirmRenderVariant(text, 1, 0, "...", 80, 400)
+		assert rendered == version1 or rendered == version2
+
+
+
 def test_stripMacros():
 	text = """Hi![MACRO testmacro][This|or|that|or {another macro}][MACRO another macro][~Booya]Strip![MACRO blerg][@hello>yes|no]Again![MACRO final][thing|or|other thing]Bye!"""
 	stripped = confirm.stripMacros(text)
@@ -447,7 +473,6 @@ But enough light to see two people standing there...
 	rendered = confirmRenderVariant(text1 + "   " + text2, 0, 0, "...", 80, 80)
 	assert rendered == expected
 
- 	
 
 
 

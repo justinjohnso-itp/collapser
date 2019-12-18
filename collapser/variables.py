@@ -116,6 +116,11 @@ def reset():
 	global __v
 	__v = Variables()
 
+def set(key, val):
+	global __v
+	if key in __v.variables:
+		__v.variables[key] = val
+
 def setAllTo(val):
 	global __v
 	for key in __v.variables:

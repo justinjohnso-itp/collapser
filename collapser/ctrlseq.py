@@ -28,15 +28,24 @@ class Alts:
 
 	def getByFromVariable(self, setDefines):
 		for alt in self.alts:
-			if alt.fromVariable is not None and alt.fromVariable in setDefines:
+			if alt.fromVariable is not None and ( alt.fromVariable in setDefines or variables.check(alt.fromVariable) ):
 				return alt.txt
-		return self.getRandom()
+		# Once we've made a decision here, remember it.
+		choice = self.getRandomFullAlt()
+		variables.set(choice.fromVariable, True)
+		return choice.txt
 
 	def getRandom(self):
 		if self.hasProbabilities():
 			return chooser.distributedPick(self.alts)
 		else:
 			return chooser.oneOf(self.alts).txt
+
+	def getRandomFullAlt(self):
+		if self.hasProbabilities():
+			return chooser.distributedPick(self.alts)
+		else:
+			return chooser.oneOf(self.alts)
 
 	def getSortedAlts(self):
 		return sorted(self.alts, key = lambda a: len(a.txt))
