@@ -99,6 +99,7 @@ def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrl
 	parseParams.setDefines = [fromVar]
 	oldVariables = variables.__v
 	variables.setAllTo(False)
+	vTxt = getExpandedVariantText(vTxt, parseParams)
 	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, sequenceList, bufferLen)
 	post = getRenderedPost(sourceText, parseParams, ctrlEndPos, sequenceList, bufferLen)
 	rendered = renderVariant(truncStart, pre, vTxt, post, truncEnd, maxLineLength, parseParams)
@@ -106,11 +107,12 @@ def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrl
 	variables.__v = oldVariables
 	return rendered
 
+def getExpandedVariantText(variantTxt, parseParams):
+	return macros.expand(variantTxt, parseParams, isPartialText = True)
 
 def renderVariant(truncStart, pre, variant, post, truncEnd, maxLineLength,  parseParams):
 
 	# Set up the variant text.
-	variant = macros.expand(variant, parseParams, isPartialText = True)
 	variant = fixSpacing(variant)
 	variant = fixUnicode(variant)
 	variant = summarizeIfNecessary(variant, maxLineLength)
