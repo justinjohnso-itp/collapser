@@ -286,7 +286,7 @@ def fixUnicode(text):
 	text = re.sub(r"”", '"', text)
 
 	# Show paragraph breaks.
-	text = re.sub(r"\{pp\}", "\n\n", text)
+	text = re.sub(r"\s*\{pp\}\s*", "\n\n", text)
 
 	return text
 
