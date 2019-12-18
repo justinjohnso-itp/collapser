@@ -31,17 +31,15 @@ class Alts:
 			if alt.fromVariable is not None and ( alt.fromVariable in setDefines or variables.check(alt.fromVariable) ):
 				return alt.txt
 		# Once we've made a decision here, remember it.
-		choice = self.getRandomFullAlt()
+		choice = self.getRandomAlt()
 		variables.set(choice.fromVariable, True)
 		return choice.txt
 
 	def getRandom(self):
-		if self.hasProbabilities():
-			return chooser.distributedPick(self.alts)
-		else:
-			return chooser.oneOf(self.alts).txt
+		result = self.getRandomAlt()
+		return result if self.hasProbabilities() else result.txt
 
-	def getRandomFullAlt(self):
+	def getRandomAlt(self):
 		if self.hasProbabilities():
 			return chooser.distributedPick(self.alts)
 		else:
