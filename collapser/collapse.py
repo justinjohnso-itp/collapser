@@ -7,6 +7,8 @@
 import quantlex
 import quantparse
 import re
+import variables
+import macros
 
 
 # Main entry point.
@@ -17,16 +19,20 @@ def go(sourceText, params):
 
     result = quantlex.lex(sourceText)
     if not result.isValid:
-        print result
-    	return ""
+    	return result
 
-    output = quantparse.parse(result.package, sourceText, params)
+    tokens = result.package
+
+    # Calculate and pre-set variables for Longest/Shortest case.
+    if params.chooseStrategy in ["longest", "shortest"]:
+        params.setDefines = quantparse.getDefinesForLongestShortest(tokens, params)
+
+    variables.reset()
+    macros.reset()
+    preppedTokens = quantparse.handleVariablesAndMacros(tokens, sourceText, params)
+    output = quantparse.parse(preppedTokens, sourceText, params)
     if not output.isValid:
-        print output
-        return ""
-        
-    outputText = output.package
+        return output
 
-    return outputText
-
+    return output
 

@@ -3,23 +3,16 @@
 import quantlex
 import quantparse
 import pytest
+import collapse
 
 def parse(text, params = None):
-	result = parseResult(text, params)
-	if not result.isValid:
-		print result
-		assert False
-	return result.package
-
-def parseResult(text, params = None):
-	lexed = quantlex.lex(text)
-	if not lexed.isValid:
-		print lexed
-		assert False
 	if params == None:
 		params = quantparse.ParseParams(chooseStrategy="random", doConfirm=False)
-	return quantparse.parse(lexed.package, text, params)
-
+	result = collapse.go(text, params)
+	if not result.isValid:
+		print result
+		raise ValueError("result was not valid")
+	return result.package
 
 
 # When sent an array like ["A", "B", "C"] and a test to parse, will fail if after a large number of attempts to parse it hasn't seen each option appear as a parse result.
@@ -149,11 +142,11 @@ def test_number_values_cant_exceed_100():
 	text = "[50>alpha|50>omega]"
 	assert parse(text) in ["alpha", "omega"]
 	text = "[50>alpha|51>omega]"
-	res = parseResult(text)
-	assert res.isValid == False
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 	text = "[50>alpha|50>omega|50>omega|50>omega|50>omega]"
-	res = parseResult(text)
-	assert res.isValid == False
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 
 def test_can_use_author_preferred_with_prob():
 	text = "[80>alpha|10>beta|10>^gamma]"
@@ -333,8 +326,8 @@ def test_variable_with_named_options():
 
 def test_if_some_named_only_last_unnamed():
 	text = "[DEFINE 50>@alpha|50>@beta][Barney|@alpha>Arnold]"
-	result = parseResult(text)
-	assert result.isValid == False
+	with pytest.raises(Exception) as e_info:
+		parse(text)
 	text = "[DEFINE 33>@alpha|33>@beta|34>@gamma][@alpha>Andrew|Bailey|@gamma>Gary]"
 	with pytest.raises(Exception) as e_info:
 		parse(text)

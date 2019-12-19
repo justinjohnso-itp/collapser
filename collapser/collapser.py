@@ -265,9 +265,11 @@ def collapseInputText(inputFiles, inputFileDir, params):
 			print "Appending %s" % fileList[pos]
 			fileTexts.append(file)
 	joinedFileTexts = ''.join(fileTexts)
-	collapsedText = collapse.go(joinedFileTexts, params)
-	if collapsedText == "":
+	result = collapse.go(joinedFileTexts, params)
+	if not result.isValid:
+		print result
 		sys.exit()
+	collapsedText = result.package
 
 	return collapsedText
 
