@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import variables
+import macros
 import quantlex
 import quantparse
 import ctrlseq
@@ -16,6 +17,8 @@ def parseResult(text, params = None):
 	if params == None:
 		params = quantparse.ParseParams(chooseStrategy="random", doConfirm=False)
 	params.originalText = text
+	variables.reset()
+	macros.reset()
 	preppedTokens = quantparse.handleVariablesAndMacros(lexed.package, text, params)
 	return preppedTokens
 

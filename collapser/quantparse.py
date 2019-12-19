@@ -100,6 +100,8 @@ def parse(tokens, sourceText, parseParams):
 
 	# Handle the rendering.
 	try:
+		variables.reset()
+		macros.reset()
 		preppedTokens = handleVariablesAndMacros(tokens, sourceText, parseParams)
 		# TODO: for the above to work, we'd need to be stripping out the DEFINE and MACRO tags from sourceText also as we went.
 		if parseParams.doConfirm:
@@ -113,8 +115,6 @@ def parse(tokens, sourceText, parseParams):
 	return output
 
 def handleVariablesAndMacros(tokens, sourceText, parseParams):
-	variables.reset()
-	macros.reset()
 	tokens = variables.handleDefs(tokens, parseParams)
 	tokens = macros.handleDefs(tokens, parseParams)
 	return tokens
