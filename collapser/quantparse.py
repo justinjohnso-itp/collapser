@@ -6,7 +6,6 @@
 import macros
 import variables
 import ctrlseq
-import chooser
 import result
 import confirm
 import discourseVars
@@ -65,59 +64,6 @@ def handleParsing(tokens, params):
 	renderedString = macros.expand(renderedString, params)
 	return renderedString
 
-def getDefinesForLongestShortest(tokens, parseParams):
-	print "Calculating %s defines (ignoring seed)..." % parseParams.chooseStrategy
-	bestDefines = []
-
-	# Process all the DEFINEs in the code, with a copy of everything.
-	variables.reset()
-	macros.reset()
-	tempTokens = list(tokens)
-	tempTokens = variables.handleDefs(tempTokens, parseParams)
-	tempTokens = macros.handleDefs(tempTokens, parseParams)
-	parseParamsCopy = parseParams.copy()
-	chooser.setSeed(chooser.number(100000))
-
-	# Now for each option in a define group, see which one is best.
-	groups = variables.__v.varGroups.keys()
-	for groupname in groups:
-		optsToTry = list(variables.__v.varGroups[groupname])
-
-		# If just one option, we want to try it as True and False.
-		if len(optsToTry) is 1:
-			optsToTry.append("^" + optsToTry[0])
-
-		bestPos = -1
-		bestLen = -1
-		secondBestLen = -1
-		isShortest = parseParams.chooseStrategy == "shortest"
-		if isShortest:
-			secondBestLen = 999999999
-			bestLen = 999999999
-		for pos, key in enumerate(optsToTry):
-			variables.setAllTo(False)
-
-			if key[0] != "^":
-				variables.__v.variables[key] = True
-
-			thisLen = len(handleParsing(tempTokens, parseParamsCopy))
-
-			isBetter = False
-			if isShortest:
-				isBetter = thisLen < bestLen
-			else:
-				isBetter = thisLen > bestLen
-			if isBetter:
-				bestPos = pos
-				secondBestLen = bestLen
-				bestLen = thisLen
-			elif (isShortest and thisLen < secondBestLen) or (not isShortest and thisLen > secondBestLen):
-				secondBestLen = thisLen
-
-		print "Best was %s (%d chars %s than next best)" % (optsToTry[bestPos], abs(bestLen - secondBestLen), "longer" if parseParams.chooseStrategy == "longest" else "shorter")
-		bestDefines.append(optsToTry[bestPos])
-
-	return bestDefines
 
 # The lexer should have guaranteed that we have a series of TEXT tokens interspersed with sequences of others nested between CTRLBEGIN and CTRLEND with no issues with nesting or incomplete tags.
 def process(tokens, parseParams):
