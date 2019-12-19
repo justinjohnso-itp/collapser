@@ -203,7 +203,7 @@ def postLatexSanityCheck(latexLog):
 	if result["numPages"] < 5 or result["numPages"] > 300:
 		print "Unexpected page length (%d); halting." % result["numPages"]
 		return False
-	if result["numBytes"] < 100000 or result["numBytes"] > 3000000:
+	if result["numBytes"] < 80000 or result["numBytes"] > 3000000:
 		print "Unexpected size (%d kb); halting." % (result["numBytes"] / 1000)
 		return False
 
