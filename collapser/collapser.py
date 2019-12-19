@@ -256,16 +256,22 @@ def collapseInputText(inputFiles, inputFileDir, params):
 		result = readManifestOrFile(iFile, inputFileDir, params)
 		files = files + result["files"]
 		fileList = fileList + result["fileList"]
-
-	fileTexts = []
 	fileSetKey = hasher.hash(''.join(fileList))
 	params.fileSetKey = fileSetKey
-	for pos, file in enumerate(files):
-		if len(params.onlyShow) == 0 or fileList[pos] in params.onlyShow or fileList[pos] == "globals.txt":
-			print "Appending %s" % fileList[pos]
-			fileTexts.append(file)
-	joinedFileTexts = ''.join(fileTexts)
-	result = collapse.go(joinedFileTexts, joinedFileTexts, params)
+
+	allTexts = []
+	selectionTexts = []
+	allTexts = files
+	if len(params.onlyShow) == 0:
+		selectionTexts = files
+	else:
+		for pos, file in enumerate(files):
+			if fileList[pos] in params.onlyShow:
+				print "Selecting %s" % fileList[pos]
+				selectionTexts.append(file)
+	joinedAllTexts = ''.join(allTexts)
+	joinedSelectionTexts = ''.join(selectionTexts)
+	result = collapse.go(joinedAllTexts, joinedSelectionTexts, params)
 	if not result.isValid:
 		print result
 		sys.exit()
