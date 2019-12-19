@@ -267,6 +267,9 @@ def collapseInputText(inputFiles, inputFileDir, params):
 			if fileList[pos] in params.onlyShow:
 				print "Selecting %s" % fileList[pos]
 				selectionTexts.append(file)
+		if len(selectionTexts) == 0:
+			print "Something went wrong; nothing was selected for output. params.onlyShow was '%s'" % params.onlyShow
+			sys.exit()
 	joinedSelectionTexts = ''.join(selectionTexts)
 	joinedAllTexts = ''.join(fileContents)
 	result = collapse.go(joinedAllTexts, joinedSelectionTexts, params)
