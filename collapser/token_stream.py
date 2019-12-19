@@ -4,6 +4,8 @@ import result
 
 # Abstraction over an array of parsed tokens, which will be text or control sequences.
 
+# TODO: Refactor so all the places looping through TokenStreams can use a more advanced structure. We need a function like "nextUpToCtrlSeq(seq_type)". Then we can just keep iterating and appending, and either discarding or processing the final sequence we get. 
+
 class TokenStream:
 
 	def __init__(self, tokens):

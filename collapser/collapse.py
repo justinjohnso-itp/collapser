@@ -15,6 +15,7 @@ import chooser
 # Main entry point.
 def go(fullText, selectedText, params, returnTokensOnly = False):
 
+    # Lex the full input text.
     result = quantlex.lex(fullText)
     if not result.isValid:
     	return result
@@ -24,12 +25,13 @@ def go(fullText, selectedText, params, returnTokensOnly = False):
     if params.chooseStrategy in ["longest", "shortest"]:
         params.setDefines = getDefinesForLongestShortest(tokens, params)
 
+    # Register all the variables and macros from the full text.
     variables.reset()
     macros.reset()        
     variables.handleDefs(tokens, params)
     macros.handleDefs(tokens, params)
 
-    # Now do only the text we want to render.
+    # Now re-lex the selection we want to render, and strip variable/macro defs.
     result = quantlex.lex(selectedText)
     if not result.isValid:
         return result
@@ -39,11 +41,8 @@ def go(fullText, selectedText, params, returnTokensOnly = False):
     if returnTokensOnly:
         return preppedTokens
 
-    output = quantparse.parse(preppedTokens, selectedText, params)
-    if not output.isValid:
-        return output
-
-    return output
+    # And finally, parse and render the selection.
+    return quantparse.parse(preppedTokens, selectedText, params)
 
 
 def getDefinesForLongestShortest(tokens, parseParams):
