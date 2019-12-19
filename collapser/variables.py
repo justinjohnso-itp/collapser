@@ -2,6 +2,7 @@
 import ctrlseq
 import chooser
 import result
+import token_stream
 
 class Variables:
 	def __init__(self):
@@ -40,7 +41,6 @@ class Variables:
 
 	def render(self, tokens, params):
 		pos = 0
-
 		# First ensure all vars are in same control group
 		varCtrlGroup = ""
 		posOfFreeText = -1

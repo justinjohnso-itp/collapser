@@ -7,20 +7,14 @@ import quantparse
 import ctrlseq
 import confirm
 import token_stream
+import collapse
 import pytest
 
 def parseResult(text, params = None):
-	lexed = quantlex.lex(text)
-	if not lexed.isValid:
-		print lexed
-		assert False
 	if params == None:
 		params = quantparse.ParseParams(chooseStrategy="random", doConfirm=False)
-	params.originalText = text
-	variables.reset()
-	macros.reset()
-	preppedTokens = quantparse.handleVariablesAndMacros(lexed.package, text, params)
-	return preppedTokens
+	tokens = collapse.go(text, text, params, returnTokensOnly = True)
+	return tokens
 
 def getFirstCtrlSeq(tokens):
 	ts = token_stream.SequenceStream(tokens)

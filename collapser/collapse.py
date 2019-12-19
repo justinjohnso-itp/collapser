@@ -13,15 +13,11 @@ import chooser
 
 
 # Main entry point.
-def go(sourceText, params):
+def go(fullText, selectedText, params, returnTokensOnly = False):
 
-    # sampleData = '''[MACRO alpha][@zetta>Use {beta} macro.][MACRO beta][@yotta>this is yotta|not yotta][DEFINE ^@zetta][DEFINE @yotta]{alpha}'''
-    # sourceText = sampleData
-
-    result = quantlex.lex(sourceText)
+    result = quantlex.lex(fullText)
     if not result.isValid:
     	return result
-
     tokens = result.package
 
     # Calculate and pre-set variables for Longest/Shortest case.
@@ -29,19 +25,25 @@ def go(sourceText, params):
         params.setDefines = getDefinesForLongestShortest(tokens, params)
 
     variables.reset()
-    macros.reset()
-    preppedTokens = handleVariablesAndMacros(tokens, sourceText, params)
-    output = quantparse.parse(preppedTokens, sourceText, params)
+    macros.reset()        
+    variables.handleDefs(tokens, params)
+    macros.handleDefs(tokens, params)
+
+    # Now do only the text we want to render.
+    result = quantlex.lex(selectedText)
+    if not result.isValid:
+        return result
+    tokens = result.package
+    preppedTokens = variables.stripDefs(tokens, params)
+    preppedTokens = macros.stripMacros(preppedTokens, params)
+    if returnTokensOnly:
+        return preppedTokens
+
+    output = quantparse.parse(preppedTokens, selectedText, params)
     if not output.isValid:
         return output
 
     return output
-
-
-def handleVariablesAndMacros(tokens, sourceText, parseParams):
-    tokens = variables.handleDefs(tokens, parseParams)
-    tokens = macros.handleDefs(tokens, parseParams)
-    return tokens
 
 
 def getDefinesForLongestShortest(tokens, parseParams):

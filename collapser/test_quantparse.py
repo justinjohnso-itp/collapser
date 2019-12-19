@@ -8,7 +8,7 @@ import collapse
 def parse(text, params = None):
 	if params == None:
 		params = quantparse.ParseParams(chooseStrategy="random", doConfirm=False)
-	result = collapse.go(text, params)
+	result = collapse.go(text, text, params)
 	if not result.isValid:
 		print result
 		raise ValueError("result was not valid")
