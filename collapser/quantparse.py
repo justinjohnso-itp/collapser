@@ -53,11 +53,6 @@ def parse(preppedTokens, sourceText, parseParams):
 	output.package = renderedString
 	return output
 
-def handleVariablesAndMacros(tokens, sourceText, parseParams):
-	tokens = variables.handleDefs(tokens, parseParams)
-	tokens = macros.handleDefs(tokens, parseParams)
-	return tokens
-
 def handleParsing(tokens, params):
 	renderedChunks = process(tokens, params)
 	renderedString = ''.join(renderedChunks)

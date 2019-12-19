@@ -30,12 +30,18 @@ def go(sourceText, params):
 
     variables.reset()
     macros.reset()
-    preppedTokens = quantparse.handleVariablesAndMacros(tokens, sourceText, params)
+    preppedTokens = handleVariablesAndMacros(tokens, sourceText, params)
     output = quantparse.parse(preppedTokens, sourceText, params)
     if not output.isValid:
         return output
 
     return output
+
+
+def handleVariablesAndMacros(tokens, sourceText, parseParams):
+    tokens = variables.handleDefs(tokens, parseParams)
+    tokens = macros.handleDefs(tokens, parseParams)
+    return tokens
 
 
 def getDefinesForLongestShortest(tokens, parseParams):
