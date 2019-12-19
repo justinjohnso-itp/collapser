@@ -61,6 +61,23 @@ def handleDefs(tokens, params):
 	return tokens
 
 
+def stripMacros(tokens, params):
+	output = []
+	ts = token_stream.TokenStream(tokens)
+	while True:
+		nextSection = ts.next()
+		if nextSection is None:
+			break
+		if ts.wasText():
+			output += nextSection
+			continue
+		ctrlParam = nextSection[1].type
+		if ctrlParam != "MACRO":
+			output += nextSection
+			continue
+		ts.next() # Skip the Macro contents.
+	return output	
+
 # Take in an array of tokens, register any macro definitions and the following control sequence, validate that they're being used correctly, and remove them both from the array before returning it. 
 def registerAndStripMacros(tokens, params):
 	output = []

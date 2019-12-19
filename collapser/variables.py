@@ -175,6 +175,22 @@ def check(key):
 	return __v.check(key)
 
 
+def stripDefs(tokens, params):
+	output = []
+	ts = token_stream.TokenStream(tokens)
+	while True:
+		nextSection = ts.next()
+		if nextSection is None:
+			break
+		if ts.wasText():
+			output += nextSection
+			continue
+		ctrlParam = nextSection[1].type
+		if ctrlParam != "DEFINE":
+			output += nextSection
+			continue
+	return output
+
 # Store all DEFINE definitions in "variables" and strip them from the token stream.
 def handleDefs(tokens, params):
 	output = []
