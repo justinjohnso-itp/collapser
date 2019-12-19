@@ -250,27 +250,25 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, sk
 
 
 def collapseInputText(inputFiles, inputFileDir, params):
-	files = []
+	fileContents = []
 	fileList = []
 	for iFile in inputFiles:
 		result = readManifestOrFile(iFile, inputFileDir, params)
-		files = files + result["files"]
+		fileContents = fileContents + result["files"]
 		fileList = fileList + result["fileList"]
 	fileSetKey = hasher.hash(''.join(fileList))
 	params.fileSetKey = fileSetKey
 
-	allTexts = []
 	selectionTexts = []
-	allTexts = files
 	if len(params.onlyShow) == 0:
-		selectionTexts = files
+		selectionTexts = fileContents
 	else:
-		for pos, file in enumerate(files):
+		for pos, file in enumerate(fileContents):
 			if fileList[pos] in params.onlyShow:
 				print "Selecting %s" % fileList[pos]
 				selectionTexts.append(file)
-	joinedAllTexts = ''.join(allTexts)
 	joinedSelectionTexts = ''.join(selectionTexts)
+	joinedAllTexts = ''.join(fileContents)
 	result = collapse.go(joinedAllTexts, joinedSelectionTexts, params)
 	if not result.isValid:
 		print result
