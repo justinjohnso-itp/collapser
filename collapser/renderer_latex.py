@@ -68,6 +68,14 @@ class RendererLatex(renderer.Renderer):
 		if code == "i":
 			text = contents[1]
 			return template_i[0] + text + template_i[1]
+		if code == "sc":
+			text = contents[1]
+			return template_sc[0] + text + template_sc[1]
+		if code == "scwide":
+			text = contents[1]
+			adjustedText = '\\kern.1em'.join(text)
+			adjustedText = adjustedText.replace(" \\kern.1em", "\\kern.3em")
+			return template_sc[0] + adjustedText + template_sc[1]
 		if code == "vspace":
 			text = contents[1]
 			return template_vspace[0] + text + template_vspace[1]
@@ -360,6 +368,7 @@ template_pp = '''
 '''
 
 template_i = ['''\\textit{''', '''}''']
+template_sc = ['''\\allsmcp{''', '''}''']
 
 template_verse = ['''
 

@@ -132,7 +132,7 @@ def registerLabels(tokens, params):
 	return output
 
 
-formatting_codes = ["section_break", "chapter", "part", "end_part_page", "verse", "verse_inline", "epigraph", "pp", "i", "vspace"]
+formatting_codes = ["section_break", "chapter", "part", "end_part_page", "verse", "verse_inline", "epigraph", "pp", "i", "vspace", "sc", "scwide"]
 
 def getNextMacro(text, pos, params, isPartialText):
 	# A macro can be in the form {this thing} or $that (one word). 

@@ -502,6 +502,10 @@ But enough light to see two people standing there...
 	assert rendered == expected
 
 
+# TODO If an expansion only uses some of the alts in control group, print how it would expand for all of the alts. 
+# def test_implied_alts():
+# 	text = """[DEFINE @alpha|@beta|@gamma]One day, I was [@alpha>wandering|@beta>strolling] when I saw a tree."""
+
 
 
 
