@@ -1,7 +1,6 @@
 
 import random
 import fileio
-import ctrlseq
 
 def number(highest):
 	return random.randint(1,highest)
@@ -85,10 +84,10 @@ def distributedPick(alts):
 	for item in alts:
 		if item.prob is None:
 			# Case of [X or|^]
-			return item
+			return item.txt
 		measure += item.prob
 		if pick <= measure:
-			return item
+			return item.txt
 
 	# If we've run out of numbers but we're still here, it means we had empty space, i.e. [60>alpha|20>beta] which means the remaining probability space prints nothing.
-	return ctrlseq.Item("", None, False, None, None)
+	return ""
