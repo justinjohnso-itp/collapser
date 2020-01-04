@@ -63,6 +63,9 @@ class RendererLatex(renderer.Renderer):
 		if code == "verse_inline":
 			text = contents[1]
 			return template_verse_inline[0] + text + template_verse_inline[1]
+		if code == "verse_inline_sc":
+			text = contents[1]
+			return template_verse_inline_sc[0] + text + template_verse_inline_sc[1]
 		if code == "pp":
 			return template_pp
 		if code == "i":
@@ -382,6 +385,11 @@ template_verse = ['''
 
 template_verse_inline = ['''\\begin{adjustwidth}{3em}{} 
 \\textit{''', '''}
+\\end{adjustwidth}
+\\noindent ''']
+
+template_verse_inline_sc = ['''\\begin{adjustwidth}{3em}{} 
+\\allsmcp{''', '''}
 \\end{adjustwidth}
 \\noindent ''']
 
