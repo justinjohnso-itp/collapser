@@ -262,6 +262,15 @@ I looked up and regretted it. Set part. Other sequence. This only if ffset.
                               ^                       ^
 """[1:]
 
+# TODO Why do we have to add the extra space after "underneath." for this to pass?
+def test_empty_pre_post_options_dont_crash():
+	text = """This is what happened[15>|] when we found [@ch1stairs>the stairs|a staircase] underneath. [DEFINE @ch1stairs]"""
+	rendered = confirmRenderVariant(text, 1, 0, "", 80, 80)
+	assert rendered == """
+This is what happened when we found the stairs underneath.
+                                    ^        ^
+"""[1:]
+
 # def test_even_macros_only_in_pre_post_are_consistent():
 #  	text = """[DEFINE @possibles][DEFINE @justRyan|@justNiko|@ryanAndNiko][MACRO itthemCh1][@ryanAndNiko>them|it][MACRO personCh1][@ryanAndNiko>people|person]enough light to see [@ryanAndNiko>two people|that someone was] standing there.
 
