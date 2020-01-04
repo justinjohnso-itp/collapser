@@ -97,7 +97,6 @@ def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrl
 	oldSetDefines = parseParams.setDefines
 	parseParams.setDefines = [fromVar]
 	oldVariables = copy.deepcopy(variables.__v)
-	oldVariables = variables.__v
 	variables.setAllTo(False)
 	vTxt = getExpandedVariantText(vTxt, parseParams)
 	pre = getRenderedPre(sourceText, parseParams, ctrlStartPos, sequenceList, bufferLen)
