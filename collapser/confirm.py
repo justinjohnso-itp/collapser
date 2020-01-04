@@ -7,11 +7,9 @@ import re
 import getch
 import sys
 import textwrap
-import chooser
 import macros
 import token_stream
 import variables
-
 import fileio
 
 

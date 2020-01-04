@@ -15,10 +15,8 @@ import re
 
 import fileio
 import collapse
-import quantlex
 import quantparse
 import chooser
-import result
 import differ
 import hasher
 import renderer_latex

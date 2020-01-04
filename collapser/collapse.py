@@ -6,7 +6,6 @@
 
 import quantlex
 import quantparse
-import re
 import variables
 import macros
 import chooser
