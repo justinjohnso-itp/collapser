@@ -41,7 +41,9 @@ def go(fullText, selectedText, params, returnTokensOnly = False):
         return preppedTokens
 
     # And finally, parse and render the selection.
-    return quantparse.parse(preppedTokens, selectedText, params)
+    rendered = quantparse.parse(preppedTokens, selectedText, params)
+    print "** vars: %s" % variables.showVars()
+    return rendered
 
 
 def getDefinesForLongestShortest(tokens, parseParams):
