@@ -11,6 +11,7 @@ import macros
 import token_stream
 import variables
 import fileio
+import copy
 
 
 # We should have a series of text and CTRLBEGIN/END sequences.
@@ -95,6 +96,7 @@ def getContextualizedRenderedVariant(sourceText, parseParams, ctrlStartPos, ctrl
 	fromVar = variant.fromVariable
 	oldSetDefines = parseParams.setDefines
 	parseParams.setDefines = [fromVar]
+	oldVariables = copy.deepcopy(variables.__v)
 	oldVariables = variables.__v
 	variables.setAllTo(False)
 	vTxt = getExpandedVariantText(vTxt, parseParams)
