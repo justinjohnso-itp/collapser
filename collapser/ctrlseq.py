@@ -32,8 +32,10 @@ class Alts:
 				return alt.txt
 		# Once we've made a decision here, remember it.
 		choice = self.getRandomAlt()
-		variables.set(choice.fromVariable, True)
-		return choice.txt
+		if type(choice) != str:
+			variables.set(choice.fromVariable, True)
+			return choice.txt
+		return choice
 
 	def getRandom(self):
 		result = self.getRandomAlt()
