@@ -48,6 +48,7 @@ class RendererLatex(renderer.Renderer):
 		if code == "epigraph":
 			epigraph = contents[1]
 			epigraph = fixLongEpigraphLines(epigraph)
+			epigraph = fixMultiStanzaEpigraphs(epigraph)
 			source = contents[2]
 			return template_epigraph[0] + epigraph + template_epigraph[1] + source + template_epigraph[2]
 		if code == "end_part_page":
@@ -316,6 +317,10 @@ def fixLongEpigraphLines(txt):
 	result =  "\\\\".join(output)
 	return result
 
+def fixMultiStanzaEpigraphs(txt):
+	return txt.replace("\\\\\n\n", """\\\\
+
+\\noindent """)
 
 template_chapter = ['''
 
