@@ -19,6 +19,7 @@ import quantparse
 import chooser
 import differ
 import hasher
+import variables
 import renderer_latex
 import renderer_text
 import renderer_html
@@ -199,6 +200,9 @@ def main():
 				print "Seed (requested): %d" % thisSeed
 
 			collapsedText = collapseInputText(inputFiles, inputFileDir, params)
+			if len(variables.showVars()) < 4:
+				print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
+				sys.exit()
 			collapsedFileName = outputDir + "collapsed.txt"
 
 			fileio.writeOutputFile(collapsedFileName, collapsedText)
