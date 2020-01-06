@@ -5,7 +5,10 @@ import chooser
 from textblob import TextBlob
 
 dpStats = {}
-showTrace = False
+showTrace = True
+
+# Thoughts:
+# - "wordy" should only kick in if there's more than one word, or even maybe more than a couple words? (i.e. Ursela Le Guin vs Douglas Adams)
 
 def resetStats():
 	global dpStats
@@ -13,17 +16,27 @@ def resetStats():
 
 def showStats(vars):
 	global dpStats
-	# print "*******************************************************"
-	# print "How many times set discourse variables changed text weight:"
-	# print dpStats
+	print "*******************************************************"
+	print "How many times set discourse variables changed text weight:"
+	print dpStats
 	# filteredStats = {k, v for k, v in dpStats.items() if vars.check(k) }
-	filtered = dict(filter(lambda i: vars.check(i[0]), dpStats.items()))
+	# filtered = dict(filter(lambda i: vars.check(i[0]), dpStats.items()))
 	# print filtered
-	# print "*******************************************************"
+	print "*******************************************************"
 
+trace_output = ""
 def trace(txt):
+	global trace_output
 	if showTrace:
-		print txt
+		trace_output += "%s\n" % txt
+
+def clear_trace():
+	global trace_output
+	trace_output = ""
+
+def show_trace():
+	global trace_output
+	print trace_output
 
 def getDiscoursePreferredVersion(alts, vars):
 	# For each discourse variable set, rank each alt for desireability. Return something weighted for the highest-ranked options.
@@ -31,6 +44,8 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	global dpStats
 	dpQuality = []
+	tracker = dpStats["avoidbe"]
+	clear_trace()
 	trace("******** %s" % alts)
 	if len(alts.alts) == 1:
 		trace("/// YES OR NO ///")
@@ -48,7 +63,7 @@ def getDiscoursePreferredVersion(alts, vars):
 				dpQuality[pos] -= 1
 
 		if vars.check("wordy"):
-			if len(item.txt) == len(alts.getLongest()):
+			if len(item.txt) == len(alts.getLongest()) and len(item.txt) > 30:
 				trace("(Rewarding '%s' b/c @wordy and this is longest)" % item.txt)
 				dpStats["wordy"] += 1
 				dpQuality[pos] += 1
@@ -86,13 +101,23 @@ def getDiscoursePreferredVersion(alts, vars):
 
 
 	# TODO improve stats so if everything ranked the same, it doesn't count as a hit.
-	trace("Final rankings:")
+	firstVal = dpQuality[0]
+	allSame = True
 	for pos, item in enumerate(alts.alts):
-		trace("%d: '%s'" % (dpQuality[pos], item.txt))
+		if dpQuality[pos] != firstVal:
+			allSame = False
+			break
 	bestRankedPositions = getHighestPositions(dpQuality)
-	trace("Best positions: %s" % bestRankedPositions)
 	selectedPos = chooser.oneOf(bestRankedPositions)
-	trace("Picked '%s'" % alts.alts[selectedPos].txt)
+	if not allSame:
+		trace("Final rankings:")
+		for pos, item in enumerate(alts.alts):
+			trace("%d: '%s'" % (dpQuality[pos], item.txt))
+		trace("Best positions: %s" % bestRankedPositions)
+		trace("Picked '%s'" % alts.alts[selectedPos].txt)
+
+	if dpStats["avoidbe"] > tracker:
+		show_trace()
 
 	return alts.alts[selectedPos].txt
 

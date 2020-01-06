@@ -160,6 +160,8 @@ def renderAll(tokens, params, showAllVars=False):
 
 def render(tokens, params):
 
+	MAX_CHARS_FOR_DISCOURSE_VARS = 160
+
 	# Strip begin/end tokens if present.
 	if tokens[0].type == "CTRLBEGIN":
 		tokens = tokens[1:len(tokens)-1]
@@ -177,7 +179,7 @@ def render(tokens, params):
 		return alts.getShortest()
 	elif params.chooseStrategy == "author":
 		result = alts.getAuthorPreferred()
-	elif len(alts.alts) > 1 and len(alts.getLongest()) < 160 and not alts.hasProbabilities() and chooser.percent(params.discourseVarChance):
+	elif len(alts.alts) > 1 and len(alts.getLongest()) < MAX_CHARS_FOR_DISCOURSE_VARS and not alts.hasProbabilities() and chooser.percent(params.discourseVarChance):
 		result = discourseVars.getDiscoursePreferredVersion(alts, variables)
 	else:
 		choice = alts.getRandomAlt()
