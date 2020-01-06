@@ -12,7 +12,7 @@ showTrace = True
 
 def resetStats():
 	global dpStats
-	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0, "bigwords": 0, "slang": 0, "formal": 0, "alliteration": 0, "noalliteration": 0, "avoidme": 0, "likesimile": 0, "dislikesimile": 0}
+	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0, "bigwords": 0, "slang": 0, "formal": 0, "alliteration": 0, "noalliteration": 0, "avoidme": 0, "likesimile": 0, "dislikesimile": 0, "avoiddialogue": 0}
 
 
 def showStats(vars):
@@ -45,7 +45,7 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	global dpStats
 	dpQuality = []
-	tracker = dpStats["likesimile"]
+	tracker = dpStats["avoiddialogue"]
 	clear_trace()
 	trace("******** %s" % alts)
 	if len(alts.alts) == 1:
@@ -124,6 +124,13 @@ def getDiscoursePreferredVersion(alts, vars):
 					dpStats["dislikesimile"] += 1
 					dpQuality[pos] -= 2
 
+		if vars.check("avoiddialogue"):
+			mayHaveDialogue = isSomethingQuoted(item.txt)
+			if mayHaveDialogue:
+				trace("(Penalizing '%s' b/c @avoiddialogue and some was found." % item.txt)
+				dpStats["avoiddialogue"] += 1
+				dpQuality[pos] -= 1
+
 		if vars.check("depressive") or vars.check("optimist") or vars.check("subjective") or vars.check("objective"):
 			safetxt = unicode(item.txt, "utf-8").encode('ascii', 'replace')
 			tb = TextBlob(safetxt)
@@ -171,8 +178,8 @@ def getDiscoursePreferredVersion(alts, vars):
 		trace("Best positions: %s" % bestRankedPositions)
 		trace("Picked '%s'" % alts.alts[selectedPos].txt)
 
-	if dpStats["likesimile"] > tracker:
-		show_trace()
+	# if dpStats["avoiddialogue"] > tracker:
+	show_trace()
 
 	return alts.alts[selectedPos].txt
 
@@ -244,6 +251,9 @@ simileWords = re.compile(r"\b(like|as if)\b", re.IGNORECASE)
 def findSimileWords(txt):
 	return len(re.findall(simileWords, txt))
 
+def isSomethingQuoted(txt):
+	numQuotes = re.findall(r"“.*”", txt)
+	return len(numQuotes) > 0
 
 
 
