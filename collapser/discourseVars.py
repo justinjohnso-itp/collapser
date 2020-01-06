@@ -12,7 +12,8 @@ showTrace = True
 
 def resetStats():
 	global dpStats
-	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0}
+	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0, "bigwords": 0, "slang": 0, "formal": 0}
+
 
 def showStats(vars):
 	global dpStats
@@ -44,7 +45,7 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	global dpStats
 	dpQuality = []
-	tracker = dpStats["optimist"]
+	tracker = dpStats["slang"]
 	clear_trace()
 	trace("******** %s" % alts)
 	if len(alts.alts) == 1:
@@ -53,6 +54,10 @@ def getDiscoursePreferredVersion(alts, vars):
 		dpQuality.append(0)
 
 	# TODO: should these be scaled so they all have equal importance? If so how?
+
+	posOfBiggestWordLen = -1
+	biggestWordLen = -1
+	skipBiggest = False
 
 	for pos, item in enumerate(alts.alts):
 
@@ -66,6 +71,26 @@ def getDiscoursePreferredVersion(alts, vars):
 				trace("(Rewarding '%s' b/c @succinct and this is shortest)" % item.txt)
 				dpStats["succinct"] += 1
 				dpQuality[pos] += 1
+
+		if vars.check("bigwords"):
+			wordLen = getAvgWordLen(item.txt)
+			if wordLen <= 2:
+				skipBiggest = True
+			elif wordLen > biggestWordLen:
+				posOfBiggestWordLen = pos
+				biggestWordLen = wordLen
+
+		if vars.check("slang") or vars.check("formal"):
+			slanginess = findSlangWords(item.txt)
+			if slanginess > 0:
+				if vars.check("slang"):
+					trace("(Rewarding '%s' b/c @slang and %d informal words found." % (item.txt, slanginess))
+					dpStats["slang"] += 1
+					dpQuality[pos] += 1
+				elif vars.check("formal"):
+					trace("(Penalizing '%s' b/c @formal and %d slangy words found." % (item.txt, slanginess))
+					dpStats["formal"] += 1
+					dpQuality[pos] -= 1
 
 		if vars.check("depressive") or vars.check("optimist") or vars.check("subjective") or vars.check("objective"):
 			safetxt = unicode(item.txt, "utf-8").encode('ascii', 'replace')
@@ -90,6 +115,13 @@ def getDiscoursePreferredVersion(alts, vars):
 				dpStats["objective"] += 1
 				dpQuality[pos] -= 1
 
+	# Loop ends
+
+	if vars.check("bigwords") and not skipBiggest:
+		if biggestWordLen > 7:
+			trace("(Rewarding '%s' b/c @bigwords and avg word len is %d)" % (alts.alts[posOfBiggestWordLen].txt, biggestWordLen))
+			dpStats["bigwords"] += 1
+			dpQuality[posOfBiggestWordLen] += 1
 
 	# TODO improve stats so if everything ranked the same, it doesn't count as a hit.
 	firstVal = dpQuality[0]
@@ -107,7 +139,7 @@ def getDiscoursePreferredVersion(alts, vars):
 		trace("Best positions: %s" % bestRankedPositions)
 		trace("Picked '%s'" % alts.alts[selectedPos].txt)
 
-	if dpStats["optimist"] > tracker:
+	if dpStats["slang"] > tracker:
 		show_trace()
 
 	return alts.alts[selectedPos].txt
@@ -126,6 +158,31 @@ def getHighestPositions(arr):
 		elif item == highestRank:
 			highestPositions.append(pos)
 	return highestPositions
+
+
+def getAvgWordLen(txt):
+	if txt.find("{") >= 0:
+		return 0
+	words = re.findall(r'\w+', txt)
+	if len(words) <= 0:
+		return 0
+	onlySignificantWords = filter(lambda word: len(word) >= 4, words)
+	if len(onlySignificantWords) <= 0:
+		return 0
+	wordLengths = map(lambda word: len(word), onlySignificantWords)
+	avgWordLength = sum(wordLengths) / len(wordLengths)
+	return avgWordLength
+
+slangRegex = re.compile(r"\b(thing|things|stuff|okay|ok|cool|guys|dude|junk|sucks|sucked|whatever|wanna|gonna|gotta|dunno|kinda|whatcha|lemme|outta|gimme|ain't|yeah|actually|shit|shitty|fuck|fucking|fucked|till|little|nope|huh|uh|um|umm|ah|ahh|aha|aww|eh|er|eww|hey|hmm|uh-huh|wow|yay|lot|lots|tons|'em|actually|weird|jet|poke)\b", re.IGNORECASE)
+
+def findSlangWords(txt):
+	txt = txt.replace("‘", "'")
+	txt = txt.replace("’", "'")
+	return len(re.findall(slangRegex, txt))
+
+
+	
+
 
 
 
