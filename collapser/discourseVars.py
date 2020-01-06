@@ -8,11 +8,11 @@ dpStats = {}
 showTrace = True
 
 # Thoughts:
-# - "wordy" should only kick in if there's more than one word, or even maybe more than a couple words? (i.e. Ursela Le Guin vs Douglas Adams)
+# - Narrator who prefers big words?
 
 def resetStats():
 	global dpStats
-	dpStats = {"wordy": 0, "succinct": 0, "avoidfiller": 0, "depressive": 0, "subjective": 0, "objective": 0}
+	dpStats = {"wordy": 0, "succinct": 0, "avoidfiller": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0}
 
 def showStats(vars):
 	global dpStats
@@ -44,7 +44,7 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	global dpStats
 	dpQuality = []
-	tracker = dpStats["wordy"]
+	tracker = dpStats["optimist"]
 	clear_trace()
 	trace("******** %s" % alts)
 	if len(alts.alts) == 1:
@@ -61,8 +61,7 @@ def getDiscoursePreferredVersion(alts, vars):
 				trace("(Rewarding '%s' b/c @wordy and this is longest)" % item.txt)
 				dpStats["wordy"] += 1
 				dpQuality[pos] += 1
-
-		if vars.check("succinct"):
+		elif vars.check("succinct"):
 			if len(item.txt) == len(alts.getShortest()):
 				trace("(Rewarding '%s' b/c @succinct and this is shortest)" % item.txt)
 				dpStats["succinct"] += 1
@@ -75,20 +74,25 @@ def getDiscoursePreferredVersion(alts, vars):
 				dpStats["avoidfiller"] += 1
 				dpQuality[pos] -= 1
 
-		if vars.check("depressive") or vars.check("subjective") or vars.check("objective"):
+		if vars.check("depressive") or vars.check("optimist") or vars.check("subjective") or vars.check("objective"):
 			safetxt = unicode(item.txt, "utf-8").encode('ascii', 'replace')
 			tb = TextBlob(safetxt)
 			polarity = tb.sentiment.polarity
 			subjectivity = tb.sentiment.subjectivity
-			if polarity <= -0.5 and vars.check("depressive"):
+			POLARITY_CUTOFF = -0.35
+			if polarity <= POLARITY_CUTOFF and vars.check("depressive"):
 				trace("(Rewarding '%s' b/c @depressive and low polarity %f)" % (item.txt, polarity))
 				dpStats["depressive"] += 1
 				dpQuality[pos] += 1
+			elif polarity <= POLARITY_CUTOFF and vars.check("optimist"):
+				trace("(Penalizing '%s' b/c @optimist and low polarity %f)" % (item.txt, polarity))
+				dpStats["optimist"] += 1
+				dpQuality[pos] -= 1
 			if subjectivity > 0.3 and vars.check("subjective"):
 				trace("(Rewarding '%s' b/c @subjective and subjectivity %f)" % (item.txt, subjectivity))
 				dpStats["subjective"] += 1
 				dpQuality[pos] += 1
-			if subjectivity > 0.3 and vars.check("objective"):
+			elif subjectivity > 0.3 and vars.check("objective"):
 				trace("(Penalizing '%s' b/c @objective and subjectivity %f)" % (item.txt, subjectivity))
 				dpStats["objective"] += 1
 				dpQuality[pos] -= 1
@@ -110,7 +114,7 @@ def getDiscoursePreferredVersion(alts, vars):
 		trace("Best positions: %s" % bestRankedPositions)
 		trace("Picked '%s'" % alts.alts[selectedPos].txt)
 
-	if dpStats["wordy"] > tracker:
+	if dpStats["optimist"] > tracker:
 		show_trace()
 
 	return alts.alts[selectedPos].txt
