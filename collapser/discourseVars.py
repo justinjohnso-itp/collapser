@@ -12,7 +12,7 @@ showTrace = True
 
 def resetStats():
 	global dpStats
-	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0, "bigwords": 0, "slang": 0, "formal": 0, "alliteration": 0, "noalliteration": 0}
+	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0, "bigwords": 0, "slang": 0, "formal": 0, "alliteration": 0, "noalliteration": 0, "avoidme": 0}
 
 
 def showStats(vars):
@@ -45,7 +45,7 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	global dpStats
 	dpQuality = []
-	tracker = dpStats["alliteration"]
+	tracker = dpStats["avoidme"]
 	clear_trace()
 	trace("******** %s" % alts)
 	if len(alts.alts) == 1:
@@ -104,6 +104,13 @@ def getDiscoursePreferredVersion(alts, vars):
 					dpStats["noalliteration"] += 1
 					dpQuality[pos] -= alliterations
 
+		if vars.check("avoidme"):
+			mewords = findMeWords(item.txt)
+			if mewords > 0:
+				trace("(Penalizing '%s' b/c @avoidme and %d me words found." % (item.txt, mewords))
+				dpStats["avoidme"] += 1
+				dpQuality[pos] -= mewords
+
 		if vars.check("depressive") or vars.check("optimist") or vars.check("subjective") or vars.check("objective"):
 			safetxt = unicode(item.txt, "utf-8").encode('ascii', 'replace')
 			tb = TextBlob(safetxt)
@@ -151,7 +158,7 @@ def getDiscoursePreferredVersion(alts, vars):
 		trace("Best positions: %s" % bestRankedPositions)
 		trace("Picked '%s'" % alts.alts[selectedPos].txt)
 
-	if dpStats["alliteration"] > tracker:
+	if dpStats["avoidme"] > tracker:
 		show_trace()
 
 	return alts.alts[selectedPos].txt
@@ -212,6 +219,12 @@ def findAlliteration(txt):
 		lastFirstLetter = word[0]
 	return alliterationCount
 
+meWords = re.compile(r"\b(i|i'm|i'll|i'd|me|my|myself|mine)\b", re.IGNORECASE)
+
+def findMeWords(txt):
+	txt = txt.replace("‘", "'")
+	txt = txt.replace("’", "'")
+	return len(re.findall(meWords, txt))
 
 
 
