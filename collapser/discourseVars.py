@@ -12,7 +12,7 @@ showTrace = True
 
 def resetStats():
 	global dpStats
-	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0, "bigwords": 0, "slang": 0, "formal": 0}
+	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0, "bigwords": 0, "slang": 0, "formal": 0, "alliteration": 0, "noalliteration": 0}
 
 
 def showStats(vars):
@@ -45,7 +45,7 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	global dpStats
 	dpQuality = []
-	tracker = dpStats["slang"]
+	tracker = dpStats["alliteration"]
 	clear_trace()
 	trace("******** %s" % alts)
 	if len(alts.alts) == 1:
@@ -91,6 +91,18 @@ def getDiscoursePreferredVersion(alts, vars):
 					trace("(Penalizing '%s' b/c @formal and %d slangy words found." % (item.txt, slanginess))
 					dpStats["formal"] += 1
 					dpQuality[pos] -= 1
+
+		if vars.check("alliteration") or vars.check("noalliteration"):
+			alliterations = findAlliteration(item.txt)
+			if alliterations > 0:
+				if vars.check("alliteration"):
+					trace("(Rewarding '%s' b/c @alliteration and %d instances found." % (item.txt, alliterations))
+					dpStats["alliteration"] += 1
+					dpQuality[pos] += alliterations
+				elif vars.check("noalliteration"):
+					trace("(Penalizing '%s' b/c @noalliteration and %d instances found." % (item.txt, alliterations))
+					dpStats["noalliteration"] += 1
+					dpQuality[pos] -= alliterations
 
 		if vars.check("depressive") or vars.check("optimist") or vars.check("subjective") or vars.check("objective"):
 			safetxt = unicode(item.txt, "utf-8").encode('ascii', 'replace')
@@ -139,7 +151,7 @@ def getDiscoursePreferredVersion(alts, vars):
 		trace("Best positions: %s" % bestRankedPositions)
 		trace("Picked '%s'" % alts.alts[selectedPos].txt)
 
-	if dpStats["slang"] > tracker:
+	if dpStats["alliteration"] > tracker:
 		show_trace()
 
 	return alts.alts[selectedPos].txt
@@ -180,8 +192,27 @@ def findSlangWords(txt):
 	txt = txt.replace("’", "'")
 	return len(re.findall(slangRegex, txt))
 
+def findAlliteration(txt):
+	txt = txt.lower()
+	if txt.find("{") >= 0:
+		return 0
+	words = re.findall(r'\w+', txt)
+	if len(words) <= 0:
+		return 0
+	onlySignificantWords = filter(lambda word: len(word) >= 4, words)
+	if len(onlySignificantWords) <= 0:
+		return 0
+	alliterationCount = 0
+	lastFirstLetter = ""
+	for word in onlySignificantWords:
+		if len(word) == 0:
+			continue
+		if word[0] == lastFirstLetter:
+			alliterationCount += 1
+		lastFirstLetter = word[0]
+	return alliterationCount
 
-	
+
 
 
 
