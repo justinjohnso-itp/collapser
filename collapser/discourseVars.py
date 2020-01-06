@@ -12,7 +12,7 @@ showTrace = True
 
 def resetStats():
 	global dpStats
-	dpStats = {"avoidbe": 0, "wordy": 0, "succinct": 0, "avoidfiller": 0, "depressive": 0, "subjective": 0, "objective": 0}
+	dpStats = {"wordy": 0, "succinct": 0, "avoidfiller": 0, "depressive": 0, "subjective": 0, "objective": 0}
 
 def showStats(vars):
 	global dpStats
@@ -44,7 +44,7 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	global dpStats
 	dpQuality = []
-	tracker = dpStats["avoidbe"]
+	tracker = dpStats["wordy"]
 	clear_trace()
 	trace("******** %s" % alts)
 	if len(alts.alts) == 1:
@@ -55,12 +55,6 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO: should these be scaled so they all have equal importance? If so how?
 
 	for pos, item in enumerate(alts.alts):
-		if vars.check("avoidbe"):
-			numBeVerbs = getNumBeVerbsInText(item.txt)
-			if numBeVerbs > 0:
-				trace("(Penalizing '%s' b/c @avoidbe and found %d be verbs)" % (item.txt, numBeVerbs))
-				dpStats["avoidbe"] += 1
-				dpQuality[pos] -= 1
 
 		if vars.check("wordy"):
 			if len(item.txt) == len(alts.getLongest()) and len(item.txt) > 30:
@@ -116,7 +110,7 @@ def getDiscoursePreferredVersion(alts, vars):
 		trace("Best positions: %s" % bestRankedPositions)
 		trace("Picked '%s'" % alts.alts[selectedPos].txt)
 
-	if dpStats["avoidbe"] > tracker:
+	if dpStats["wordy"] > tracker:
 		show_trace()
 
 	return alts.alts[selectedPos].txt
@@ -135,14 +129,6 @@ def getHighestPositions(arr):
 		elif item == highestRank:
 			highestPositions.append(pos)
 	return highestPositions
-
-beVerbsRegex = re.compile(r"\b(be|been|being|am|is|isn't|are|aren't|was|wasn't|were|weren't|i'm|he's|she's|it's|they're|you're|that's|there's|what's)\b", re.IGNORECASE)
-
-def getNumBeVerbsInText(txt):
-	# Fix smart quotes
-	txt = txt.replace("‘", "'")
-	txt = txt.replace("’", "'")
-	return len(re.findall(beVerbsRegex, txt))
 
 boringRegex = re.compile(r"\b(the|a|an|i|you|he|she|it|we|they|me|him|her|us|them|my|your|his|its|our|their|hers|ours|yours|theirs|well|something|thing|things|stuff|okay|ok|able|maybe|could|possibly|might)\b", re.IGNORECASE)
 
