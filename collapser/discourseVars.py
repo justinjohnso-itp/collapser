@@ -12,7 +12,7 @@ showTrace = True
 
 def resetStats():
 	global dpStats
-	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0, "bigwords": 0, "slang": 0, "formal": 0, "alliteration": 0, "noalliteration": 0, "avoidme": 0}
+	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0, "bigwords": 0, "slang": 0, "formal": 0, "alliteration": 0, "noalliteration": 0, "avoidme": 0, "likesimile": 0, "dislikesimile": 0}
 
 
 def showStats(vars):
@@ -45,7 +45,7 @@ def getDiscoursePreferredVersion(alts, vars):
 	# TODO if we have one short and one long alternative, the longer one will tend to get penalized more, and less often chosen.
 	global dpStats
 	dpQuality = []
-	tracker = dpStats["avoidme"]
+	tracker = dpStats["likesimile"]
 	clear_trace()
 	trace("******** %s" % alts)
 	if len(alts.alts) == 1:
@@ -111,6 +111,19 @@ def getDiscoursePreferredVersion(alts, vars):
 				dpStats["avoidme"] += 1
 				dpQuality[pos] -= mewords
 
+		if vars.check("likesimile") or vars.check("dislikesimile"):
+			simileWords = findSimileWords(item.txt)
+			if simileWords > 0:
+				if vars.check("likesimile"):
+					trace("(Rewarding '%s' b/c @likesimile and %d simile words found." % (item.txt, simileWords))
+					dpStats["likesimile"] += 1
+					# This won't find all of them so give it a bigger impact.
+					dpQuality[pos] += 2 
+				elif vars.check("dislikesimile"):
+					trace("(Penalizing '%s' b/c @dislikesimile and %d simile words found." % (item.txt, simileWords))
+					dpStats["dislikesimile"] += 1
+					dpQuality[pos] -= 2
+
 		if vars.check("depressive") or vars.check("optimist") or vars.check("subjective") or vars.check("objective"):
 			safetxt = unicode(item.txt, "utf-8").encode('ascii', 'replace')
 			tb = TextBlob(safetxt)
@@ -158,7 +171,7 @@ def getDiscoursePreferredVersion(alts, vars):
 		trace("Best positions: %s" % bestRankedPositions)
 		trace("Picked '%s'" % alts.alts[selectedPos].txt)
 
-	if dpStats["avoidme"] > tracker:
+	if dpStats["likesimile"] > tracker:
 		show_trace()
 
 	return alts.alts[selectedPos].txt
@@ -226,6 +239,10 @@ def findMeWords(txt):
 	txt = txt.replace("’", "'")
 	return len(re.findall(meWords, txt))
 
+simileWords = re.compile(r"\b(like|as if)\b", re.IGNORECASE)
+
+def findSimileWords(txt):
+	return len(re.findall(simileWords, txt))
 
 
 
