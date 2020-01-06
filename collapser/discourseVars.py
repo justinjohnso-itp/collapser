@@ -12,7 +12,7 @@ showTrace = True
 
 def resetStats():
 	global dpStats
-	dpStats = {"wordy": 0, "succinct": 0, "avoidfiller": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0}
+	dpStats = {"wordy": 0, "succinct": 0, "depressive": 0, "optimist": 0, "subjective": 0, "objective": 0}
 
 def showStats(vars):
 	global dpStats
@@ -66,13 +66,6 @@ def getDiscoursePreferredVersion(alts, vars):
 				trace("(Rewarding '%s' b/c @succinct and this is shortest)" % item.txt)
 				dpStats["succinct"] += 1
 				dpQuality[pos] += 1
-
-		if vars.check("avoidfiller"):
-			numArticles = getNumBoringWordsInText(item.txt)
-			if numArticles > 0:
-				trace("(Penalizing '%s' b/c @avoidfiller and found %d weak words)" % (item.txt, numArticles))
-				dpStats["avoidfiller"] += 1
-				dpQuality[pos] -= 1
 
 		if vars.check("depressive") or vars.check("optimist") or vars.check("subjective") or vars.check("objective"):
 			safetxt = unicode(item.txt, "utf-8").encode('ascii', 'replace')
@@ -134,9 +127,5 @@ def getHighestPositions(arr):
 			highestPositions.append(pos)
 	return highestPositions
 
-boringRegex = re.compile(r"\b(the|a|an|i|you|he|she|it|we|they|me|him|her|us|them|my|your|his|its|our|their|hers|ours|yours|theirs|well|something|thing|things|stuff|okay|ok|able|maybe|could|possibly|might)\b", re.IGNORECASE)
-
-def getNumBoringWordsInText(txt):
-	return len(re.findall(boringRegex, txt))
 
 
