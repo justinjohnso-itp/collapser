@@ -246,6 +246,7 @@ def findMeWords(txt):
 	txt = txt.replace("’", "'")
 	return len(re.findall(meWords, txt))
 
+# Welcome to the most ham-fisted way imaginable to check for analogy
 simileWords = re.compile(r"\b(like|as if)\b", re.IGNORECASE)
 
 def findSimileWords(txt):
