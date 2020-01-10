@@ -5,7 +5,7 @@ import chooser
 from textblob import TextBlob
 
 dpStats = {}
-showTrace = True
+showTrace = False
 
 # Thoughts:
 # - Narrator who prefers big words?

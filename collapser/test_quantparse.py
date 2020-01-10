@@ -188,6 +188,22 @@ def test_less_than_100_is_chance_of_blank():
 	text = "[25>alpha|35>beta]"
 	verifyEachIsFound(["alpha", "beta", ""], text)
 
+def test_zero_is_never_selected():
+	text = "[99>alpha|1>gamma|0>beta]"
+	TIMES = 250  # This isn't enough to guarantee on a specific test, but over multiple runthroughs any problems should pop up.
+	for _ in range(TIMES):
+		result = parse(text)
+		assert result == "alpha" or result == "gamma"
+	text = "Test of [0>null ]probability."
+	for _ in range(TIMES):
+		result = parse(text)
+		assert result == "Test of probability."
+	text = "[DEFINE 0>@never]This will [@never>certainly not ]appear."
+	for _ in range(TIMES):
+		result = parse(text)
+		assert result == "This will appear."
+
+
 def test_defines_are_stripped():
 	text = "[DEFINE @test1][DEFINE @test2]This is a test of [DEFINE @test3]stripping.[DEFINE   @test4]"
 	assert parse(text) == "This is a test of stripping."
