@@ -21,7 +21,8 @@ class RendererTweet(renderer.Renderer):
 		print "Rendering to tweets."
 		inputFile = self.params["outputDir"] + self.params["fileId"] + ".txt"
 		inputText = fileio.readInputFile(inputFile)
-		tweets = splitIntoTweets(inputText)
+		cleanedText = prepInputForTweets(inputText)
+		tweets = splitIntoTweets(cleanedText)
 		output = "\n==============\n".join(tweets)
 
 		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".tweets.txt"
@@ -30,6 +31,10 @@ class RendererTweet(renderer.Renderer):
 	def renderFormattingSequence(self, contents):
 		pass
 
+
+def prepInputForTweets(text):
+	text = text.replace("	", "    ")
+	return text
 
 # How to break tweets?
 # - Break at paragraph breaks
@@ -99,7 +104,7 @@ def addTweet(tweets, tweet, max_size):
 	tweet = re.sub(r"([a-z])\n([a-z])", r"\1 \2", tweet)
 	tweet = re.sub(r" +", " ", tweet)
 	tweet = re.sub(r"\|\|", "\n\n", tweet)
-	print "Tweet (%d):\n\"%s\"\n\n" % (len(tweet), tweet)
+	# print "Tweet (%d):\n\"%s\"\n\n" % (len(tweet), tweet)
 	if len(tweet) > max_size:
 		print "ERROR: Tried to append tweet with length %d" % len(tweet)
 		sys.exit()
@@ -152,7 +157,6 @@ def splitIntoSentences(text):
 	text = re.sub(r"\n{2,}", "\n\n", text)
 	outputArr = []
 	pos = 0
-	# pattern = r"([\.!\?][_\"\)]*)([ \n\#]+)(?![a-z])(Chapter |Part )"
 	pattern = r"([\.!\?][_\"\)]*)([ \n\#]+)(?![a-z])(Chapter [0-9]+|PART .*\n\n.*)?"
 	prevPos = 0
 	savedBreak = ""
@@ -162,10 +166,10 @@ def splitIntoSentences(text):
 		endPunc = match.group(1)
 		endSpace = match.group(2)
 		breakSpace = match.group(3)
-		print 'Sentence ended with endPunc "%s" and endSpace "%s" and breakSpace "%s" at %d:%d' % (endPunc, endSpace, breakSpace, startPos, endPos)
+		# print 'Sentence ended with endPunc "%s" and endSpace "%s" and breakSpace "%s" at %d:%d' % (endPunc, endSpace, breakSpace, startPos, endPos)
 
 		sentence = text[prevPos:startPos + len(endPunc)]
-		print '-->sentence: "%s"' % sentence
+		# print '-->sentence: "%s"' % sentence
 		join = ""
 		if endSpace == " " or endSpace == "  ":
 			join = "SPACE"
@@ -177,11 +181,11 @@ def splitIntoSentences(text):
 			join = "SECTIONBREAK"
 		elif re.search(r"(\n){2,}", endSpace):
 			join = "PARAGRAPH"
-		elif endSpace == "\n":
+		elif re.search(r"\n *", endSpace):
 			join = "LINEBREAK"
-		print "-->join: %s" % join
+		# print "-->join: %s" % join
 		if join == "":
-			print "ERROR"
+			print "ERROR. endSpace '%s', breakSpace '%s'" % (endSpace, breakSpace)
 			sys.exit()
 
 		sen = sentence
