@@ -20,6 +20,7 @@ import chooser
 import differ
 import hasher
 import variables
+import result
 import renderer_latex
 import renderer_text
 import renderer_html
@@ -255,9 +256,9 @@ def collapseInputText(inputFiles, inputFileDir, params):
 	fileContents = []
 	fileList = []
 	for iFile in inputFiles:
-		result = readManifestOrFile(iFile, inputFileDir, params)
-		fileContents = fileContents + result["files"]
-		fileList = fileList + result["fileList"]
+		res = readManifestOrFile(iFile, inputFileDir, params)
+		fileContents = fileContents + res["files"]
+		fileList = fileList + res["fileList"]
 	fileSetKey = hasher.hash(''.join(fileList))
 	params.fileSetKey = fileSetKey
 
@@ -274,11 +275,15 @@ def collapseInputText(inputFiles, inputFileDir, params):
 			sys.exit()
 	joinedSelectionTexts = ''.join(selectionTexts)
 	joinedAllTexts = ''.join(fileContents)
-	result = collapse.go(joinedAllTexts, joinedSelectionTexts, params)
-	if not result.isValid:
-		print result
+	try:
+		res = collapse.go(joinedAllTexts, joinedSelectionTexts, params)
+	except result.ParseException as e:
+		print e.result
 		sys.exit()
-	collapsedText = result.package
+	if not res.isValid:
+		print res
+		sys.exit()
+	collapsedText = res.package
 
 	return collapsedText
 
