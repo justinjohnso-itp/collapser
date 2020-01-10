@@ -255,18 +255,15 @@ def test_defines_with_probabilities_must_sum_to_100():
 	with pytest.raises(Exception) as e_info:
 		parse(text)
 
-	text = "[DEFINE 99>@A]"
-	with pytest.raises(Exception) as e_info:
-		parse(text)
-	text = "[DEFINE 1>@A]"
-	with pytest.raises(Exception) as e_info:
-		parse(text)
-
 	text = "[DEFINE 10>@A|15>@B|4>@C|31>@D|38>@E|2>@F]"
 	assert parse(text) == ""
 	text = "[DEFINE 10>@A|15>@B|31>@D|38>@E|2>@F]"
 	with pytest.raises(Exception) as e_info:
 		parse(text)
+
+def test_probability_boolean_defines_are_okay():
+	text = "[DEFINE 45>@A]We say [@A>this|that]."
+	verifyEachIsFound(["We say this.", "We say that."], text)
 
 def test_equal_distribution_defines():
 	text = "[DEFINE @wordy|@average|@taciturn]I am a [@wordy>rather wordy|@average>normal|@taciturn>quiet] person."

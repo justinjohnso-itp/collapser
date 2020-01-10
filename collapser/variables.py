@@ -255,9 +255,9 @@ def handleDefs(tokens, params):
 				token = tokens[index]
 
 		if not foundSetDefine:
-			if probTotal != 0 and probTotal != 100:
+			if len(alts) > 1 and probTotal != 0 and probTotal != 100:
 				badResult = result.Result(result.PARSE_RESULT)
-				badResult.flagBad("Probabilities in a DEFINE must sum to 100: found %d instead." % probTotal, params.originalText, tokens[index-1].lexpos)
+				badResult.flagBad("Probabilities in a DEFINE must sum to 100: found %d instead in '%s'" % (probTotal, alts), params.originalText, tokens[index-1].lexpos)
 				raise result.ParseException(badResult)
 			if len(alts) == 0:
 				__v.set(groupName, lastVarName, False)
