@@ -273,6 +273,13 @@ def collapseInputText(inputFiles, inputFileDir, params):
 		if len(selectionTexts) == 0:
 			print "Something went wrong; nothing was selected for output. params.onlyShow was '%s'" % params.onlyShow
 			sys.exit()
+	
+	# Manually add end matter (test)
+	em = "chapters/end-abouttheauthor.txt"
+	print "Selecting %s" % em
+	emContents = fileio.readInputFile(em)
+	selectionTexts.append(emContents)
+
 	joinedSelectionTexts = ''.join(selectionTexts)
 	joinedAllTexts = ''.join(fileContents)
 	try:

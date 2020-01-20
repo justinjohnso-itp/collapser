@@ -83,6 +83,14 @@ class RendererLatex(renderer.Renderer):
 		if code == "vspace":
 			text = contents[1]
 			return template_vspace[0] + text + template_vspace[1]
+		if code == "start_matter":
+			header = contents[1]
+			return template_start_matter[0] + header + template_start_matter[1]
+		if code == "finish_matter":
+			return template_finish_matter
+		if code == "url":
+			url = contents[1]
+			return template_url[0] + url + template_url[1]
 
 		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, contents)) 
 
@@ -347,6 +355,32 @@ template_part = ['''
 
 \\vspace*{4\\nbs}''']
 
+template_start_matter = ['''
+
+\\cleartorecto
+\\thispagestyle{empty}
+\\begin{parascale}[0.88]
+\\vspace*{9\\nbs}
+\\begin{adjustwidth}{4em}{4em}
+\\begin{center}
+\\textsc{''', '''}
+\\end{center}
+\\vspace*{2\\nbs}
+
+''']
+
+template_finish_matter = '''
+
+\\end{adjustwidth}
+\\end{parascale}
+
+'''
+
+template_url = ['''
+\\begin{center}
+\\textsc{''', '''}
+\\end{center}
+''']
 
 template_end_part = '''
 
