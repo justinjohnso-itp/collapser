@@ -295,15 +295,16 @@ def collapseInputText(inputFiles, inputFileDir, params):
 	return collapsedText
 
 def readManifestOrFile(inputFile, inputFileDir, params):
-	inputText = fileio.readInputFile(inputFileDir + inputFile)
+	filePath = inputFileDir + inputFile
+	inputText = fileio.readInputFile(filePath)
 	fileList = []
 	files = []
 	if inputText[:10] == "# MANIFEST":
-		print "Reading manifest '%s'" % inputFile
+		print "Reading manifest '%s'" % filePath
 		fileList = fileio.getFilesFromManifest(inputText)
 		files = fileio.loadManifestFromFileList(inputFileDir, fileList)
 	else:
-		print "Reading file '%s'" % inputFile
+		print "Reading file '%s'" % filePath
 		fileHeader = fileio.getFileId(inputFile)
 		fileList = [inputFile]
 		files = [fileHeader + inputText]
