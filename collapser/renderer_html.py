@@ -20,7 +20,7 @@ class RendererHTML(renderer.Renderer):
 		workFile = self.renderFormattingSequences()
 		workFile = specialHTMLFixes(workFile)
 		postHTMLificationSanityCheck(workFile)
-		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".html"
+		outputFileName = self.params.outputDir + self.params.fileId + ".html"
 		fileio.writeOutputFile(outputFileName, workFile)
 
 	def renderFormattingSequence(self, contents):

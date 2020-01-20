@@ -20,7 +20,7 @@ class RendererText(renderer.Renderer):
 		workFile = self.renderFormattingSequences()
 		workFile = specialTextFixes(workFile)
 		postTextificationSanityCheck(workFile)
-		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".txt"
+		outputFileName = self.params.outputDir + self.params.fileId + ".txt"
 		fileio.writeOutputFile(outputFileName, workFile)
 
 	def renderFormattingSequence(self, contents):

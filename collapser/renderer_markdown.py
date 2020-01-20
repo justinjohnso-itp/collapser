@@ -19,10 +19,10 @@ class RendererMarkdown(renderer.Renderer):
 		self.collapsedText = prepForMarkdownOutput(self.collapsedText)
 		workFile = self.renderFormattingSequences()
 		workFile = specialMarkdownFixes(workFile)
-		if self.params["doFront"]:
-			workFile = generateFrontMatter(self.params["seed"]) + workFile
+		if self.params.doFront:
+			workFile = generateFrontMatter(self.params.seed) + workFile
 		postMarkdownificationSanityCheck(workFile)
-		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".md"
+		outputFileName = self.params.outputDir + self.params.fileId + ".md"
 		fileio.writeOutputFile(outputFileName, workFile)
 
 	def renderFormattingSequence(self, contents):

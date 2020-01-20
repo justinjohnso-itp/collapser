@@ -19,13 +19,13 @@ class RendererTweet(renderer.Renderer):
 
 	def makeOutputFile(self):
 		print "Rendering to tweets."
-		inputFile = self.params["outputDir"] + self.params["fileId"] + ".txt"
+		inputFile = self.params.outputDir + self.params.fileId + ".txt"
 		inputText = fileio.readInputFile(inputFile)
 		cleanedText = prepInputForTweets(inputText)
 		tweets = splitIntoTweets(cleanedText)
 		output = "\n==============\n".join(tweets)
 
-		outputFileName = self.params["outputDir"] + self.params["fileId"] + ".tweets.txt"
+		outputFileName = self.params.outputDir + self.params.fileId + ".tweets.txt"
 		fileio.writeOutputFile(outputFileName, output)
 
 	def renderFormattingSequence(self, contents):

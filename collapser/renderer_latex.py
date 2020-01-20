@@ -26,14 +26,14 @@ class RendererLatex(renderer.Renderer):
 		self.collapsedText = specialLatexAndPDFFixes(self.collapsedText)
 		workFile = self.renderFormattingSequences()
 		postLatexificationSanityCheck(workFile)
-		stagedFileText = latexWrapper(workFile, self.params["seed"], self.params["doFront"])
-		latexFileName = self.params["fileId"] + ".tex"
-		fileio.writeOutputFile(self.params["outputDir"] + latexFileName, stagedFileText)
+		stagedFileText = latexWrapper(workFile, self.params.seed, self.params.doFront)
+		latexFileName = self.params.fileId + ".tex"
+		fileio.writeOutputFile(self.params.outputDir + latexFileName, stagedFileText)
 
 	def makeOutputFile(self):
-		inputFileName = self.params["fileId"] + ".tex"
-		outputFileName = self.params["fileId"] + ".pdf"
-		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["skipPadding"], self.params["endMatter"], self.params["isDigital"])
+		inputFileName = self.params.fileId + ".tex"
+		outputFileName = self.params.fileId + ".pdf"
+		outputPDF(self.params.outputDir, inputFileName, outputFileName, self.params.skipPadding, self.params.endMatter, self.params.isDigital)
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]

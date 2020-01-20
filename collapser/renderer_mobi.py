@@ -20,7 +20,7 @@ class RendererMobi(renderer.Renderer):
 
 	def makeOutputFile(self):
 		print "Rendering to mobi."
-		inputFile = self.params["outputDir"] + self.params["fileId"] + ".epub"
+		inputFile = self.params.outputDir + self.params.fileId + ".epub"
 		outputEPub(inputFile)
 
 	def renderFormattingSequence(self, contents):

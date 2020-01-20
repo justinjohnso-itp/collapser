@@ -2,6 +2,23 @@
 import abc
 import re
 
+
+class RenderParams:
+
+	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, endMatter = False, outputDir = "", isDigital = False, copies = 1):
+		self.outputFormat = outputFormat
+		self.fileId = fileId
+		self.seed = seed
+		self.randSeed = randSeed
+		self.doFront = doFront
+		self.skipPadding = skipPadding
+		self.endMatter = endMatter
+		self.outputDir = outputDir
+		self.isDigital = isDigital
+		self.copies = copies
+
+
+
 class Renderer(object):
 	__metaclass__ = abc.ABCMeta
 

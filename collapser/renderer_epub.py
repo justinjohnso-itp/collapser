@@ -20,10 +20,10 @@ class RendererEPub(renderer.Renderer):
 
 	def makeOutputFile(self):
 		print "Rendering to epub."
-		outputDir = self.params["outputDir"]
-		inputFile = outputDir + self.params["fileId"] + ".md"
-		outputFile = outputDir + self.params["fileId"] + ".epub"
-		title = generateTitle(self.params["seed"])
+		outputDir = self.params.outputDir
+		inputFile = outputDir + self.params.fileId + ".md"
+		outputFile = outputDir + self.params.fileId + ".epub"
+		title = generateTitle(self.params.seed)
 		fileio.writeOutputFile(outputDir + "title.md", title)
 		outputEPub(outputDir, inputFile, outputFile)
 

@@ -21,6 +21,7 @@ import differ
 import hasher
 import variables
 import result
+import renderer
 import renderer_latex
 import renderer_text
 import renderer_html
@@ -169,9 +170,13 @@ def main():
 		print "*** You set seed to %d but also set variables %s; you need to do one or the other ***\n" % (seed, setDefines)
 		sys.exit()
 
-	params = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow, endMatter = endMatter)
+	parseParams = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow, endMatter = endMatter)
+	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = -1, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, endMatter = endMatter, outputDir = outputDir, isDigital = isDigital, copies = copies)
 
-	if strategy == "pair":
+	makeBooks(inputFiles, inputFileDir, parseParams, renderParams)
+
+def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
+	if parseParams.chooseStrategy == "pair":
 		# TODO make this work with new output format.
 		texts = []
 		tries = 10
@@ -179,33 +184,37 @@ def main():
 		seed = chooser.nextSeed()
 		for x in range(tries):
 			seeds.append(seed)
-			texts.append(collapseInputText(inputFiles, inputFileDir, params))
+			texts.append(collapseInputText(inputFiles, inputFileDir, parseParams))
 			seed = chooser.nextSeed()
 		leastSimilarPair = differ.getTwoLeastSimilar(texts)
 		text0 = texts[leastSimilarPair[0]]
 		seed0 = seeds[leastSimilarPair[0]]
 		text1 = texts[leastSimilarPair[1]]
 		seed1 = seeds[leastSimilarPair[1]]
-		render(outputFormat, text0, outputDir, outputFile, seed0, doFront, skipPadding, endMatter, isDigital)
-		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, skipPadding, endMatter, isDigital)
+		renderParams.seed = seed0
+		render(text0, renderParams)
+		renderParams.seed = seed1
+		renderParams.fileId = alternateOutputFile
+		render(text1, renderParams)
 
 	else:
-		copiesRequested = copies
+		copies = renderParams.copies
 		while copies >= 1:
-			thisSeed = seed
-			if strategy != "random" and strategy != "skipbanned":
-				print "Ignoring seed (b/c strategy = %s)" % strategy
-			elif randSeed:
+			thisSeed = renderParams.seed
+			if parseParams.chooseStrategy != "random" and parseParams.chooseStrategy != "skipbanned":
+				print "Ignoring seed (b/c chooseStrategy = %s)" % parseParams.chooseStrategy
+			elif renderParams.randSeed:
 				thisSeed = chooser.randomSeed()
 				print "Seed (purely random): %d" % thisSeed
-			elif seed is -1:
+			elif thisSeed is -1:
 				thisSeed = chooser.nextSeed()
 				print "Seed (next): %d" % thisSeed
 			else:
 				chooser.setSeed(thisSeed)
 				print "Seed (requested): %d" % thisSeed
+			renderParams.seed = thisSeed
 
-			collapsedText = collapseInputText(inputFiles, inputFileDir, params)
+			collapsedText = collapseInputText(inputFiles, inputFileDir, parseParams)
 			if len(variables.showVars()) < 4:
 				print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
 				sys.exit()
@@ -213,27 +222,20 @@ def main():
 
 			fileio.writeOutputFile(collapsedFileName, collapsedText)
 
-			thisOutputFile = outputFile
-			if copiesRequested > 1:
-				thisOutputFile = "%s-%s" % (outputFile, thisSeed)
-			render(outputFormat, collapsedText, outputDir, thisOutputFile, thisSeed, doFront, skipPadding, endMatter, isDigital)
+			thisOutputFile = renderParams.fileId
+			if renderParams.copies > 1:
+				thisOutputFile = "%s-%s" % (renderParams.fileId, renderParams.thisSeed)
+			renderParams.fileId = thisOutputFile
+			render(collapsedText, renderParams)
 
 			copies -= 1
 			if copies > 0:
 				print "%d cop%s left to generate." % (copies, "y" if copies is 1 else "ies")
 
 
-def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, skipPadding, endMatter, isDigital):
+def render(collapsedText, renderParams):
+	outputFormat = renderParams.outputFormat
 	if outputFormat != "":
-		renderParams = {
-			"fileId": outputFile,
-			"seed": seed,
-			"doFront": doFront,
-			"skipPadding": skipPadding,
-			"endMatter": endMatter,
-			"outputDir": outputDir,
-			"isDigital": isDigital
-		}
 		renderer = None
 		if outputFormat == "pdf":
 			renderer = renderer_latex.RendererLatex(collapsedText, renderParams)
