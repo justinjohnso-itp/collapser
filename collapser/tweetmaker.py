@@ -1,3 +1,4 @@
+# Standalone program for generating promotional tweets. 
 
 import chooser
 
