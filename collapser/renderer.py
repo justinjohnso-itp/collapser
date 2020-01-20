@@ -16,6 +16,7 @@ class RenderParams:
 		self.outputDir = outputDir
 		self.isDigital = isDigital
 		self.copies = copies
+		self.renderer = None
 
 
 

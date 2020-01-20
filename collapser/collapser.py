@@ -247,26 +247,25 @@ def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
 def render(collapsedText, renderParams):
 	outputFormat = renderParams.outputFormat
 	if outputFormat != "":
-		renderer = None
 		if outputFormat == "pdf":
-			renderer = renderer_latex.RendererLatex(collapsedText, renderParams)
+			renderParams.renderer = renderer_latex.RendererLatex(collapsedText, renderParams)
 		elif outputFormat == "txt":
-			renderer = renderer_text.RendererText(collapsedText, renderParams)
+			renderParams.renderer = renderer_text.RendererText(collapsedText, renderParams)
 		elif outputFormat == "html":
-			renderer = renderer_html.RendererHTML(collapsedText, renderParams)
+			renderParams.renderer = renderer_html.RendererHTML(collapsedText, renderParams)
 		elif outputFormat == "md":
-			renderer = renderer_markdown.RendererMarkdown(collapsedText, renderParams)
+			renderParams.renderer = renderer_markdown.RendererMarkdown(collapsedText, renderParams)
 		elif outputFormat == "epub":
-			renderer = renderer_epub.RendererEPub(collapsedText, renderParams)
+			renderParams.renderer = renderer_epub.RendererEPub(collapsedText, renderParams)
 		elif outputFormat == "mobi":
-			renderer = renderer_mobi.RendererMobi(collapsedText, renderParams)
+			renderParams.renderer = renderer_mobi.RendererMobi(collapsedText, renderParams)
 		elif outputFormat == "tweet":
-			renderer = renderer_tweet.RendererTweet(collapsedText, renderParams)
+			renderParams.renderer = renderer_tweet.RendererTweet(collapsedText, renderParams)
 
-		if renderer is None:
+		if renderParams.renderer is None:
 			print "No rendering requested or available."
 		else:
-			renderer.render()
+			renderParams.renderer.render()
 
 
 
