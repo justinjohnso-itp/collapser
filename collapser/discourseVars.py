@@ -17,13 +17,13 @@ def resetStats():
 
 def showStats(vars):
 	global dpStats
-	print "*******************************************************"
-	print "How many times set discourse variables changed text weight:"
-	print dpStats
+	# print "*******************************************************"
+	# print "How many times set discourse variables changed text weight:"
+	# print dpStats
 	# filteredStats = {k, v for k, v in dpStats.items() if vars.check(k) }
 	# filtered = dict(filter(lambda i: vars.check(i[0]), dpStats.items()))
 	# print filtered
-	print "*******************************************************"
+	# print "*******************************************************"
 
 trace_output = ""
 def trace(txt):
@@ -212,7 +212,7 @@ def getAvgWordLen(txt):
 	avgWordLength = sum(wordLengths) / len(wordLengths)
 	return avgWordLength
 
-slangRegex = re.compile(r"\b(thing|things|stuff|okay|ok|cool|guys|dude|junk|sucks|sucked|whatever|wanna|gonna|gotta|dunno|kinda|whatcha|lemme|outta|gimme|ain't|yeah|actually|shit|shitty|fuck|fucking|fucked|till|little|nope|huh|uh|um|umm|ah|ahh|aha|aww|eh|er|eww|hey|hmm|uh-huh|wow|yay|lot|lots|tons|'em|actually|weird|jet|poke)\b", re.IGNORECASE)
+slangRegex = re.compile(r"\b(thing|things|stuff|okay|ok|cool|guys|dude|junk|sucks|sucked|whatever|wanna|gonna|gotta|dunno|kinda|whatcha|lemme|outta|gimme|ain't|yeah|yep|yup|actually|shit|shitty|fuck|fucking|fucked|till|little|nope|huh|uh|um|umm|ah|ahh|aha|aww|eh|er|eww|hey|hmm|uh-huh|wow|yay|lot|lots|tons|'em|actually|weird|jet|poke)\b", re.IGNORECASE)
 
 def findSlangWords(txt):
 	txt = txt.replace("‘", "'")
