@@ -33,9 +33,10 @@ class RendererLatex(renderer.Renderer):
 	def makeOutputFile(self):
 		inputFileName = self.params.fileId + ".tex"
 		outputFileName = self.params.fileId + ".pdf"
-		outputPDF(self.params.outputDir, inputFileName, outputFileName, self.params.skipPadding, self.params.endMatter, self.params.isDigital)
+		outputPDF(self.params, inputFileName, outputFileName)
 
 	def suggestEndMatters(self):
+		print "In renderer_latex.suggestEndMatters, numPDFPages: %d" % self.params.pdfPages
 		return ["end-abouttheauthor.txt"]
 
 	def renderFormattingSequence(self, contents):
@@ -191,22 +192,25 @@ This is the one you have.""" % seedPrinted
 
 
 
-def outputPDF(outputDir, inputFile, outputFile, skipPadding, endMatter, isDigital):
+def outputPDF(params, inputFile, outputFile):
 	PADDED_PAGES = 232
-	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (outputDir, inputFile))
+	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (params.outputDir, inputFile))
 	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
 	latexLooksGood = postLatexSanityCheck(result["output"])
 	if not latexLooksGood:
 		print "*** Generation failed. Check .log file in output folder."
 		sys.exit()
-	else:
-		stats = getStats(result["output"])
-		print "Success! Generated %d page PDF." % stats["numPages"]
-		if not skipPadding:
-			addPadding(outputDir, outputFile, stats["numPages"], PADDED_PAGES)
-		if isDigital:
-			print "isDigital, so adding cover"
-			addCover(outputFile, "fragments/cover.pdf")
+
+	stats = getStats(result["output"])
+	numPages = stats["numPages"]
+	print "Generated %d page PDF." % numPages
+	params.pdfPages = numPages
+
+	if not params.skipPadding:
+		addPadding(params.outputDir, outputFile, stats["numPages"], PADDED_PAGES)
+	if params.isDigital:
+		print "isDigital, so adding cover"
+		addCover(outputFile, "fragments/cover.pdf")
 
 
 

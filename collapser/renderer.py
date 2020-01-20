@@ -17,6 +17,7 @@ class RenderParams:
 		self.isDigital = isDigital
 		self.copies = copies
 		self.renderer = None
+		self.pdfPages = -1
 
 
 
