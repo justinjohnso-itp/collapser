@@ -60,10 +60,8 @@ Arguments:
                  Preface with ^ to negate
   --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
   --skipPadding		Skip padding to 232 pages
-  --skipEndMatter	Don't add end matter in padding
-  --endMatter=x,y	End matter files to render and append (note that
-  					except for testing these are automatically selected
-  					provided skipEndMatter is False)
+  --endMatter=auto	Automatically add appropriate end matter
+  --endMatter=x,y	Add specific end matter files
 """
 
 
@@ -84,7 +82,6 @@ def main():
 	setDefines = []
 	discourseVarChance = 80
 	skipPadding = False
-	skipEndMatter = False
 	endMatter = []
 	randSeed = False
 	isDigital = False
@@ -93,7 +90,7 @@ def main():
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "skipPadding", "skipEndMatter", "input=", "only=", "endMatter="])
+	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -152,10 +149,11 @@ def main():
 				sys.exit()
 		elif opt == "--skipPadding":
 			skipPadding = True
-		elif opt == "--skipEndMatter":
-			skipEndMatter = True
 		elif opt == "--endMatter":
-			endMatter = arg.split(',')
+			if arg == "auto":
+				endMatter = ["auto"]
+			else:
+				endMatter = arg.split(',')
 			print "Setting endMatter: %s" % endMatter
 
 	if outputFile == "":
@@ -181,15 +179,15 @@ def main():
 		seed = chooser.nextSeed()
 		for x in range(tries):
 			seeds.append(seed)
-			texts.append(collapseInputText(inputFiles, inputFileDir, skipEndMatter, params))
+			texts.append(collapseInputText(inputFiles, inputFileDir, params))
 			seed = chooser.nextSeed()
 		leastSimilarPair = differ.getTwoLeastSimilar(texts)
 		text0 = texts[leastSimilarPair[0]]
 		seed0 = seeds[leastSimilarPair[0]]
 		text1 = texts[leastSimilarPair[1]]
 		seed1 = seeds[leastSimilarPair[1]]
-		render(outputFormat, text0, outputDir, outputFile, seed0, doFront, skipPadding, skipEndMatter, isDigital)
-		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, skipPadding, skipEndMatter, isDigital)
+		render(outputFormat, text0, outputDir, outputFile, seed0, doFront, skipPadding, endMatter, isDigital)
+		render(outputFormat, text1, outputDir, alternateOutputFile, seed1, doFront, skipPadding, endMatter, isDigital)
 
 	else:
 		copiesRequested = copies
@@ -207,7 +205,7 @@ def main():
 				chooser.setSeed(thisSeed)
 				print "Seed (requested): %d" % thisSeed
 
-			collapsedText = collapseInputText(inputFiles, inputFileDir, skipEndMatter, params)
+			collapsedText = collapseInputText(inputFiles, inputFileDir, params)
 			if len(variables.showVars()) < 4:
 				print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
 				sys.exit()
@@ -218,21 +216,21 @@ def main():
 			thisOutputFile = outputFile
 			if copiesRequested > 1:
 				thisOutputFile = "%s-%s" % (outputFile, thisSeed)
-			render(outputFormat, collapsedText, outputDir, thisOutputFile, thisSeed, doFront, skipPadding, skipEndMatter, isDigital)
+			render(outputFormat, collapsedText, outputDir, thisOutputFile, thisSeed, doFront, skipPadding, endMatter, isDigital)
 
 			copies -= 1
 			if copies > 0:
 				print "%d cop%s left to generate." % (copies, "y" if copies is 1 else "ies")
 
 
-def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, skipPadding, skipEndMatter, isDigital):
+def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, skipPadding, endMatter, isDigital):
 	if outputFormat != "":
 		renderParams = {
 			"fileId": outputFile,
 			"seed": seed,
 			"doFront": doFront,
 			"skipPadding": skipPadding,
-			"skipEndMatter": skipEndMatter,
+			"endMatter": endMatter,
 			"outputDir": outputDir,
 			"isDigital": isDigital
 		}
@@ -259,7 +257,7 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, sk
 
 
 
-def collapseInputText(inputFiles, inputFileDir, skipEndMatter, params):
+def collapseInputText(inputFiles, inputFileDir, params):
 	fileContents = []
 	fileList = []
 	for iFile in inputFiles:
@@ -282,17 +280,11 @@ def collapseInputText(inputFiles, inputFileDir, skipEndMatter, params):
 			sys.exit()
 	
 	# Add end matter.
-	# Note: the valid states are:
-	# --skipEndMatter [don't generate any endMatter]
-	# --endMatter=x,y [manually include some end matter]
-	# neither [in which case automatically look for end matter to include]
-	if skipEndMatter and len(params.endMatter) > 0:
-		print "Error: You can't set --skipEndMatter and also specify end matter to include."
-		sys.exit()
-	for em in params.endMatter:
-		em = readManifestOrFile(em, inputFileDir, params)
-		emContents = em["files"][0]
-		selectionTexts.append(emContents)
+	if len(params.endMatter) > 0 and params.endMatter[0] != "auto":
+		for em in params.endMatter:
+			em = readManifestOrFile(em, inputFileDir, params)
+			emContents = em["files"][0]
+			selectionTexts.append(emContents)
 
 	joinedSelectionTexts = ''.join(selectionTexts)
 	joinedAllTexts = ''.join(fileContents)

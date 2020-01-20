@@ -33,7 +33,7 @@ class RendererLatex(renderer.Renderer):
 	def makeOutputFile(self):
 		inputFileName = self.params["fileId"] + ".tex"
 		outputFileName = self.params["fileId"] + ".pdf"
-		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["skipPadding"], self.params["skipEndMatter"], self.params["isDigital"])
+		outputPDF(self.params["outputDir"], inputFileName, outputFileName, self.params["skipPadding"], self.params["endMatter"], self.params["isDigital"])
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
@@ -188,7 +188,7 @@ This is the one you have.""" % seedPrinted
 
 
 
-def outputPDF(outputDir, inputFile, outputFile, skipPadding, skipEndMatter, isDigital):
+def outputPDF(outputDir, inputFile, outputFile, skipPadding, endMatter, isDigital):
 	PADDED_PAGES = 232
 	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (outputDir, inputFile))
 	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
