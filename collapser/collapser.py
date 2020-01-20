@@ -175,9 +175,14 @@ def main():
 
 	makeBooks(inputFiles, inputFileDir, parseParams, renderParams)
 
+
+
+
 def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	if parseParams.chooseStrategy == "pair":
-		makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
+		# makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
+		print "Book pair functionality currently offline."
+		sys.exit()
 	else:
 		copies = renderParams.copies
 		while copies >= 1:
@@ -187,26 +192,26 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 				print "%d cop%s left to generate." % (copies, "y" if copies is 1 else "ies")
 
 
-def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
-	# TODO make this work with new output format.
-	texts = []
-	tries = 10
-	seeds = []
-	seed = chooser.nextSeed()
-	for x in range(tries):
-		seeds.append(seed)
-		texts.append(collapseInputText(inputFiles, inputFileDir, parseParams))
-		seed = chooser.nextSeed()
-	leastSimilarPair = differ.getTwoLeastSimilar(texts)
-	text0 = texts[leastSimilarPair[0]]
-	seed0 = seeds[leastSimilarPair[0]]
-	text1 = texts[leastSimilarPair[1]]
-	seed1 = seeds[leastSimilarPair[1]]
-	renderParams.seed = seed0
-	render(text0, renderParams)
-	renderParams.seed = seed1
-	renderParams.fileId = alternateOutputFile
-	render(text1, renderParams)
+# def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
+# 	# TODO make this work with new output format.
+# 	texts = []
+# 	tries = 10
+# 	seeds = []
+# 	seed = chooser.nextSeed()
+# 	for x in range(tries):
+# 		seeds.append(seed)
+# 		texts.append(collapseInputText(inputFiles, inputFileDir, parseParams))
+# 		seed = chooser.nextSeed()
+# 	leastSimilarPair = differ.getTwoLeastSimilar(texts)
+# 	text0 = texts[leastSimilarPair[0]]
+# 	seed0 = seeds[leastSimilarPair[0]]
+# 	text1 = texts[leastSimilarPair[1]]
+# 	seed1 = seeds[leastSimilarPair[1]]
+# 	renderParams.seed = seed0
+# 	render(text0, renderParams)
+# 	renderParams.seed = seed1
+# 	renderParams.fileId = alternateOutputFile
+# 	render(text1, renderParams)
 
 
 def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
