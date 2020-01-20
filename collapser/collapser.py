@@ -177,60 +177,66 @@ def main():
 
 def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	if parseParams.chooseStrategy == "pair":
-		# TODO make this work with new output format.
-		texts = []
-		tries = 10
-		seeds = []
-		seed = chooser.nextSeed()
-		for x in range(tries):
-			seeds.append(seed)
-			texts.append(collapseInputText(inputFiles, inputFileDir, parseParams))
-			seed = chooser.nextSeed()
-		leastSimilarPair = differ.getTwoLeastSimilar(texts)
-		text0 = texts[leastSimilarPair[0]]
-		seed0 = seeds[leastSimilarPair[0]]
-		text1 = texts[leastSimilarPair[1]]
-		seed1 = seeds[leastSimilarPair[1]]
-		renderParams.seed = seed0
-		render(text0, renderParams)
-		renderParams.seed = seed1
-		renderParams.fileId = alternateOutputFile
-		render(text1, renderParams)
-
+		makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
 	else:
 		copies = renderParams.copies
 		while copies >= 1:
-			thisSeed = renderParams.seed
-			if parseParams.chooseStrategy != "random" and parseParams.chooseStrategy != "skipbanned":
-				print "Ignoring seed (b/c chooseStrategy = %s)" % parseParams.chooseStrategy
-			elif renderParams.randSeed:
-				thisSeed = chooser.randomSeed()
-				print "Seed (purely random): %d" % thisSeed
-			elif thisSeed is -1:
-				thisSeed = chooser.nextSeed()
-				print "Seed (next): %d" % thisSeed
-			else:
-				chooser.setSeed(thisSeed)
-				print "Seed (requested): %d" % thisSeed
-			renderParams.seed = thisSeed
-
-			collapsedText = collapseInputText(inputFiles, inputFileDir, parseParams)
-			if len(variables.showVars()) < 4:
-				print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
-				sys.exit()
-			collapsedFileName = outputDir + "collapsed.txt"
-
-			fileio.writeOutputFile(collapsedFileName, collapsedText)
-
-			thisOutputFile = renderParams.fileId
-			if renderParams.copies > 1:
-				thisOutputFile = "%s-%s" % (renderParams.fileId, renderParams.thisSeed)
-			renderParams.fileId = thisOutputFile
-			render(collapsedText, renderParams)
-
+			makeBook(inputFiles, inputFileDir, parseParams, renderParams)
 			copies -= 1
 			if copies > 0:
 				print "%d cop%s left to generate." % (copies, "y" if copies is 1 else "ies")
+
+
+def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
+	# TODO make this work with new output format.
+	texts = []
+	tries = 10
+	seeds = []
+	seed = chooser.nextSeed()
+	for x in range(tries):
+		seeds.append(seed)
+		texts.append(collapseInputText(inputFiles, inputFileDir, parseParams))
+		seed = chooser.nextSeed()
+	leastSimilarPair = differ.getTwoLeastSimilar(texts)
+	text0 = texts[leastSimilarPair[0]]
+	seed0 = seeds[leastSimilarPair[0]]
+	text1 = texts[leastSimilarPair[1]]
+	seed1 = seeds[leastSimilarPair[1]]
+	renderParams.seed = seed0
+	render(text0, renderParams)
+	renderParams.seed = seed1
+	renderParams.fileId = alternateOutputFile
+	render(text1, renderParams)
+
+
+def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
+	thisSeed = renderParams.seed
+	if parseParams.chooseStrategy != "random" and parseParams.chooseStrategy != "skipbanned":
+		print "Ignoring seed (b/c chooseStrategy = %s)" % parseParams.chooseStrategy
+	elif renderParams.randSeed:
+		thisSeed = chooser.randomSeed()
+		print "Seed (purely random): %d" % thisSeed
+	elif thisSeed is -1:
+		thisSeed = chooser.nextSeed()
+		print "Seed (next): %d" % thisSeed
+	else:
+		chooser.setSeed(thisSeed)
+		print "Seed (requested): %d" % thisSeed
+	renderParams.seed = thisSeed
+
+	collapsedText = collapseInputText(inputFiles, inputFileDir, parseParams)
+	if len(variables.showVars()) < 4:
+		print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
+		sys.exit()
+	collapsedFileName = outputDir + "collapsed.txt"
+
+	fileio.writeOutputFile(collapsedFileName, collapsedText)
+
+	thisOutputFile = renderParams.fileId
+	if renderParams.copies > 1:
+		thisOutputFile = "%s-%s" % (renderParams.fileId, renderParams.thisSeed)
+	renderParams.fileId = thisOutputFile
+	render(collapsedText, renderParams)
 
 
 def render(collapsedText, renderParams):
