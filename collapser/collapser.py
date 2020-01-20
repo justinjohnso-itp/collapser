@@ -156,7 +156,7 @@ def main():
 		showUsage()
 		sys.exit()
 
-	if seed is not -1 and strategy is not "random" and strategy is not "skipbanned":
+	if seed is not -1 and strategy != "random" and strategy != "skipbanned":
 		print "*** You set seed to %d but strategy to '%s'; a seed can only be used when strategy is 'random' or 'skipbanned' ***\n" % (seed, strategy)
 		sys.exit()
 
