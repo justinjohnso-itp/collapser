@@ -61,6 +61,9 @@ Arguments:
   --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
   --skipPadding		Skip padding to 232 pages
   --skipEndMatter	Don't add end matter in padding
+  --endMatter=x,y	End matter files to render and append (note that
+  					except for testing these are automatically selected
+  					provided skipEndMatter is False)
 """
 
 
@@ -82,6 +85,7 @@ def main():
 	discourseVarChance = 80
 	skipPadding = False
 	skipEndMatter = False
+	endMatter = []
 	randSeed = False
 	isDigital = False
 	copies = 1
@@ -89,7 +93,7 @@ def main():
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "skipPadding", "skipEndMatter", "input=", "only="])
+	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "skipPadding", "skipEndMatter", "input=", "only=", "endMatter="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -150,6 +154,9 @@ def main():
 			skipPadding = True
 		elif opt == "--skipEndMatter":
 			skipEndMatter = True
+		elif opt == "--endMatter":
+			endMatter = arg.split(',')
+			print "Setting endMatter: %s" % endMatter
 
 	if outputFile == "":
 		print "*** Missing output file. ***\n"
@@ -164,7 +171,7 @@ def main():
 		print "*** You set seed to %d but also set variables %s; you need to do one or the other ***\n" % (seed, setDefines)
 		sys.exit()
 
-	params = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow)
+	params = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow, endMatter = endMatter)
 
 	if strategy == "pair":
 		# TODO make this work with new output format.
@@ -274,11 +281,11 @@ def collapseInputText(inputFiles, inputFileDir, params):
 			print "Something went wrong; nothing was selected for output. params.onlyShow was '%s'" % params.onlyShow
 			sys.exit()
 	
-	# Manually add end matter (test)
-	em = "chapters/end-abouttheauthor.txt"
-	print "Selecting %s" % em
-	emContents = fileio.readInputFile(em)
-	selectionTexts.append(emContents)
+	# Add end matter
+	for em in params.endMatter:
+		em = readManifestOrFile(em, inputFileDir, params)
+		emContents = em["files"][0]
+		selectionTexts.append(emContents)
 
 	joinedSelectionTexts = ''.join(selectionTexts)
 	joinedAllTexts = ''.join(fileContents)
