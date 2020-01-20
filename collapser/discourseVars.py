@@ -28,8 +28,7 @@ def showStats(vars):
 trace_output = ""
 def trace(txt):
 	global trace_output
-	if showTrace:
-		trace_output += "%s\n" % txt
+	trace_output += "%s\n" % txt
 
 def clear_trace():
 	global trace_output
@@ -37,7 +36,8 @@ def clear_trace():
 
 def show_trace():
 	global trace_output
-	print trace_output
+	if showTrace:
+		print trace_output
 
 def getDiscoursePreferredVersion(alts, vars):
 	# For each discourse variable set, rank each alt for desireability. Return something weighted for the highest-ranked options.
