@@ -4,6 +4,7 @@ import renderer
 
 import re
 import result
+import chooser
 import fileio
 import terminal
 import sys
@@ -12,6 +13,9 @@ latexBegin = "fragments/begin.tex"
 latexEnd = "fragments/end.tex"
 latexFrontMatter = "fragments/frontmatter.tex"
 latexPostFrontMatter = "fragments/postfrontmatter.tex"
+
+PADDED_PAGES = 232
+
 
 # TODO Add cleanup step to get rid of temp files
 
@@ -36,8 +40,20 @@ class RendererLatex(renderer.Renderer):
 		outputPDF(self.params, inputFileName, outputFileName)
 
 	def suggestEndMatters(self):
+		global PADDED_PAGES
+		suggestions = []
 		print "In renderer_latex.suggestEndMatters, numPDFPages: %d" % self.params.pdfPages
-		return ["end-abouttheauthor.txt"]
+		extraPages = PADDED_PAGES - self.params.pdfPages
+
+		# Should be listed in order you'd want them to appear.
+
+		extraPages = tryEndMatterPage("end-backers.txt", 5, 100, suggestions, extraPages)
+
+		extraPages = tryEndMatterPage("end-stats.txt", 3, 85, suggestions, extraPages)
+
+		extraPages = tryEndMatterPage("end-abouttheauthor.txt", 3, 75, suggestions, extraPages)
+
+		return suggestions
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
@@ -190,10 +206,8 @@ This is the one you have.""" % seedPrinted
 
 	return output
 
-
-
 def outputPDF(params, inputFile, outputFile):
-	PADDED_PAGES = 232
+	global PADDED_PAGES
 	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (params.outputDir, inputFile))
 	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
 	latexLooksGood = postLatexSanityCheck(result["output"])
@@ -212,6 +226,13 @@ def outputPDF(params, inputFile, outputFile):
 		print "isDigital, so adding cover"
 		addCover(outputFile, "fragments/cover.pdf")
 
+
+def tryEndMatterPage(filename, maxPages, chance, suggestions, extraPages):
+	if extraPages > maxPages and chooser.percent(chance):
+		suggestions.append(filename)
+		print "-> %d pages left, so adding %s [%d]" % (extraPages, filename, maxPages)
+		extraPages -= maxPages
+	return extraPages
 
 
 def postLatexSanityCheck(latexLog):
