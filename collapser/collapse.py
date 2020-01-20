@@ -45,7 +45,8 @@ def go(fullText, selectedText, params, returnTokensOnly = False):
     print "** vars: %s" % variables.showVars()
     return rendered
 
-
+# TODO: Exclude "singular" variables. 
+# TODO: Warning flag, some of these are not showing up with ^opposites, i.e. thoreauflag, 
 def getDefinesForLongestShortest(tokens, parseParams):
     print "Calculating %s defines (ignoring seed)..." % parseParams.chooseStrategy
     bestDefines = []
@@ -78,7 +79,7 @@ def getDefinesForLongestShortest(tokens, parseParams):
         for pos, key in enumerate(optsToTry):
             variables.setAllTo(False)
 
-            if key[0] != "^":
+            if len(key) > 0 and key[0] != "^":
                 variables.__v.variables[key] = True
 
             thisLen = len(quantparse.handleParsing(tempTokens, parseParamsCopy))
