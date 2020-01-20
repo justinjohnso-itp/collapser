@@ -46,7 +46,7 @@ class RendererMarkdown(renderer.Renderer):
 		if code == "verse":
 			text = indent(contents[1])
 			return "\n\n" + text + "\n\n"
-		if code == "verse_inline":
+		if code == "verse_inline" or code == "verse_inline_sc":
 			text = indent(contents[1])
 			return "\n" + text + "\n"
 		if code == "pp":
@@ -54,6 +54,9 @@ class RendererMarkdown(renderer.Renderer):
 		if code == "i":
 			text = contents[1]
 			return "*" + text + "*"
+		if code == "sc" or code == "scwide":
+			text = contents[1]
+			return text.upper()
 		if code == "vspace":
 			# TODO: Make this work if there's a need.
 			return "\n\n\n"

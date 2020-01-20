@@ -44,7 +44,7 @@ class RendererHTML(renderer.Renderer):
 		if code == "verse":
 			text = contents[1]
 			return "<blockquote><i>" + text + "</i></blockquote>"
-		if code == "verse_inline":
+		if code == "verse_inline" or code == "verse_inline_sc":
 			text = contents[1]
 			return "\n<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + text + "</i>\n"
 		if code == "pp":
@@ -52,6 +52,9 @@ class RendererHTML(renderer.Renderer):
 		if code == "i":
 			text = contents[1]
 			return "<i>" + text + "</i>"
+		if code == "sc" or code == "scwide":
+			text = contents[1]
+			return text.upper()
 		if code == "vspace":
 			# TODO: Make this work if there's a need.
 			return "<p>&nbsp;</p>"
