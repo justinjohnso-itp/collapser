@@ -181,7 +181,7 @@ def main():
 		seed = chooser.nextSeed()
 		for x in range(tries):
 			seeds.append(seed)
-			texts.append(collapseInputText(inputFiles, inputFileDir, params))
+			texts.append(collapseInputText(inputFiles, inputFileDir, skipEndMatter, params))
 			seed = chooser.nextSeed()
 		leastSimilarPair = differ.getTwoLeastSimilar(texts)
 		text0 = texts[leastSimilarPair[0]]
@@ -207,7 +207,7 @@ def main():
 				chooser.setSeed(thisSeed)
 				print "Seed (requested): %d" % thisSeed
 
-			collapsedText = collapseInputText(inputFiles, inputFileDir, params)
+			collapsedText = collapseInputText(inputFiles, inputFileDir, skipEndMatter, params)
 			if len(variables.showVars()) < 4:
 				print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
 				sys.exit()
@@ -259,7 +259,7 @@ def render(outputFormat, collapsedText, outputDir, outputFile, seed, doFront, sk
 
 
 
-def collapseInputText(inputFiles, inputFileDir, params):
+def collapseInputText(inputFiles, inputFileDir, skipEndMatter, params):
 	fileContents = []
 	fileList = []
 	for iFile in inputFiles:
@@ -281,7 +281,14 @@ def collapseInputText(inputFiles, inputFileDir, params):
 			print "Something went wrong; nothing was selected for output. params.onlyShow was '%s'" % params.onlyShow
 			sys.exit()
 	
-	# Add end matter
+	# Add end matter.
+	# Note: the valid states are:
+	# --skipEndMatter [don't generate any endMatter]
+	# --endMatter=x,y [manually include some end matter]
+	# neither [in which case automatically look for end matter to include]
+	if skipEndMatter and len(params.endMatter) > 0:
+		print "Error: You can't set --skipEndMatter and also specify end matter to include."
+		sys.exit()
 	for em in params.endMatter:
 		em = readManifestOrFile(em, inputFileDir, params)
 		emContents = em["files"][0]
