@@ -44,10 +44,15 @@ class Renderer(object):
 	def makeOutputFile(self):
 		pass
 
+	# Convert a formatting sequence like {i/italics} into the proper coding for this output format.
 	@abc.abstractmethod
 	def renderFormattingSequence(self, text):
 		return text
 
+	# Suggest an array of endMatters to append that won't exceed the page budget (if this format has one) based on stats stored from the last time we rendered; return an empty array if no suggestions.
+	@abc.abstractmethod
+	def suggestEndMatters(self):
+		return []
 
 	# Handle any text preparation that's agnostic across output formats.
 	def prepareInputText(self):

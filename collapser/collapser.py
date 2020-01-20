@@ -186,7 +186,19 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	else:
 		copies = renderParams.copies
 		while copies >= 1:
+			
 			makeBook(inputFiles, inputFileDir, parseParams, renderParams)
+
+			#End Matter
+			if len(parseParams.endMatter) == 1 and parseParams.endMatter[0] == "auto":
+				endMatters = renderParams.renderer.suggestEndMatters()
+				print "Suggested End Matter: %s" % endMatters
+				if len(endMatters) > 0:
+					print "Re-rendering..."
+					parseParams.endMatter = endMatters
+					renderParams.randSeed = False
+					makeBook(inputFiles, inputFileDir, parseParams, renderParams)
+
 			copies -= 1
 			if copies > 0:
 				print "%d cop%s left to generate." % (copies, "y" if copies is 1 else "ies")

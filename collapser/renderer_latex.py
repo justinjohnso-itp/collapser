@@ -35,6 +35,9 @@ class RendererLatex(renderer.Renderer):
 		outputFileName = self.params.fileId + ".pdf"
 		outputPDF(self.params.outputDir, inputFileName, outputFileName, self.params.skipPadding, self.params.endMatter, self.params.isDigital)
 
+	def suggestEndMatters(self):
+		return ["end-abouttheauthor.txt"]
+
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
 		if code == "part":
