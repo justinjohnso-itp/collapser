@@ -75,7 +75,8 @@ class Renderer(object):
 
 	def renderFormattingSequences(self):
 		# First swap in a render of an alternate scene if we need it, so the rest of the code will handle its formatting as per usual.
-		self.collapsedText = self.collapsedText.replace("{alternate_scene}", renderAlternateSequence(self.params.parseParams))
+		if self.collapsedText.find("{alternate_scene}") >= 0:
+			self.collapsedText = self.collapsedText.replace("{alternate_scene}", renderAlternateSequence(self.params.parseParams))
 
 		self.resetFormattingSeqPos()
 		fSeq = self.getNextFormatSeq()

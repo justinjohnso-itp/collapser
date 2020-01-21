@@ -49,6 +49,8 @@ class RendererLatex(renderer.Renderer):
 
 		extraPages = tryEndMatterPage("end-backers.txt", 5, 100, suggestions, extraPages)
 
+		extraPages = tryEndMatterPage("end-altscene.txt", 6, 75, suggestions, extraPages)
+
 		extraPages = tryEndMatterPage("end-stats.txt", 3, 85, suggestions, extraPages)
 
 		extraPages = tryEndMatterPage("end-abouttheauthor.txt", 3, 75, suggestions, extraPages)
