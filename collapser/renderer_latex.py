@@ -47,13 +47,13 @@ class RendererLatex(renderer.Renderer):
 
 		# Should be listed in order you'd want them to appear.
 
-		extraPages = tryEndMatterPage("end-backers.txt", 4, 100, suggestions, extraPages)
+		extraPages = tryEndMatterPage("end-backers.txt", 4, 100, suggestions, extraPages, self.params.isDigital)
 
-		extraPages = tryEndMatterPage("end-altscene.txt", 6, 75, suggestions, extraPages)
+		extraPages = tryEndMatterPage("end-altscene.txt", 6, 75, suggestions, extraPages, self.params.isDigital)
 
-		extraPages = tryEndMatterPage("end-stats.txt", 3, 85, suggestions, extraPages)
+		extraPages = tryEndMatterPage("end-stats.txt", 3, 85, suggestions, extraPages, self.params.isDigital)
 
-		extraPages = tryEndMatterPage("end-abouttheauthor.txt", 3, 75, suggestions, extraPages)
+		extraPages = tryEndMatterPage("end-abouttheauthor.txt", 3, 75, suggestions, extraPages, self.params.isDigital)
 
 		return suggestions
 
@@ -237,8 +237,8 @@ def outputPDF(params, inputFile, outputFile):
 		addCover(outputFile, "fragments/cover.pdf")
 
 
-def tryEndMatterPage(filename, maxPages, chance, suggestions, extraPages):
-	if extraPages > maxPages and chooser.percent(chance):
+def tryEndMatterPage(filename, maxPages, chance, suggestions, extraPages, isDigital):
+	if (isDigital or extraPages > maxPages) and chooser.percent(chance):
 		suggestions.append(filename)
 		print "-> %d pages left, so adding %s [%d]" % (extraPages, filename, maxPages)
 		extraPages -= maxPages
