@@ -14,6 +14,9 @@ class AbstractRenderer(renderer.Renderer):
 	def makeOutputFile(self):
 		pass
 
+	def suggestEndMatters(self):
+		return []
+
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
 		if code == "i":
