@@ -196,6 +196,7 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 					print "Re-rendering..."
 					parseParams.endMatter = endMatters
 					renderParams.randSeed = False
+					parseParams.doConfirm = False
 					makeBook(inputFiles, inputFileDir, parseParams, renderParams)
 
 			copies -= 1
