@@ -1,11 +1,14 @@
 
+import quantparse
+import ctrlseq
+
 import abc
 import re
 
 
 class RenderParams:
 
-	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, endMatter = False, outputDir = "", isDigital = False, copies = 1):
+	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, endMatter = False, outputDir = "", isDigital = False, copies = 1, parseParams = None):
 		self.outputFormat = outputFormat
 		self.fileId = fileId
 		self.seed = seed
@@ -18,6 +21,7 @@ class RenderParams:
 		self.copies = copies
 		self.renderer = None
 		self.pdfPages = -1
+		self.parseParams = parseParams
 
 
 
@@ -71,7 +75,10 @@ class Renderer(object):
 		while fSeq is not None:
 			leadingText = fSeq[0]
 			seqParams = fSeq[1:]
-			rendered = self.renderFormattingSequence(seqParams)
+			if seqParams[0] == "alternate_scene":
+				rendered = renderAlternateSequence(self.params.parseParams)
+			else:
+				rendered = self.renderFormattingSequence(seqParams)
 			output.append(leadingText)
 			output.append(rendered)
 			fSeq = self.getNextFormatSeq()
@@ -96,6 +103,18 @@ class Renderer(object):
 		self.seqPos = endPos+1
 		return [contentSinceLast] + contents
 
+
+
+
+
+def renderAlternateSequence(parseParams):
+	sequencePicked = getSequenceToRender()
+	seq = quantparse.get_ctrlseq(sequencePicked)
+	rendered = ctrlseq.render(seq, parseParams)
+	return rendered
+
+def getSequenceToRender():
+	return "Ch1IntroScene"
 
 
 
