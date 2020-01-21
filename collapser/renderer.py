@@ -2,6 +2,7 @@
 import quantparse
 import ctrlseq
 import macros
+import variables
 
 import abc
 import re
@@ -107,16 +108,21 @@ class Renderer(object):
 
 
 
+# Special code for the "Alternate Scene" End Matter.
 
 def renderAlternateSequence(parseParams):
-	sequencePicked = getSequenceToRender()
+	sequencePicked = getSequenceToRender(parseParams)
 	seq = quantparse.get_ctrlseq(sequencePicked)
 	rendered = ctrlseq.render(seq, parseParams)
 	rendered = macros.expand(rendered, parseParams)
 	return rendered
 
-def getSequenceToRender():
-	return "Ch1IntroScene"
+def getSequenceToRender(parseParams):
+	# Pick a hand-tagged alternate scene based on which variables were set.
+	choice = "Ch1IntroScene"
+	if choice == "Ch1IntroScene":
+		variables.__v.shuffleGroupVal("clubintro")
+	return choice
 
 
 

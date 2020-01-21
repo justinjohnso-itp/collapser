@@ -3,6 +3,7 @@ import ctrlseq
 import chooser
 import result
 import token_stream
+import sys
 
 class Variables:
 	def __init__(self):
@@ -30,6 +31,27 @@ class Variables:
 			if key in groupVal:
 				return groupKey
 		return ""
+
+	def shuffleGroupVal(self, key):
+		groupKey = self.getGroupFromVar(key)
+		if groupKey == "":
+			print "*** Error: Tried to call shuffleGroupVal('%s') but no such variable key was found." % key
+			sys.exit()
+		theSetOne = ""
+		for v in self.getVarsInGroup(groupKey):
+			if self.check(v):
+				theSetOne = v
+		remainders = self.getVarsInGroup(groupKey)
+		if theSetOne != "":
+			remainders.remove(theSetOne)
+		choice = chooser.oneOf(remainders)
+		for v in self.getVarsInGroup(groupKey):
+			if v == choice:
+				self.set(groupKey, v, True)
+			else:
+				self.set(groupKey, v, False)
+		print "From key '%s' got group '%s' of which '%s' was set, chose '%s' instead." % (key, groupKey, theSetOne, choice)
+
 
 	def getVarsInGroup(self, key):
 		return [] + self.varGroups[key]
