@@ -97,6 +97,10 @@ def renderAll(tokens, params, showAllVars=False):
 	if len(tokens) == 0:
 		return alts
 
+	# Remove CtrlSeq Labels (these served their purpose back in quantparse.process)
+	if tokens[0].type == "CTRLSEQ_LABEL":
+		tokens = tokens[1:len(tokens)]
+
 	if tokens[0].type == "VARIABLE":
 		if showAllVars:
 			alts.alts.extend(variables.renderAll(tokens))
