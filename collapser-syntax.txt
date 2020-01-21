@@ -17,13 +17,11 @@ Problems:
 
 ** Basic Formatting:
 
-Wrap text in asterisks for italics, as in markdown.
+Blank line between paragraphs.
 
-	"I already *told* you..."
+Three dashes for em-dash, or the em-dash character directly.  
 
-Two dashes for em-dash; might as well allow — since this prints the same. (Note Latex is triple dash). (Actually, maybe should find/replace this, since it's visually hard to distinguish from a normal dash.) 
-
-	Look--Peter--the thing is...
+	Look---Peter---the thing is...
 
 Write extended Unicode characters directly.
 
@@ -31,8 +29,8 @@ Write extended Unicode characters directly.
 
 Line break by ending line with \\ (same as Latex).
 
-Smart quotes? Putting " doesn't do them right. Manually use “ ” ? Collapser catches " ?
-' or ’ in didn't works, but must use ’ and (other).
+To ensure smart quotes work correctly, paste them directly into the document. “ ” ‘ ’ Latex or other renderers may try to guess but they often get it wrong.
+
 
 ** Basic Syntax:
 
@@ -46,6 +44,7 @@ Control characters should never be ones that would appear in the manuscript. So 
 	#	Comment
 	~	Always print this block.
 	/	Split params in formatting block
+	*	Surrounds control sequence labels
 
 Start a line with a # for a comment to be stripped/ignored.
 
@@ -118,9 +117,10 @@ If you use STICKY_MACRO, the choice will be made once and then consistently for 
 
 	[STICKY_MACRO Soda][Pepsi|Sprite|Coke]
 
-Invoke a macro in text by wrapping it in curly braces.
+Invoke a macro in text by wrapping it in curly braces, or (if its name has no spaces) prefacing it with $.
 
 	"But {it's not} relevant"
+	She ordered a $Soda.
 
 
 ** Faking Conditional Logic **
@@ -154,10 +154,9 @@ You can then later have a label: the text will continue afterwards.
 	[LABEL myLabel]
 
 
-
 ** Formatting Codes
 
-The system has a number of predefined formatting codes to print things in certain ways. They can either take parameters or not. These can appear within control sequences and are output verbatim. Complete list:
+The system has a number of predefined formatting codes to print things in certain ways. They can either take parameters or not. These can appear within control sequences and are output verbatim. 
 
 	{section_break}
 	{chapter/2}
@@ -168,5 +167,17 @@ The system has a number of predefined formatting codes to print things in certai
 	{i/italics}
 	{vspace/9}
 
+Since they both use curly braces and nesting is not allowed, macros don't play well with formatting codes. To get around this, you can reference a macro with no spaces in its name by prefacing it with a $, either in a formatting code or anywhere. However note that doing this to nest formatting codes within each other might lead to layout/rendering issues.
 
+	[MACRO destination][movies|store|beach]
+	{i/going to the $destination}
+
+
+** Control Sequence Labels **
+
+To enable the "alternate version" End Matter bonus feature, authors can manually label a control sequence (which allows code to later retrieve and re-render that sequence). Put an identifier surrounded by asterisks as the first thing after the opening bracket to do this.
+
+	[*Label1*alpha|omega]
+	[*AlphaOrOmegaVersion*@alpha>version one|@beta>version two]
+	[*AnotherLabel*50>X|50>Y]
 
