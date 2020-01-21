@@ -10,6 +10,7 @@ import result
 import confirm
 import discourseVars
 import token_stream
+import chooser
 
 import sys
 
@@ -61,9 +62,31 @@ def handleParsing(tokens, params):
 	return renderedString
 
 
+
+# Save all the control sequences we process with a given key.
+
+stored_ctrlseqs = {}
+
+def reset_stored_ctrlseqs():
+	global stored_ctrlseqs
+	chooser.resetIter("ctrlSeqIds")
+	stored_ctrlseqs = {}
+
+def save_ctrlseq(id, ctrlseq):
+	global stored_ctrlseqs
+	stored_ctrlseqs[id] = ctrlseq
+
+def get_ctrlseq(id):
+	global stored_ctrlseqs
+	if id in stored_ctrlseqs:
+		return stored_ctrlseqs[id]
+	return None
+
+
 # The lexer should have guaranteed that we have a series of TEXT tokens interspersed with sequences of others nested between CTRLBEGIN and CTRLEND with no issues with nesting or incomplete tags.
 def process(tokens, parseParams):
 	output = []
+	reset_stored_ctrlseqs()
 	discourseVars.resetStats()
 	tokenStream = token_stream.TokenStream(tokens)
 	nextSection = tokenStream.next()
@@ -72,6 +95,8 @@ def process(tokens, parseParams):
 		if tokenStream.wasText():
 			rendered = nextSection[0].value
 		else:
+			seqid = chooser.iter("ctrlSeqIds")
+			save_ctrlseq(seqid, nextSection)
 			rendered = ctrlseq.render(nextSection, parseParams)
 
 		output.append(rendered)
