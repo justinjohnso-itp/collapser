@@ -433,7 +433,6 @@ def test_lex_ctrlseqlabel():
 
 	text = "[DEFINE @georgia]Hnnn[*MyLabel*@georgia>text1|text2]"
 	result = quantlex.lex(text)
-	print "result: %s" % result
 	assert result.isValid == True
 	toks = result.package
 	assert toks[5].type == "CTRLBEGIN"
@@ -444,5 +443,28 @@ def test_lex_ctrlseqlabel():
 	assert toks[8].type == "TEXT"
 	assert toks[8].value == "text1"
 
+	text = "[*HurdyGurd*50>one|50>two]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.package
+	assert toks[0].type == "CTRLBEGIN"
+	assert toks[1].type == "CTRLSEQ_LABEL"
+	assert toks[1].value == "HurdyGurd"
+	assert toks[2].type == "NUMBER"
+	assert toks[2].value == 50
+	assert toks[3].type == "TEXT"
+	assert toks[3].value == "one"	
 
+def test_bad_lex_ctrlseqlabel():
+	text = "Hmm *Label1* [alpha|omega]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+
+	text = "[alpha|*label*omega]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
+
+	text = "[DEFINE @georgia][@georgia>*label*alpha|omega]"
+	result = quantlex.lex(text)
+	assert result.isValid == False
 
