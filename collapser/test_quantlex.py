@@ -415,3 +415,34 @@ def test_lex_labels():
 	assert toks[2].value == "labelName"
 	assert toks[3].type == "CTRLEND"
 
+def test_lex_ctrlseqlabel():
+	text = "[*Label1*alpha|omega]"
+	result = quantlex.lex(text)
+	assert result.isValid == True
+	toks = result.package
+	assert len(toks) == 6
+	assert toks[0].type == "CTRLBEGIN"
+	assert toks[1].type == "CTRLSEQ_LABEL"
+	assert toks[1].value == "Label1"
+	assert toks[2].type == "TEXT"
+	assert toks[2].value == "alpha"
+	assert toks[3].type == "DIVIDER"
+	assert toks[4].type == "TEXT"
+	assert toks[4].value == "omega"
+	assert toks[5].type == "CTRLEND"
+
+	text = "[DEFINE @georgia]Hnnn[*MyLabel*@georgia>text1|text2]"
+	result = quantlex.lex(text)
+	print "result: %s" % result
+	assert result.isValid == True
+	toks = result.package
+	assert toks[5].type == "CTRLBEGIN"
+	assert toks[6].type == "CTRLSEQ_LABEL"
+	assert toks[6].value == "MyLabel"
+	assert toks[7].type == "VARIABLE"
+	assert toks[7].value == "georgia"
+	assert toks[8].type == "TEXT"
+	assert toks[8].value == "text1"
+
+
+

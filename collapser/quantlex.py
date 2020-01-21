@@ -24,6 +24,7 @@ tokens = (
    'VARIABLE',
    'MACRO',
    'LABEL',
+   'CTRLSEQ_LABEL',
    'ERROR_LONE_GT',
    'ERROR_LONE_VAR'
 )
@@ -36,6 +37,16 @@ def t_VARIABLE(t):
 	r'@[A-Za-z_\-][A-Za-z_\-0-9]*\>?'
 	t.value = t.value[1:]
 	t.value = t.value.rstrip('>')
+	return t
+
+def t_CTRLSEQ_LABEL(t):
+	r'\*[A-Za-z_\-][A-Za-z_\-0-9]*\*'
+	t.value = t.value[1:]
+	t.value = t.value.rstrip('*')
+	if not __lexState["inCtrlSequence"]:
+		__lexState["flaggedBad"] = True
+		__lexState["errorMessage"] = "CtrlSeq labels not allowed except at the start of control sequences. '*%s'" % t.value
+		pass
 	return t
 
 def t_ERROR_LONE_VAR(t):
@@ -166,7 +177,7 @@ def lex(text):
 		if tok.type == "DEFINE" and ( prevTok is -1 or prevTok.type != "CTRLBEGIN" ):
 			result.flagBad("DEFINE can only appear at the start of a control sequence.", text, tok.lexpos)
 			break;
-		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER", "CTRLBEGIN", "DIVIDER"] ):
+		if tok.type == "VARIABLE" and ( prevTok is -1 or prevTok.type not in ["DEFINE", "AUTHOR", "NUMBER", "CTRLBEGIN", "DIVIDER", "CTRLSEQ_LABEL"] ):
 			result.flagBad("Found a @variable but in an unexpected spot.", text, tok.lexpos)
 			break;
 		if prevTok is not -1:
@@ -188,6 +199,9 @@ def lex(text):
 				result.flagBad("MACRO must be followed by text.", text, tok.lexpos)
 			if prevTok.type == "LABEL" and tok.type != "TEXT":
 				result.flagBad("LABEL must be followed by text.", text, tok.lexpos)
+			if tok.type == "CTRLSEQ_LABEL" and prevTok.type != "CTRLBEGIN":
+				result.flagBad("CTRLSEQ_LABEL can only appear as the first thing in a control sequence.", text, tok.lexpos)
+
 
 		result.package.append(tok)
 		penultTok = prevTok
