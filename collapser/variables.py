@@ -244,9 +244,7 @@ def handleDefs(tokens, params):
 					alts.setAuthorPreferred()
 				if item.prob:
 					probTotal += item.prob
-				skipBanned = params.chooseStrategy == "skipbanned" and item.banned
-				if not skipBanned:
-					alts.add(varname, item.prob)
+				alts.add(varname, item.prob)
 
 				__v.set(groupName, item.txt, False)
 

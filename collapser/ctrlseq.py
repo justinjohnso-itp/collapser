@@ -16,7 +16,7 @@ class Alts:
 	def add(self, txt, prob=None, fromVar=None):
 		if prob == 0:
 			return
-		self.alts.append(Item(txt, prob, False, fromVar, False))
+		self.alts.append(Item(txt, prob, False, fromVar))
 		if prob is not None:
 			self.probabilityTotal += prob
 
@@ -74,12 +74,11 @@ class Alts:
 # Create a class for a single text item with probability.
 
 class Item:
-	def __init__(self, txt, prob, authorPreferred, fromVariable, banned):
+	def __init__(self, txt, prob, authorPreferred, fromVariable):
 		self.txt = txt
 		self.prob = prob
 		self.authorPreferred = authorPreferred
 		self.fromVariable = fromVariable
-		self.banned = banned
 
 	def __repr__(self):
 		base = "Item: %s%s" % ("^" if self.authorPreferred else "", self.txt)
@@ -139,9 +138,7 @@ def renderAll(tokens, params, showAllVars=False):
 			item = parseItem(thisAltBits, params, variablesAllowed=False)
 			if item.authorPreferred:
 				alts.setAuthorPreferred()
-			skipBanned = params.chooseStrategy == "skipbanned" and item.banned
-			if not skipBanned:
-				alts.add(item.txt, item.prob)
+			alts.add(item.txt, item.prob)
 
 			index += 1
 
@@ -202,7 +199,6 @@ def parseItem(altBits, params, variablesAllowed=True):
 	text = ""
 	ap = False
 	prob = None
-	banned = False
 	sourceVar = None
 	while index < len(altBits):
 		token = altBits[index]
@@ -219,8 +215,6 @@ def parseItem(altBits, params, variablesAllowed=True):
 			ap = True
 		elif token.type == "NUMBER":
 			prob = token.value
-		elif token.type == "BANNED":
-			banned = True
 		elif token.type == "LABEL":
 			pass
 		else:
@@ -229,7 +223,7 @@ def parseItem(altBits, params, variablesAllowed=True):
 			raise result.ParseException(badResult)
 		index += 1
 
-	return Item(text, prob, ap, sourceVar, banned)
+	return Item(text, prob, ap, sourceVar)
 
 
 

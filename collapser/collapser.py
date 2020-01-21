@@ -50,7 +50,6 @@ Arguments:
   --strategy=x   Selection strategy.
   		N		 Make N copies with "random" strategy
   		"random": default
-  		"skipbanned": random, but avoid banned alternatives
   		"author": Author's preferred
   		"pair": Two versions optimizing for difference
   		"longest"
@@ -162,8 +161,8 @@ def main():
 		showUsage()
 		sys.exit()
 
-	if seed is not -1 and strategy != "random" and strategy != "skipbanned":
-		print "*** You set seed to %d but strategy to '%s'; a seed can only be used when strategy is 'random' or 'skipbanned' ***\n" % (seed, strategy)
+	if seed is not -1 and strategy != "random":
+		print "*** You set seed to %d but strategy to '%s'; a seed can only be used when strategy is 'random' ***\n" % (seed, strategy)
 		sys.exit()
 
 	if seed is not -1 and len(setDefines) is not 0:
@@ -228,7 +227,7 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 
 def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
 	thisSeed = renderParams.seed
-	if parseParams.chooseStrategy != "random" and parseParams.chooseStrategy != "skipbanned":
+	if parseParams.chooseStrategy != "random":
 		print "Ignoring seed (b/c chooseStrategy = %s)" % parseParams.chooseStrategy
 	elif renderParams.randSeed:
 		thisSeed = chooser.randomSeed()

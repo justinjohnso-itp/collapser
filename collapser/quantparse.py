@@ -17,7 +17,7 @@ import sys
 
 class ParseParams:
 
-	VALID_STRATEGIES = ["random", "skipbanned", "author", "longest", "shortest", "pair"]
+	VALID_STRATEGIES = ["random", "author", "longest", "shortest", "pair"]
 
 	def __init__(self, chooseStrategy="random", setDefines=[], doConfirm=False, discourseVarChance=80, originalText="", fileSetKey="", onlyShow=[], endMatter=[]):
 		if chooseStrategy not in self.VALID_STRATEGIES:

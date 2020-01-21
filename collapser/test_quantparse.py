@@ -427,48 +427,6 @@ def test_zeros_never_appear():
 	for i in range(1000):
 		assert parse(text) != "Alpha never okay beta."
 
-def test_banned_symbol_basic():
-	text = '''Of these, [this is okay|and so is this].'''
-	params = quantparse.ParseParams(chooseStrategy="skipbanned")
-	verifyEachIsFound(["Of these, this is okay.", "Of these, and so is this."], text, params)
-	text = '''Of these, [only this is okay|*this is not].'''
-	for i in range(10):
-		assert parse(text, params) == "Of these, only this is okay."
-	text = '''Of these, [*this is not okay|but this is].'''
-	for i in range(10):
-		assert parse(text, params) == "Of these, but this is."
-	text = '''I hate vowels! [k|l|*e|m|x]'''
-	for i in range(25):
-		assert parse(text, params) != "I hate vowels! e"
-	text = '''A[*If all are marked|*Can't choose any]B'''
-	for i in range(10):
-		assert parse(text, params) == "AB"
-	text = '''In this case [I suppose ]either is okay.'''
-	verifyEachIsFound(["In this case I suppose either is okay.", "In this case either is okay."], text, params)
-	text = '''In this case [*I suppose ]it's not okay.'''
-	for i in range(10):
-		assert parse(text, params) == "In this case it's not okay."
-
-def test_banned_symbol_complex():
-	text = '''[DEFINE *@alpha]Here's some [@alpha>text|words].'''
-	params = quantparse.ParseParams(chooseStrategy="skipbanned")
-	for i in range(10):
-		assert parse(text, params) == "Here's some words."
-	text = '''[DEFINE @alpha]Here's some [@alpha>text|words].'''
-	verifyEachIsFound(["Here's some text.", "Here's some words."], text, params)
-	# text = '''[DEFINE 90>*@alpha|10>@omega]Here's some [@alpha>text|@omega>words|nonsense].'''
-	# for i in range(10):
-	# 	assert parse(text, params) == "Here's some words."
-
-def test_banned_symbol_invalid():
-	text = '''[DEFINE @alpha]Test of [*@alpha>option|other].'''
-	params = quantparse.ParseParams(chooseStrategy="skipbanned")
-	with pytest.raises(Exception) as e_info:
-		parse(text, params)
-	text = '''[This is one option|*^and this is another'''
-	with pytest.raises(Exception) as e_info:
-		parse(text, params)
-
 
 def test_long_passages():
 	text = '''

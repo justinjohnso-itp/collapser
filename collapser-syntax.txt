@@ -46,7 +46,6 @@ Control characters should never be ones that would appear in the manuscript. So 
 	#	Comment
 	~	Always print this block.
 	/	Split params in formatting block
-	*	Indicate banned option.
 
 Start a line with a # for a comment to be stripped/ignored.
 
@@ -154,17 +153,6 @@ You can then later have a label: the text will continue afterwards.
 
 	[LABEL myLabel]
 
-
-** Banned Options **
-
-Add a * at the start of a block of variable definition to indicate text you don't want selected when the "skipbanned" option is used. This is useful to mark works in progress while still allowing generation of a satisfying output.
-
-Put this immediately before the text or variable, after any other control options.
-
-	[use this|*not this]
-	[50>use this|50>*not this]
-	[DEFINE *@notReady]
-	[DEFINE 50>^*@notReady]
 
 
 ** Formatting Codes
