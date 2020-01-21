@@ -1,6 +1,7 @@
 
 import quantparse
 import ctrlseq
+import macros
 
 import abc
 import re
@@ -111,6 +112,7 @@ def renderAlternateSequence(parseParams):
 	sequencePicked = getSequenceToRender()
 	seq = quantparse.get_ctrlseq(sequencePicked)
 	rendered = ctrlseq.render(seq, parseParams)
+	rendered = macros.expand(rendered, parseParams)
 	return rendered
 
 def getSequenceToRender():
