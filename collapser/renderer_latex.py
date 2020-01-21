@@ -78,6 +78,9 @@ class RendererLatex(renderer.Renderer):
 		if code == "chapter":
 			chapNum = contents[1]
 			return template_chapter[0] + chapNum + template_chapter[1]
+		if code == "endmatter":
+			title = contents[1]
+			return template_endmatter[0] + title + template_endmatter[1]
 		if code == "section_break":
 			return template_section_break
 		if code == "verse":
@@ -105,11 +108,11 @@ class RendererLatex(renderer.Renderer):
 		if code == "vspace":
 			text = contents[1]
 			return template_vspace[0] + text + template_vspace[1]
-		if code == "start_matter":
+		if code == "start_colophon":
 			header = contents[1]
-			return template_start_matter[0] + header + template_start_matter[1]
-		if code == "finish_matter":
-			return template_finish_matter
+			return template_start_colophon[0] + header + template_start_colophon[1]
+		if code == "finish_colophon":
+			return template_finish_colophon
 		if code == "url":
 			url = contents[1]
 			return template_url[0] + url + template_url[1]
@@ -390,7 +393,18 @@ template_part = ['''
 
 \\vspace*{4\\nbs}''']
 
-template_start_matter = ['''
+template_endmatter = ['''
+
+\\cleartorecto
+\\thispagestyle{empty}
+\\begin{ChapterStart}[6]
+\\vspace*{1\\nbs} 
+\\ChapterTitle{''', '''} 
+\\end{ChapterStart}
+\\vspace*{1\\nbs} 
+''']
+
+template_start_colophon = ['''
 
 \\cleartorecto
 \\thispagestyle{empty}
@@ -404,7 +418,7 @@ template_start_matter = ['''
 
 ''']
 
-template_finish_matter = '''
+template_finish_colophon = '''
 
 \\end{adjustwidth}
 \\end{parascale}

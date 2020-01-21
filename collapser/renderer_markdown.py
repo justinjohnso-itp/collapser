@@ -4,6 +4,7 @@
 import renderer
 import re
 import fileio
+import chooser
 
 class RendererMarkdown(renderer.Renderer):
 
@@ -25,12 +26,29 @@ class RendererMarkdown(renderer.Renderer):
 		outputFileName = self.params.outputDir + self.params.fileId + ".md"
 		fileio.writeOutputFile(outputFileName, workFile)
 
+	def suggestEndMatters(self):
+		suggestions = []
+		# Should be listed in order you'd want them to appear.
+		if chooser.percent(100): # 75
+			suggestions.append("end-altscene.txt")
+		if chooser.percent(100): # 75
+			suggestions.append("end-stats.txt")
+		if chooser.percent(100): # 75
+			suggestions.append("end-abouttheauthor.txt")
+		if chooser.percent(100):
+			suggestions.append("end-backers.txt")
+		return suggestions
+
+
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
 		if code == "part":
 			partNum = contents[1]
 			partTitle = contents[2]
 			return "\n\n# " + partNum + ": " + partTitle
+		if code == "endmatter":
+			title = contents[1]
+			return "\n\n# " + title
 		if code == "epigraph":
 			epigraph = contents[1]
 			source = contents[2]
@@ -43,13 +61,13 @@ class RendererMarkdown(renderer.Renderer):
 			return "\n\n# " + intro + chapNum + "\n\n"
 		if code == "section_break":
 			return "\n***\n"
-		if code == "verse":
+		if code == "verse" or code == "url":
 			text = indent(contents[1])
 			return "\n\n" + text + "\n\n"
 		if code == "verse_inline" or code == "verse_inline_sc":
 			text = indent(contents[1])
 			return "\n" + text + "\n"
-		if code == "pp":
+		if code == "pp" or code == "finish_colophon":
 			return "\n\n"
 		if code == "i":
 			text = contents[1]
@@ -60,6 +78,13 @@ class RendererMarkdown(renderer.Renderer):
 		if code == "vspace":
 			# TODO: Make this work if there's a need.
 			return "\n\n\n"
+		if code == "start_colophon":
+			header = contents[1]
+			return "\n\n# " + header + "\n\n"
+		if code == "columns":
+			return "\n\n<div class='columns'>"
+		if code == "end_columns":
+			return "</div>\n\n"
 
 		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, contents)) 
 

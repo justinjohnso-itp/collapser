@@ -28,6 +28,9 @@ class RendererTweet(renderer.Renderer):
 		outputFileName = self.params.outputDir + self.params.fileId + ".tweets.txt"
 		fileio.writeOutputFile(outputFileName, output)
 
+	def suggestEndMatters(self):
+		return []
+
 	def renderFormattingSequence(self, contents):
 		pass
 

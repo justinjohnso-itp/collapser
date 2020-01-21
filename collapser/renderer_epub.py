@@ -30,6 +30,9 @@ class RendererEPub(renderer.Renderer):
 	def renderFormattingSequence(self, contents):
 		pass
 
+	def suggestEndMatters(self):
+		return renderer_markdown.RendererMarkdown(self.collapsedText, self.params).suggestEndMatters()
+
 
 def generateTitle(seed):
 	if seed == -1:

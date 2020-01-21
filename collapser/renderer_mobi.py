@@ -26,6 +26,10 @@ class RendererMobi(renderer.Renderer):
 	def renderFormattingSequence(self, contents):
 		pass
 
+	def suggestEndMatters(self):
+		return renderer_epub.RendererEPub(self.collapsedText, self.params).suggestEndMatters()
+
+
 
 # Note: This requires KindleGen to be installed on the OS.
 def outputEPub(inputFile):
