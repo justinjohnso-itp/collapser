@@ -167,6 +167,10 @@ def render(tokens, params):
 	if tokens[0].type == "LABEL":
 		return "[LABEL %s]" % tokens[1].value
 
+	# Remove CtrlSeq Labels (these served their purpose back in quantparse.process)
+	if tokens[0].type == "CTRLSEQ_LABEL":
+		tokens = tokens[1:len(tokens)]
+
 	alts = renderAll(tokens, params)
 	if len(alts) == 0:
 		return ""

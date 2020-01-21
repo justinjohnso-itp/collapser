@@ -427,6 +427,13 @@ def test_zeros_never_appear():
 	for i in range(1000):
 		assert parse(text) != "Alpha never okay beta."
 
+def test_ctrlseq_labels_dont_interfere():
+	text = "[*label*alpha|beta]"
+	assert parse(text) in ["alpha", "beta"]
+	text = "[DEFINE @kalamazoo]Let's go to [*area*@kalamazoo>KZ|NY]."
+	assert parse(text) in ["Let's go to KZ.", "Let's go to NY."]
+	text = "[*BigLongLabelWith25Numbers*10>A|40>B|C]"
+	assert parse(text) in ["A", "B", "C"]
 
 def test_long_passages():
 	text = '''

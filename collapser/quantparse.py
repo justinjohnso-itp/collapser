@@ -95,7 +95,10 @@ def process(tokens, parseParams):
 		if tokenStream.wasText():
 			rendered = nextSection[0].value
 		else:
-			seqid = chooser.iter("ctrlSeqIds")
+			if nextSection[1].type == "CTRLSEQ_LABEL":
+				seqid = nextSection[1].value
+			else:
+				seqid = chooser.iter("ctrlSeqIds")
 			save_ctrlseq(seqid, nextSection)
 			rendered = ctrlseq.render(nextSection, parseParams)
 
