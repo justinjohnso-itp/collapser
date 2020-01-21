@@ -1,8 +1,11 @@
+#!/usr/bin/python
+# coding=utf-8
 
 import quantparse
 import ctrlseq
 import macros
 import variables
+import chooser
 
 import abc
 import re
@@ -111,18 +114,40 @@ class Renderer(object):
 # Special code for the "Alternate Scene" End Matter.
 
 def renderAlternateSequence(parseParams):
-	sequencePicked = getSequenceToRender(parseParams)
+	result = getSequenceToRender(parseParams)
+	sequencePicked = result[0]
+	originChapter = result[1]
+	setup = result[2]
 	seq = quantparse.get_ctrlseq(sequencePicked)
 	rendered = ctrlseq.render(seq, parseParams)
+	rendered = "{i/(From Chapter %s...)} " % (originChapter) + setup + "\n\n" + rendered
 	rendered = macros.expand(rendered, parseParams)
 	return rendered
 
 def getSequenceToRender(parseParams):
 	# Pick a hand-tagged alternate scene based on which variables were set.
-	choice = "Ch1IntroScene"
+	choices = {}
+	choices["Ch1IntroScene"] = ["Ch1IntroScene", 1, "Right from the start things were wrong, but I couldn’t see it. Maybe I didn’t want to. Or maybe I’m being too hard on myself. There wasn’t exactly a roadmap for what happened, a script to follow. But it’s undeniable that even on that very first night---the night of the Russian dance club, remember?---everything was already wrong."]
+	choices["Ch3PartyConvo"] = ["Ch3PartyConvo", 3, "We listened to the music for a minute, surrounded by people who naturally knew how to Saturday night, without training. It was kind of nice being near them, at least."]
+	choices["Ch4Interlude"] = ["Ch4Interlude", 4, "I worked up my courage and did a few of my own solo expeditions Downstairs, without telling him, but I couldn't convince myself to go very far. I hallucinated strange noises around corners: floorboards creaking, whispered sighs. I knew I was only scaring myself, but didn’t have it in me to stay down there for long."]
+
+	candidates = choices.keys()
+	
+	# Special cases and exceptions.
+	if variables.check("bradphone"):
+		# This is only an interesting choice if dadphone was set (the other version of the party conversation is much shorter).
+		candidates.remove("Ch3PartyConvo")
+
+	choice = chooser.oneOf(candidates)
+
 	if choice == "Ch1IntroScene":
 		variables.__v.shuffleGroupVal("clubintro")
-	return choice
+	elif choice == "Ch3PartyConvo":
+		variables.__v.shuffleGroupVal("dadphone")
+	elif choice == "Ch4Interlude":
+		variables.__v.shuffleGroupVal("cdrom")
+
+	return choices[choice]
 
 
 
