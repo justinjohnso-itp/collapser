@@ -47,7 +47,7 @@ class RendererLatex(renderer.Renderer):
 
 		# Should be listed in order you'd want them to appear.
 
-		extraPages = tryEndMatterPage("end-backers.txt", 5, 100, suggestions, extraPages)
+		extraPages = tryEndMatterPage("end-backers.txt", 4, 100, suggestions, extraPages)
 
 		extraPages = tryEndMatterPage("end-altscene.txt", 6, 75, suggestions, extraPages)
 
@@ -113,6 +113,11 @@ class RendererLatex(renderer.Renderer):
 		if code == "url":
 			url = contents[1]
 			return template_url[0] + url + template_url[1]
+		if code == "columns":
+			numCols = contents[1]
+			return template_columns[0] + numCols + template_columns[1]
+		if code == "end_columns":
+			return template_end_columns
 
 		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, contents)) 
 
@@ -468,5 +473,17 @@ template_vspace = ['''
 
 '''] 
 
+template_columns = ['''
 
+\\begin{multicols}{''', '''}
+\\begin{parascale}[0.8]
+
+\\noindent ''']
+
+template_end_columns = '''
+
+\\end{parascale}
+\\end{multicols}
+
+'''
 
