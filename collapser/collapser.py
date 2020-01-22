@@ -31,7 +31,7 @@ import renderer_mobi
 import renderer_tweet
 
 outputDir = "output/"
-alternateOutputFile = outputDir + "alternate"
+alternateOutputFile = "alternate"
 collapsedFileName = outputDir + "collapsed.txt"
 
 
@@ -209,25 +209,30 @@ def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 			makeBook(inputFiles, inputFileDir, parseParams, renderParams)	
 
 def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
-	# TODO make this work with new output format.
 	texts = []
-	tries = 10
+	tries = 4
 	seeds = []
 	seed = chooser.nextSeed()
 	for x in range(tries):
 		seeds.append(seed)
-		texts.append(collapseInputText(inputFiles, inputFileDir, parseParams))
+		renderParams.seed = seed
+		collapsed = collapseInputText(inputFiles, inputFileDir, parseParams)
+		texts.append(collapsed)
+		# fileio.writeOutputFile("%s.txt" % seed, collapsed)
 		seed = chooser.nextSeed()
 	leastSimilarPair = differ.getTwoLeastSimilar(texts)
 	text0 = texts[leastSimilarPair[0]]
 	seed0 = seeds[leastSimilarPair[0]]
 	text1 = texts[leastSimilarPair[1]]
 	seed1 = seeds[leastSimilarPair[1]]
+
 	renderParams.seed = seed0
-	render(text0, renderParams)
+	parseParams.chooseStrategy = "random"
+	makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
+
 	renderParams.seed = seed1
 	renderParams.fileId = alternateOutputFile
-	render(text1, renderParams)
+	makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 
 
 def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
@@ -252,10 +257,10 @@ def setFinalSeed(renderParams, parseParams):
 	renderParams.seed = thisSeed	
 
 def setOutputFile(renderParams):
-	thisOutputFile = renderParams.fileId
 	if renderParams.copies > 1:
+		thisOutputFile = renderParams.fileId
 		thisOutputFile = "%s-%s" % (renderParams.fileId, renderParams.thisSeed)
-	renderParams.fileId = thisOutputFile
+		renderParams.fileId = thisOutputFile
 
 
 def render(collapsedText, renderParams):
