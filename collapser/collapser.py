@@ -170,7 +170,7 @@ def main():
 		sys.exit()
 
 	parseParams = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow, endMatter = endMatter)
-	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = -1, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, endMatter = endMatter, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams)
+	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, endMatter = endMatter, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams)
 
 	makeBooks(inputFiles, inputFileDir, parseParams, renderParams)
 
