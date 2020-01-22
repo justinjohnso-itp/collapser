@@ -186,10 +186,15 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 		copies = renderParams.copies
 		while copies >= 1:
 			
+			doingEndMatter = len(parseParams.endMatter) == 1 and parseParams.endMatter[0] == "auto"
+			if doingEndMatter:
+				savedSkipPadding = renderParams.skipPadding
+				renderParams.skipPadding = True
+
 			makeBook(inputFiles, inputFileDir, parseParams, renderParams)
 
 			#End Matter
-			if len(parseParams.endMatter) == 1 and parseParams.endMatter[0] == "auto":
+			if doingEndMatter:
 				endMatters = renderParams.renderer.suggestEndMatters()
 				print "Suggested End Matter: %s" % endMatters
 				if len(endMatters) > 0:
@@ -197,6 +202,7 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 					parseParams.endMatter = endMatters
 					renderParams.randSeed = False
 					parseParams.doConfirm = False
+					renderParams.skipPadding = savedSkipPadding
 					makeBook(inputFiles, inputFileDir, parseParams, renderParams)
 
 			copies -= 1
