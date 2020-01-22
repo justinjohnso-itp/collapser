@@ -31,12 +31,12 @@ class RendererLatex(renderer.Renderer):
 		workFile = self.renderFormattingSequences()
 		postLatexificationSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params.seed, self.params.doFront)
-		latexFileName = self.params.fileId + ".tex"
+		latexFileName = "%s.tex" % self.params.fileId
 		fileio.writeOutputFile(self.params.outputDir + latexFileName, stagedFileText)
 
 	def makeOutputFile(self):
-		inputFileName = self.params.fileId + ".tex"
-		outputFileName = self.params.fileId + ".pdf"
+		inputFileName = "%s.tex" % self.params.fileId
+		outputFileName = "%s.pdf" % self.params.fileId
 		outputPDF(self.params, inputFileName, outputFileName)
 
 	def suggestEndMatters(self):

@@ -93,14 +93,14 @@ def main():
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "o:", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter="])
+	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "noconfirm", "front", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "file="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
 	for opt, arg in opts:
 		if opt == "--input":
 			inputFiles = arg.split(',')
-		elif opt == "-o":
+		elif opt == "--file":
 			if len(re.findall(r"(\/|(\.(pdf|tex|txt)))", arg)) > 0:
 				print "Please do not include paths or file extensions in output file (use --output to specify format)."
 				sys.exit()
@@ -159,11 +159,6 @@ def main():
 				endMatter = arg.split(',')
 			print "Setting endMatter: %s" % endMatter
 
-	if outputFile == "":
-		print "*** Missing output file. ***\n"
-		showUsage()
-		sys.exit()
-
 	if seed is not -1 and strategy != "random":
 		print "*** You set seed to %d but strategy to '%s'; a seed can only be used when strategy is 'random' ***\n" % (seed, strategy)
 		sys.exit()
@@ -171,6 +166,10 @@ def main():
 	if seed is not -1 and len(setDefines) is not 0:
 		print "*** You set seed to %d but also set variables %s; you need to do one or the other ***\n" % (seed, setDefines)
 		sys.exit()
+
+	if strategy != "random" and strategy != "pair" and outputFile == "":
+		outputFile = strategy
+		print "Setting output file to strategy name '%s' (b/c we don't have a seed for strategies other than random and pair)" % outputFile
 
 	parseParams = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow, endMatter = endMatter)
 	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, endMatter = endMatter, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams)
@@ -240,7 +239,7 @@ def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
 
 def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
 	setFinalSeed(renderParams, parseParams)
-	setOutputFile(renderParams)
+	setOutputFile(renderParams, parseParams)
 	collapsedText = collapseInputText(inputFiles, inputFileDir, parseParams)
 	render(collapsedText, renderParams)
 
@@ -259,11 +258,9 @@ def setFinalSeed(renderParams, parseParams):
 		print "Seed (requested): %d" % thisSeed
 	renderParams.seed = thisSeed	
 
-def setOutputFile(renderParams):
-	if renderParams.copies > 1:
-		thisOutputFile = renderParams.fileId
-		thisOutputFile = "%s-%s" % (renderParams.fileId, renderParams.thisSeed)
-		renderParams.fileId = thisOutputFile
+def setOutputFile(renderParams, parseParams):
+	if renderParams.fileId == "":
+		renderParams.fileId = renderParams.seed
 
 
 def render(collapsedText, renderParams):
