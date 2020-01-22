@@ -32,7 +32,7 @@ def loadManifestFromFileList(path, fileList):
 	contents = []
 	for file in fileList:
 		fileWithPath = path + file
-		print " > Reading '%s'" % fileWithPath
+		# print " > Reading '%s'" % fileWithPath
 		fileContents = readInputFile(fileWithPath)
 		contents.append(getFileId(file) + fileContents)
 	return contents

@@ -252,7 +252,7 @@ def outputPDF(params, inputFile, outputFile):
 
 	stats = getStats(result["output"])
 	numPages = stats["numPages"]
-	print "Generated %d page PDF." % numPages
+	print "Generated %d page PDF to %s." % (numPages, outputFile)
 	params.pdfPages = numPages
 
 	if not params.skipPadding:
@@ -318,18 +318,20 @@ def addPadding(outputDir, outputFile, reportedPages, desiredPageCount):
 		terminal.rename(tmpFn, outputFn)
 		numCombinedPages = countPages(outputFn)
 		if numCombinedPages == desiredPageCount:
-			print "Successfully padded to %d pages." % desiredPageCount
+			print "Successfully padded '%s' to %d pages." % (outputFn, desiredPageCount)
 		else:
 			print "*** Tried to pad output PDF to %d pages but result was %d pages instead." % (desiredPageCount, numPDFPages)
 			sys.exit()
 
 
 def addCover(inputPDF, coverfile):
-	arguments = "A=%s B=output/%s cat A B output output/subcutanean-with-cover.pdf" % (coverfile, inputPDF)
+	outputFn = "subcutanean-with-cover.pdf"
+	arguments = "A=%s B=output/%s cat A B output output/%s" % (coverfile, inputPDF, outputFn)
 	result = terminal.runCommand("pdftk", arguments)
 	if not result["success"]:
 		print "*** Couldn't generate PDF with cover. %s" % result["output"]
 		sys.exit()
+	print "Successfully added cover to %s." % outputFn
 
 
 # Note: This requires pdftk, and specifically the version here updated for newer MacOS: https://stackoverflow.com/questions/39750883/pdftk-hanging-on-macos-sierra
