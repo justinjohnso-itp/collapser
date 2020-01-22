@@ -68,7 +68,7 @@ class RendererLatex(renderer.Renderer):
 			extraPages -= choice[1]
 			del endMatters[choicePos]
 
-		return suggestions
+		return ["../fragments/backmatter.tex"] + suggestions
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]

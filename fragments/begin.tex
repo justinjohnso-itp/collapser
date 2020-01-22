@@ -13,6 +13,17 @@
     \clearpage
   \fi
 }
+\gdef\cleartoend{
+  \clearpage
+  \ifodd\thepage
+  	\thispagestyle{empty}
+    \null
+    \clearpage
+  \fi
+  \thispagestyle{empty}
+  \null
+  \clearpage
+}
 
 % \raggedright  % NOTE: for flyer rendering only.
 
