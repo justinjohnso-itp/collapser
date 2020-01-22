@@ -47,11 +47,12 @@ class RendererLatex(renderer.Renderer):
 		if self.params.isDigital:
 			extraPages = 99
 
+		authorFile = "end-abouttheauthor.txt"
 		endMatters = [
 			["end-backers.txt", 3],
 			["end-altscene.txt", 5],
 			["end-stats.txt", 3],
-			["end-abouttheauthor.txt", 3]
+			[authorFile, 3]
 		]
 		MAX_END_MATTERS = len(endMatters)
 
@@ -67,6 +68,12 @@ class RendererLatex(renderer.Renderer):
 			suggestions.append(choice[0])
 			extraPages -= choice[1]
 			del endMatters[choicePos]
+
+		# Ensure About The Author is always last.
+		if authorFile in suggestions:
+			authorPos = suggestions.index(authorFile)
+			del suggestions[authorPos]
+			suggestions.append(authorFile)
 
 		return ["../fragments/backmatter.tex"] + suggestions
 
