@@ -48,8 +48,8 @@ class RendererLatex(renderer.Renderer):
 			extraPages = 99
 
 		endMatters = [
-			["end-backers.txt", 4],
-			["end-altscene.txt", 6],
+			["end-backers.txt", 3],
+			["end-altscene.txt", 5],
 			["end-stats.txt", 3],
 			["end-abouttheauthor.txt", 3]
 		]
