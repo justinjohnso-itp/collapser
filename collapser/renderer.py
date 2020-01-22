@@ -13,7 +13,7 @@ import re
 
 class RenderParams:
 
-	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, endMatter = False, outputDir = "", isDigital = False, copies = 1, parseParams = None):
+	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, endMatter = False, workDir = "", outputDir = "", isDigital = False, copies = 1, finalOutput = True, parseParams = None):
 		self.outputFormat = outputFormat
 		self.fileId = fileId
 		self.seed = seed
@@ -21,9 +21,11 @@ class RenderParams:
 		self.doFront = doFront
 		self.skipPadding = skipPadding
 		self.endMatter = endMatter
+		self.workDir = workDir
 		self.outputDir = outputDir
 		self.isDigital = isDigital
 		self.copies = copies
+		self.finalOutput = finalOutput
 		self.renderer = None
 		self.pdfPages = -1
 		self.parseParams = parseParams
@@ -111,6 +113,19 @@ class Renderer(object):
 
 
 
+
+def suggestEndMatterWhenNoPageLimits():
+	suggestions = []
+	# Should be listed in order you'd want them to appear.
+	if chooser.percent(100): # 75
+		suggestions.append("end-altscene.txt")
+	if chooser.percent(100): # 75
+		suggestions.append("end-stats.txt")
+	if chooser.percent(100):
+		suggestions.append("end-backers.txt")
+	if chooser.percent(100): # 75
+		suggestions.append("end-abouttheauthor.txt")
+	return suggestions
 
 # Special code for the "Alternate Scene" End Matter.
 

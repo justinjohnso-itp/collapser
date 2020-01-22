@@ -5,6 +5,7 @@ import renderer
 import re
 import fileio
 import renderer_text
+import terminal
 import sys
 
 class RendererTweet(renderer.Renderer):
@@ -19,14 +20,15 @@ class RendererTweet(renderer.Renderer):
 
 	def makeOutputFile(self):
 		print "Rendering to tweets."
-		inputFile = self.params.outputDir + self.params.fileId + ".txt"
+		inputFile = "%s%s.txt" % (self.params.outputDir, self.params.fileId)
 		inputText = fileio.readInputFile(inputFile)
 		cleanedText = prepInputForTweets(inputText)
 		tweets = splitIntoTweets(cleanedText)
 		output = "\n==============\n".join(tweets)
 
-		outputFileName = self.params.outputDir + self.params.fileId + ".tweets.txt"
+		outputFileName = "%s%s.tweets.txt" % (self.params.outputDir, self.params.fileId)
 		fileio.writeOutputFile(outputFileName, output)
+		terminal.move(inputFile, "%s%s.txt" % (self.params.workDir, self.params.fileId))
 
 	def suggestEndMatters(self):
 		return []

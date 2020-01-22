@@ -20,8 +20,15 @@ class RendererMobi(renderer.Renderer):
 
 	def makeOutputFile(self):
 		print "Rendering to mobi."
-		inputFile = self.params.outputDir + self.params.fileId + ".epub"
+		# We start with an .epub file in the outputDir.
+		inputFile = "%s%s.epub" % (self.params.workDir, self.params.fileId)
+		if self.params.finalOutput:
+			inputFile = "%s%s.epub" % (self.params.outputDir, self.params.fileId)
 		outputEPub(inputFile)
+		# Now we also have a .mobi file in the outputDir.
+		# If final output, move the .epub file to work.
+		if self.params.finalOutput:
+			terminal.move(inputFile, "%s%s.epub" % (self.params.workDir, self.params.fileId))
 
 	def renderFormattingSequence(self, contents):
 		pass

@@ -29,3 +29,7 @@ def runCommand(command, paramString, shell=False):
 
 def rename(input, output):
 	runCommand("mv", input + " " + output)
+
+def move(input, output):
+	print "Moving %s to %s." % (input, output)
+	runCommand("mv", input + " " + output)

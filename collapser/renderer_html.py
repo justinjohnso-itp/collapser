@@ -1,5 +1,6 @@
 # coding=utf-8
 
+# This is designed to create rich text that can be copy/pasted into places like online story sharing / blogging sites, not really to make a pretty standalone HTML page.
 
 import renderer
 import re
@@ -20,8 +21,11 @@ class RendererHTML(renderer.Renderer):
 		workFile = self.renderFormattingSequences()
 		workFile = specialHTMLFixes(workFile)
 		postHTMLificationSanityCheck(workFile)
-		outputFileName = self.params.outputDir + self.params.fileId + ".html"
+		outputFileName = "%s%s.html" % (self.params.outputDir, self.params.fileId)
 		fileio.writeOutputFile(outputFileName, workFile)
+
+	def suggestEndMatters(self):
+		return renderer.suggestEndMatterWhenNoPageLimits()
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
@@ -52,12 +56,27 @@ class RendererHTML(renderer.Renderer):
 		if code == "i":
 			text = contents[1]
 			return "<i>" + text + "</i>"
+		if code == "b":
+			text = contents[1]
+			return "<b>" + text + "</b>"
 		if code == "sc" or code == "scwide":
 			text = contents[1]
 			return text.upper()
 		if code == "vspace":
 			# TODO: Make this work if there's a need.
 			return "<p>&nbsp;</p>"
+		if code == "endmatter" or code == "start_colophon":
+			title = contents[1]
+			return "<p>&nbsp;</p><h1>" + title + "</h1>"
+		if code == "columns" or code == "end_columns":
+			return ""
+		if code == "url":
+			url = contents[1]
+			return url
+		if code == "finish_colophon":
+			return ""
+
+
 
 		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, contents)) 
 

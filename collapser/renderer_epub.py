@@ -20,12 +20,16 @@ class RendererEPub(renderer.Renderer):
 
 	def makeOutputFile(self):
 		print "Rendering to epub."
+		workDir = self.params.workDir
 		outputDir = self.params.outputDir
-		inputFile = outputDir + self.params.fileId + ".md"
-		outputFile = outputDir + self.params.fileId + ".epub"
+		inputFile = "%s%s.md" % (outputDir, self.params.fileId)
+		outputFile = "%s%s.epub" % (workDir, self.params.fileId)
 		title = generateTitle(self.params.seed)
-		fileio.writeOutputFile(outputDir + "title.md", title)
-		outputEPub(outputDir, inputFile, outputFile)
+		fileio.writeOutputFile(workDir + "title.md", title)
+		outputEPub(workDir, inputFile, outputFile)
+		if self.params.finalOutput:
+			terminal.move(outputFile, "%s%s.epub" % (outputDir, self.params.fileId))
+			terminal.move("%s%s.md" % (outputDir, self.params.fileId), "%s%s.md" % (workDir, self.params.fileId))
 
 	def renderFormattingSequence(self, contents):
 		pass

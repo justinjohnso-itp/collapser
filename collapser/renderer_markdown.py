@@ -23,22 +23,11 @@ class RendererMarkdown(renderer.Renderer):
 		if self.params.doFront:
 			workFile = generateFrontMatter(self.params.seed) + workFile
 		postMarkdownificationSanityCheck(workFile)
-		outputFileName = self.params.outputDir + self.params.fileId + ".md"
+		outputFileName = "%s%s.md" % (self.params.outputDir, self.params.fileId)
 		fileio.writeOutputFile(outputFileName, workFile)
 
 	def suggestEndMatters(self):
-		suggestions = []
-		# Should be listed in order you'd want them to appear.
-		if chooser.percent(100): # 75
-			suggestions.append("end-altscene.txt")
-		if chooser.percent(100): # 75
-			suggestions.append("end-stats.txt")
-		if chooser.percent(100): # 75
-			suggestions.append("end-abouttheauthor.txt")
-		if chooser.percent(100):
-			suggestions.append("end-backers.txt")
-		return suggestions
-
+		return renderer.suggestEndMatterWhenNoPageLimits()
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
@@ -72,6 +61,9 @@ class RendererMarkdown(renderer.Renderer):
 		if code == "i":
 			text = contents[1]
 			return "*" + text + "*"
+		if code == "b":
+			text = contents[1]
+			return "**" + text + "**"
 		if code == "sc" or code == "scwide":
 			text = contents[1]
 			return text.upper()
@@ -86,7 +78,7 @@ class RendererMarkdown(renderer.Renderer):
 		if code == "end_columns":
 			return "</div>\n\n"
 
-		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, contents)) 
+		raise ValueError("Unrecognized command '%s' in formatting sequence '%s'" % (code, contents)) 
 
 
 def indent(text):

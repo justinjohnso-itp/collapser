@@ -31,8 +31,8 @@ import renderer_mobi
 import renderer_tweet
 
 outputDir = "output/"
+workDir = "work/"
 alternateOutputFile = "alternate"
-collapsedFileName = outputDir + "collapsed.txt"
 
 
 
@@ -172,7 +172,7 @@ def main():
 		print "Setting output file to strategy name '%s' (b/c we don't have a seed for strategies other than random and pair)" % outputFile
 
 	parseParams = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow, endMatter = endMatter)
-	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, endMatter = endMatter, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams)
+	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, endMatter = endMatter, workDir = workDir, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams, finalOutput = True)
 
 	makeBooks(inputFiles, inputFileDir, parseParams, renderParams)
 
@@ -196,6 +196,7 @@ def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 		savedSkipPadding = renderParams.skipPadding
 		renderParams.skipPadding = True
 
+	renderParams.finalOutput = False
 	makeBook(inputFiles, inputFileDir, parseParams, renderParams)
 
 	#End Matter
@@ -208,6 +209,7 @@ def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 			renderParams.randSeed = False
 			parseParams.doConfirm = False
 			renderParams.skipPadding = savedSkipPadding
+			renderParams.finalOutput = True
 			makeBook(inputFiles, inputFileDir, parseParams, renderParams)	
 
 def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
@@ -288,7 +290,8 @@ def render(collapsedText, renderParams):
 
 
 
-def collapseInputText(inputFiles, inputFileDir, params):
+def collapseInputText(inputFiles, inputFileDir, parseParams):
+	params = parseParams
 	fileContents = []
 	fileList = []
 	for iFile in inputFiles:
@@ -333,7 +336,7 @@ def collapseInputText(inputFiles, inputFileDir, params):
 		print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
 		sys.exit()
 
-	fileio.writeOutputFile(outputDir + "collapsed.txt", collapsedText)
+	fileio.writeOutputFile(workDir + "collapsed.txt", collapsedText)
 
 	return collapsedText
 

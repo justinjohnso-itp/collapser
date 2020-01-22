@@ -32,7 +32,7 @@ class RendererLatex(renderer.Renderer):
 		postLatexificationSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params.seed, self.params.doFront)
 		latexFileName = "%s.tex" % self.params.fileId
-		fileio.writeOutputFile(self.params.outputDir + latexFileName, stagedFileText)
+		fileio.writeOutputFile(self.params.workDir + latexFileName, stagedFileText)
 
 	def makeOutputFile(self):
 		inputFileName = "%s.tex" % self.params.fileId
@@ -243,7 +243,7 @@ This is the one you have.""" % seedPrinted
 
 def outputPDF(params, inputFile, outputFile):
 	global PADDED_PAGES
-	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (params.outputDir, inputFile))
+	result = terminal.runCommand('lualatex', '-interaction=nonstopmode -synctex=1 -recorder --output-directory="%s" "%s" ' % (params.workDir, inputFile))
 	# lualatex will fail (return exit code 1) even when successfully generating a PDF, so ignore result["success"] and just look at the output.
 	latexLooksGood = postLatexSanityCheck(result["output"])
 	if not latexLooksGood:
@@ -256,10 +256,13 @@ def outputPDF(params, inputFile, outputFile):
 	params.pdfPages = numPages
 
 	if not params.skipPadding:
-		addPadding(params.outputDir, outputFile, stats["numPages"], PADDED_PAGES)
+		addPadding(params.workDir, outputFile, stats["numPages"], PADDED_PAGES)
 	if params.isDigital:
 		print "isDigital, so adding cover"
 		addCover(outputFile, "fragments/cover.pdf")
+	if params.finalOutput:
+		moveFinalToOutput(params.workDir, params.outputDir, outputFile)
+		print "--> Outputed final PDF to %s%s." % (params.outputDir, outputFile)
 
 
 def postLatexSanityCheck(latexLog):
@@ -275,7 +278,7 @@ def postLatexSanityCheck(latexLog):
 		print "Couldn't find output line; halting."
 		return False
 
-	if result["numPages"] < 5 or result["numPages"] > 300:
+	if result["numPages"] < 190 or result["numPages"] > 240:
 		print "Unexpected page length (%d); halting." % result["numPages"]
 		return False
 	if result["numBytes"] < 80000 or result["numBytes"] > 3000000:
@@ -296,11 +299,11 @@ def getStats(latexLog):
 
 
 
-def addPadding(outputDir, outputFile, reportedPages, desiredPageCount):
+def addPadding(workDir, outputFile, reportedPages, desiredPageCount):
 
 	print "Adding padding..."
 	print "outputFile: '%s'" % outputFile
-	outputFn = outputDir + outputFile
+	outputFn = workDir + outputFile
 	numPDFPages = countPages(outputFn)
 	if numPDFPages != reportedPages:
 		print "*** Latex reported generating %d page PDF, but pdftk reported the output was %d pages instead. Aborting." % (reportedPages, numPDFPages)
@@ -313,7 +316,7 @@ def addPadding(outputDir, outputFile, reportedPages, desiredPageCount):
 	# If equal, no action needed. Otherwise, add padding to the desired number of pages, which must remain constant in print on demand so the cover art doesn't need to be resized.
 
 	if numPDFPages < desiredPageCount:
-		tmpFn = outputDir + "padded-" + outputFile
+		tmpFn = workDir + "padded-" + outputFile
 		addBlankPages(outputFn, tmpFn, desiredPageCount - numPDFPages)
 		terminal.rename(tmpFn, outputFn)
 		numCombinedPages = countPages(outputFn)
@@ -332,6 +335,9 @@ def addCover(inputPDF, coverfile):
 		print "*** Couldn't generate PDF with cover. %s" % result["output"]
 		sys.exit()
 	print "Successfully added cover to %s." % outputFn
+
+def moveFinalToOutput(workDir, outputDir, outputFile):
+	terminal.move(workDir + outputFile, outputDir + outputFile)
 
 
 # Note: This requires pdftk, and specifically the version here updated for newer MacOS: https://stackoverflow.com/questions/39750883/pdftk-hanging-on-macos-sierra

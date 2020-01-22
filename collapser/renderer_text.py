@@ -21,21 +21,11 @@ class RendererText(renderer.Renderer):
 		workFile = self.renderFormattingSequences()
 		workFile = specialTextFixes(workFile)
 		postTextificationSanityCheck(workFile)
-		outputFileName = self.params.outputDir + self.params.fileId + ".txt"
+		outputFileName = "%s%s.txt" % (self.params.outputDir, self.params.fileId)
 		fileio.writeOutputFile(outputFileName, workFile)
 
 	def suggestEndMatters(self):
-		suggestions = []
-		# Should be listed in order you'd want them to appear.
-		if chooser.percent(100): # 75
-			suggestions.append("end-altscene.txt")
-		if chooser.percent(100): # 75
-			suggestions.append("end-stats.txt")
-		if chooser.percent(100): # 75
-			suggestions.append("end-abouttheauthor.txt")
-		if chooser.percent(100):
-			suggestions.append("end-backers.txt")
-		return suggestions
+		return renderer.suggestEndMatterWhenNoPageLimits()
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]
@@ -69,6 +59,9 @@ class RendererText(renderer.Renderer):
 		if code == "i":
 			text = contents[1]
 			return "_" + text + "_"
+		if code == "b":
+			text = contents[1]
+			return "*" + text + "*"			
 		if code == "sc" or code == "scwide":
 			text = contents[1]
 			return text.upper()
