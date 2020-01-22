@@ -37,31 +37,34 @@ collapsedFileName = outputDir + "collapsed.txt"
 
 
 def showUsage():
-	print """Usage: collapser -o <OUTPUT_KEY> options
+	print """Usage: collapser options
 Arguments:
-  --help         Show this message
-  --front		 Include frontmatter
-  --seed=x       Use the given integer as a seed
-  --seed=random  Don't use an incremental seed; use one purely at random.
-  --output=x	 Format to output (default none)
-  				 "pdf" (for POD), "pdfdigital" (for online use),
-  				 "txt", "html", "md", "epub", "mobi", "tweet"
-  --noconfirm	 Skip variant confirmation
-  --strategy=x   Selection strategy.
-  		N		 Make N copies with "random" strategy
-  		"random": default
-  		"author": Author's preferred
-  		"pair": Two versions optimizing for difference
-  		"longest"
-  		"shortest"
-  --input=		 An alternate manifest file to load (default: full-book-manifest.txt)
-  --only=x,y,z	 A list of files to render from the set loaded. 
-  --set=x,y,z	 A list of variables to set true for this run.
-                 Preface with ^ to negate
-  --discourseVarChance=x   Likelihood to defer to a discourse var (default 80)
-  --skipPadding		Skip padding to 232 pages
-  --endMatter=auto	Automatically add appropriate end matter
-  --endMatter=x,y	Add specific end matter files
+  --help              Show this message
+  --input=x,y,z       Alternate file(s) or manifest file(s) to load
+                        (default: full-book-manifest.txt)
+  --only=x,y          A subset of loaded files to render. 
+  --output=x	      Format to output (default none)
+                      "pdf" (for POD), "pdfdigital" (for online use),
+                      "txt", "html", "md", "epub", "mobi", "tweet"
+  --file=x            Write output to this filename (default = seed/strategy)
+  --seed=             What seed to use in book generation (default: next)
+             N          Use the given integer
+             random     Use a purely random seed
+  --strategy=x        Selection strategy.
+             "random"   default
+             N          Make N copies with "random" strategy
+             "author"   Author's preferred
+             "pair"     Two versions optimizing for difference
+             "longest"
+             "shortest"
+  --set=x,y,z	      A list of variables to set true for this run.
+                      Preface with ^ to negate
+  --discourseVarChance=x Likelihood to defer to a discourse var (default 80)
+  --noconfirm	      Skip variant confirmation
+  --skipPadding       Skip padding to 232 pages
+  --front             Include frontmatter
+  --endMatter=auto    Automatically add appropriate end matter
+  --endMatter=x,y     Add specific end matter files
 """
 
 
