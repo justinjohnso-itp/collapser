@@ -60,7 +60,7 @@ Arguments:
   --set=x,y,z	      A list of variables to set true for this run.
                       Preface with ^ to negate
   --discourseVarChance=x Likelihood to defer to a discourse var (default 80)
-  --noconfirm	      Skip variant confirmation
+  --skipConfirm	      Skip variant confirmation
   --skipPadding       Skip padding to 232 pages
   --skipFront         Skip frontmatter
   --endMatter=auto    Automatically add appropriate end matter
@@ -93,7 +93,7 @@ def main():
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "noconfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "file="])
+	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "skipConfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "file="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -135,7 +135,7 @@ def main():
 			outputFormat = arg
 			if arg == "none":
 				outputFormat = ""
-		elif opt == "--noconfirm":
+		elif opt == "--skipConfirm":
 			doConfirm = False
 		elif opt == "--skipFront":
 			doFront = False
