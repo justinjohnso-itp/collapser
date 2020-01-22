@@ -195,8 +195,8 @@ def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 	if doingEndMatter:
 		savedSkipPadding = renderParams.skipPadding
 		renderParams.skipPadding = True
+		renderParams.finalOutput = False
 
-	renderParams.finalOutput = False
 	makeBook(inputFiles, inputFileDir, parseParams, renderParams)
 
 	#End Matter
@@ -229,13 +229,17 @@ def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	seed0 = seeds[leastSimilarPair[0]]
 	text1 = texts[leastSimilarPair[1]]
 	seed1 = seeds[leastSimilarPair[1]]
+	print "Will now render %s and %s." % (seed0, seed1)
 
 	renderParams.seed = seed0
 	parseParams.chooseStrategy = "random"
+	renderParams.fileId = ""
+	setOutputFile(renderParams, parseParams)
 	makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 
 	renderParams.seed = seed1
-	renderParams.fileId = alternateOutputFile
+	renderParams.fileId = ""
+	setOutputFile(renderParams, parseParams)
 	makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 
 
