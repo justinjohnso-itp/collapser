@@ -208,30 +208,35 @@ def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 			renderParams.skipPadding = savedSkipPadding
 			makeBook(inputFiles, inputFileDir, parseParams, renderParams)	
 
-
-# def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
-# 	# TODO make this work with new output format.
-# 	texts = []
-# 	tries = 10
-# 	seeds = []
-# 	seed = chooser.nextSeed()
-# 	for x in range(tries):
-# 		seeds.append(seed)
-# 		texts.append(collapseInputText(inputFiles, inputFileDir, parseParams))
-# 		seed = chooser.nextSeed()
-# 	leastSimilarPair = differ.getTwoLeastSimilar(texts)
-# 	text0 = texts[leastSimilarPair[0]]
-# 	seed0 = seeds[leastSimilarPair[0]]
-# 	text1 = texts[leastSimilarPair[1]]
-# 	seed1 = seeds[leastSimilarPair[1]]
-# 	renderParams.seed = seed0
-# 	render(text0, renderParams)
-# 	renderParams.seed = seed1
-# 	renderParams.fileId = alternateOutputFile
-# 	render(text1, renderParams)
+def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
+	# TODO make this work with new output format.
+	texts = []
+	tries = 10
+	seeds = []
+	seed = chooser.nextSeed()
+	for x in range(tries):
+		seeds.append(seed)
+		texts.append(collapseInputText(inputFiles, inputFileDir, parseParams))
+		seed = chooser.nextSeed()
+	leastSimilarPair = differ.getTwoLeastSimilar(texts)
+	text0 = texts[leastSimilarPair[0]]
+	seed0 = seeds[leastSimilarPair[0]]
+	text1 = texts[leastSimilarPair[1]]
+	seed1 = seeds[leastSimilarPair[1]]
+	renderParams.seed = seed0
+	render(text0, renderParams)
+	renderParams.seed = seed1
+	renderParams.fileId = alternateOutputFile
+	render(text1, renderParams)
 
 
 def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
+	setFinalSeed(renderParams, parseParams)
+	setOutputFile(renderParams)
+	collapsedText = collapseInputText(inputFiles, inputFileDir, parseParams)
+	render(collapsedText, renderParams)
+
+def setFinalSeed(renderParams, parseParams):
 	thisSeed = renderParams.seed
 	if parseParams.chooseStrategy != "random":
 		print "Ignoring seed (b/c chooseStrategy = %s)" % parseParams.chooseStrategy
@@ -244,21 +249,13 @@ def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
 	else:
 		chooser.setSeed(thisSeed)
 		print "Seed (requested): %d" % thisSeed
-	renderParams.seed = thisSeed
+	renderParams.seed = thisSeed	
 
-	collapsedText = collapseInputText(inputFiles, inputFileDir, parseParams)
-	if len(variables.showVars()) < 4:
-		print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
-		sys.exit()
-	collapsedFileName = outputDir + "collapsed.txt"
-
-	fileio.writeOutputFile(collapsedFileName, collapsedText)
-
+def setOutputFile(renderParams):
 	thisOutputFile = renderParams.fileId
 	if renderParams.copies > 1:
 		thisOutputFile = "%s-%s" % (renderParams.fileId, renderParams.thisSeed)
 	renderParams.fileId = thisOutputFile
-	render(collapsedText, renderParams)
 
 
 def render(collapsedText, renderParams):
@@ -326,6 +323,12 @@ def collapseInputText(inputFiles, inputFileDir, params):
 		print res
 		sys.exit()
 	collapsedText = res.package
+
+	if len(variables.showVars()) < 4:
+		print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
+		sys.exit()
+
+	fileio.writeOutputFile(outputDir + "collapsed.txt", collapsedText)
 
 	return collapsedText
 
