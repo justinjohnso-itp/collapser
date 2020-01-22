@@ -179,35 +179,34 @@ def main():
 
 def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	if parseParams.chooseStrategy == "pair":
-		# makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
-		print "Book pair functionality currently offline."
-		sys.exit()
+		makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
 	else:
 		copies = renderParams.copies
 		while copies >= 1:
-			
-			doingEndMatter = len(parseParams.endMatter) == 1 and parseParams.endMatter[0] == "auto"
-			if doingEndMatter:
-				savedSkipPadding = renderParams.skipPadding
-				renderParams.skipPadding = True
-
-			makeBook(inputFiles, inputFileDir, parseParams, renderParams)
-
-			#End Matter
-			if doingEndMatter:
-				endMatters = renderParams.renderer.suggestEndMatters()
-				print "Suggested End Matter: %s" % endMatters
-				if len(endMatters) > 0:
-					print "Re-rendering..."
-					parseParams.endMatter = endMatters
-					renderParams.randSeed = False
-					parseParams.doConfirm = False
-					renderParams.skipPadding = savedSkipPadding
-					makeBook(inputFiles, inputFileDir, parseParams, renderParams)
-
+			makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 			copies -= 1
 			if copies > 0:
 				print "%d cop%s left to generate." % (copies, "y" if copies is 1 else "ies")
+
+def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
+	doingEndMatter = len(parseParams.endMatter) == 1 and parseParams.endMatter[0] == "auto"
+	if doingEndMatter:
+		savedSkipPadding = renderParams.skipPadding
+		renderParams.skipPadding = True
+
+	makeBook(inputFiles, inputFileDir, parseParams, renderParams)
+
+	#End Matter
+	if doingEndMatter:
+		endMatters = renderParams.renderer.suggestEndMatters()
+		print "Suggested End Matter: %s" % endMatters
+		if len(endMatters) > 0:
+			print "Re-rendering..."
+			parseParams.endMatter = endMatters
+			renderParams.randSeed = False
+			parseParams.doConfirm = False
+			renderParams.skipPadding = savedSkipPadding
+			makeBook(inputFiles, inputFileDir, parseParams, renderParams)	
 
 
 # def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
