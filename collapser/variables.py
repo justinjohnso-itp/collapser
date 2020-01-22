@@ -32,6 +32,28 @@ class Variables:
 				return groupKey
 		return ""
 
+	def getSignature(self):
+		groupKeys = sorted(self.varGroups.keys())
+		output = ""
+		for key in groupKeys:
+			found = False
+			important = False
+			keys = self.varGroups[key]
+			if "clubintro" in keys or "gayniko" in keys or "dadphone" in keys:
+				important = True
+			for v in self.varGroups[key]:
+				if self.check(v):
+					if important:
+						v = v * 10
+					sig = "%s: %s\n" % (key, v)
+					output += sig
+					found = True
+					break
+			if not found:
+				output += "%s: False\n" % key
+
+		return output
+
 	def shuffleGroupVal(self, key):
 		groupKey = self.getGroupFromVar(key)
 		if groupKey == "":

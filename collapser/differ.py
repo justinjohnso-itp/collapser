@@ -19,10 +19,7 @@ def getTwoLeastSimilar(texts):
 	for pair in itertools.combinations(range(len(texts)), 2):
 		text1 = texts[pair[0]]
 		text2 = texts[pair[1]]
-		# print "About to compare text len %d with text len %d. %s %s" % (len(text1), len(text2), text1[:1000], text2[:1000])
-		text1 = text1[:5000]
-		text2 = text2[:5000]
-		sm = difflib.SequenceMatcher(lambda x: x == " ", text1, text2)
+		sm = difflib.SequenceMatcher(None, text1, text2, autojunk = False)
 		similarity = sm.ratio()
 		print "%s: Similarity is %f" % (pair, round(similarity, 3))
 		if similarity < lowestSimilarityScore:

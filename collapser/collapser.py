@@ -213,18 +213,22 @@ def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 			makeBook(inputFiles, inputFileDir, parseParams, renderParams)	
 
 def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
+	tries = 15
 	texts = []
-	tries = 4
 	seeds = []
+	signatures = []
+	origEndMatter = parseParams.endMatter
 	seed = chooser.nextSeed()
 	for x in range(tries):
 		seeds.append(seed)
 		renderParams.seed = seed
 		collapsed = collapseInputText(inputFiles, inputFileDir, parseParams)
 		texts.append(collapsed)
-		# fileio.writeOutputFile("%s.txt" % seed, collapsed)
+		signature = getSignature(collapsed)
+		signatures.append(signature)
+		# fileio.writeOutputFile("work/signature-%s.txt" % seed, signature)
 		seed = chooser.nextSeed()
-	leastSimilarPair = differ.getTwoLeastSimilar(texts)
+	leastSimilarPair = differ.getTwoLeastSimilar(signatures)
 	text0 = texts[leastSimilarPair[0]]
 	seed0 = seeds[leastSimilarPair[0]]
 	text1 = texts[leastSimilarPair[1]]
@@ -239,9 +243,14 @@ def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
 
 	renderParams.seed = seed1
 	renderParams.fileId = ""
+	parseParams.endMatter = origEndMatter
 	setOutputFile(renderParams, parseParams)
 	makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 
+
+def getSignature(txt):
+	sig = variables.__v.getSignature()
+	return sig
 
 def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
 	setFinalSeed(renderParams, parseParams)
