@@ -134,6 +134,8 @@ class RendererLatex(renderer.Renderer):
 			return template_columns[0] + numCols + template_columns[1]
 		if code == "end_columns":
 			return template_end_columns
+		if code == "stars":
+			return "\n \\vspace*{1\\nbs}\n \\scenestars\n"
 
 		raise ValueError("Unrecognized command '%s' in control sequence '%s'" % (code, contents)) 
 
