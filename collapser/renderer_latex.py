@@ -110,6 +110,9 @@ class RendererLatex(renderer.Renderer):
 		if code == "i":
 			text = contents[1]
 			return template_i[0] + text + template_i[1]
+		if code == "b":
+			text = contents[1]
+			return template_b[0] + text + template_b[1]
 		if code == "sc":
 			text = contents[1]
 			return template_sc[0] + text + template_sc[1]
@@ -416,7 +419,7 @@ template_start_colophon = ['''
 \\cleartorecto
 \\thispagestyle{empty}
 \\begin{parascale}[0.88]
-\\vspace*{9\\nbs}
+\\vspace*{7\\nbs}
 \\begin{adjustwidth}{4em}{4em}
 \\begin{center}
 \\textsc{''', '''}
@@ -466,6 +469,7 @@ template_pp = '''
 '''
 
 template_i = ['''\\textit{''', '''}''']
+template_b = ['''\\textbf{''', '''}''']
 template_sc = ['''\\allsmcp{''', '''}''']
 
 template_verse = ['''
