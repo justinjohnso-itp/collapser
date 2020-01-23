@@ -72,7 +72,9 @@ def randomSeed():
 	return rSeed
 
 def nextSeed():
-	return fileio.getNextSeedFromFile()
+	seed = fileio.getNextSeedFromFile()
+	setSeed(seed)
+	return seed
 
 def unSeed():
 	random.seed()
