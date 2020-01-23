@@ -172,7 +172,7 @@ def main():
 		print "Setting output file to strategy name '%s' (b/c we don't have a seed for strategies other than random and pair)" % outputFile
 
 	parseParams = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow, endMatter = endMatter)
-	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, endMatter = endMatter, workDir = workDir, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams, finalOutput = True)
+	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, workDir = workDir, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams, finalOutput = True)
 
 	makeBooks(inputFiles, inputFileDir, parseParams, renderParams)
 

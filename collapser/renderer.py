@@ -13,14 +13,13 @@ import re
 
 class RenderParams:
 
-	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, endMatter = False, workDir = "", outputDir = "", isDigital = False, copies = 1, finalOutput = True, parseParams = None):
+	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, workDir = "", outputDir = "", isDigital = False, copies = 1, finalOutput = True, parseParams = None):
 		self.outputFormat = outputFormat
 		self.fileId = fileId
 		self.seed = seed
 		self.randSeed = randSeed
 		self.doFront = doFront
 		self.skipPadding = skipPadding
-		self.endMatter = endMatter
 		self.workDir = workDir
 		self.outputDir = outputDir
 		self.isDigital = isDigital
