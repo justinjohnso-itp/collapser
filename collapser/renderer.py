@@ -13,7 +13,7 @@ import re
 
 class RenderParams:
 
-	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, workDir = "", outputDir = "", isDigital = False, copies = 1, finalOutput = True, parseParams = None):
+	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, workDir = "", outputDir = "", isDigital = False, copies = 1, finalOutput = True, parseParams = None, pairInfo = []):
 		self.outputFormat = outputFormat
 		self.fileId = fileId
 		self.seed = seed
@@ -28,6 +28,7 @@ class RenderParams:
 		self.renderer = None
 		self.pdfPages = -1
 		self.parseParams = parseParams
+		self.pairInfo = pairInfo
 
 
 
@@ -127,7 +128,7 @@ def suggestEndMatterWhenNoPageLimits():
 	return suggestions
 
 
-def frontMatterSeedMessage(seed):
+def frontMatterSeedMessage(seed, pairInfo):
 	seedPrinted = ""
 	if seed == -1:
 		seedPrinted = "01893-b"
@@ -140,7 +141,14 @@ def frontMatterSeedMessage(seed):
 	else:
 		msg = "This copy was generated from seed #%s and is the only copy generated from that seed." % seedPrinted
 		if variables.isSingularCopy():
-			msg += " Additionally, this rendering contains a piece of custom text written specifically for a Singular Subcutanean crowdfunding backer. (Thank you!)"	
+			msg += " Additionally, this rendering contains a piece of custom text written specifically for a Singular Subcutanean crowdfunding backer. (Thank you!)"
+		elif len(pairInfo) > 0:
+			firstSeed = pairInfo[0]
+			lastSeed = pairInfo[1]
+			seed0 = pairInfo[2]
+			seed1 = pairInfo[3]
+			otherSeed = seed0 if seed == seed1 else seed1
+			msg += " Additionally, this copy was co-generated with seed #%d. These two were the least similar pair of seeds in the range %d to %d." % (otherSeed, firstSeed, lastSeed)
 	return [seedPrinted, msg]
 
 

@@ -20,7 +20,7 @@ class RendererText(renderer.Renderer):
 		self.collapsedText = prepForTextOutput(self.collapsedText)
 		workFile = self.renderFormattingSequences()
 		workFile = specialTextFixes(workFile)
-		workFile = addTextFrontMatter(workFile, self.params.seed)
+		workFile = addTextFrontMatter(workFile, self.params.seed, self.params.pairInfo)
 		postTextificationSanityCheck(workFile)
 		outputFileName = "%s%s.txt" % (self.params.outputDir, self.params.fileId)
 		fileio.writeOutputFile(outputFileName, workFile)
@@ -122,8 +122,8 @@ def specialTextFixes(text):
 
 	return text
 
-def addTextFrontMatter(text, seed):
-	seedPrinted, msg = renderer.frontMatterSeedMessage(seed)
+def addTextFrontMatter(text, seed, pairInfo):
+	seedPrinted, msg = renderer.frontMatterSeedMessage(seed, pairInfo)
 	front = "*** SUBCUTANEAN ***\n\nby Aaron A. Reed\n\n\n========================\nEach rendering of Subcutanean is different. " + msg + "\n========================\n\n"
 	return front + text
 

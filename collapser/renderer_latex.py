@@ -30,7 +30,7 @@ class RendererLatex(renderer.Renderer):
 		self.collapsedText = specialLatexAndPDFFixes(self.collapsedText)
 		workFile = self.renderFormattingSequences()
 		postLatexificationSanityCheck(workFile)
-		stagedFileText = latexWrapper(workFile, self.params.seed, self.params.doFront)
+		stagedFileText = latexWrapper(workFile, self.params.seed, self.params.doFront, self.params.pairInfo)
 		latexFileName = "%s.tex" % self.params.fileId
 		fileio.writeOutputFile(self.params.workDir + latexFileName, stagedFileText)
 
@@ -187,7 +187,7 @@ def postLatexificationSanityCheck(text):
 
 
 # Wrap the converted latex in appropriate header/footers.
-def latexWrapper(text, seed, includeFrontMatter):
+def latexWrapper(text, seed, includeFrontMatter, pairInfo):
 
 	templates = {
 		"begin": fileio.readInputFile(latexBegin),
@@ -204,7 +204,7 @@ def latexWrapper(text, seed, includeFrontMatter):
 	output += templates["end"]
 
 	# Insert the seed number where it appeared in front matter.
-	seedPrinted, msg = renderer.frontMatterSeedMessage(seed)
+	seedPrinted, msg = renderer.frontMatterSeedMessage(seed, pairInfo)
 	output = output.replace("SEED_TEXT", msg)
 	output = output.replace("SEED_NUMBER", "%s" % seedPrinted)
 

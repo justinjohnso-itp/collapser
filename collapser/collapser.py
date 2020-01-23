@@ -172,7 +172,7 @@ def main():
 		print "Setting output file to strategy name '%s' (b/c we don't have a seed for strategies other than random and pair)" % outputFile
 
 	parseParams = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow, endMatter = endMatter)
-	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, workDir = workDir, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams, finalOutput = True)
+	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, workDir = workDir, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams, finalOutput = True, pairInfo = [])
 
 	makeBooks(inputFiles, inputFileDir, parseParams, renderParams)
 
@@ -218,12 +218,14 @@ def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 			makeBook(inputFiles, inputFileDir, parseParams, renderParams)	
 
 def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
-	tries = 15
+	tries = 20
 	texts = []
 	seeds = []
 	signatures = []
 	origEndMatter = parseParams.endMatter
 	seed = chooser.nextSeed()
+	firstSeed = seed
+	lastSeed = -1
 	for x in range(tries):
 		seeds.append(seed)
 		renderParams.seed = seed
@@ -232,6 +234,7 @@ def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
 		signature = getSignature(collapsed)
 		signatures.append(signature)
 		# fileio.writeOutputFile("work/signature-%s.txt" % seed, signature)
+		lastSeed = seed
 		seed = chooser.nextSeed()
 	leastSimilarPair = differ.getTwoLeastSimilar(signatures)
 	text0 = texts[leastSimilarPair[0]]
@@ -243,6 +246,7 @@ def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	renderParams.seed = seed0
 	parseParams.chooseStrategy = "random"
 	renderParams.fileId = ""
+	renderParams.pairInfo = [firstSeed, lastSeed, seed0, seed1]
 	setOutputFile(renderParams, parseParams)
 	makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 
