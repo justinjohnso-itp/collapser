@@ -122,12 +122,7 @@ def postMarkdownificationSanityCheck(text):
 def generateFrontMatter(seed):
 	text = ""
 	
-	if seed == -1:
-		seedPrinted = "01893-b"
-	elif seed < 9999:
-		seedPrinted = "0%d" % seed
-	else:
-		seedPrinted = "%s" % seed
+	seedPrinted, msg = renderer.frontMatterSeedMessage(seed)
 
 	if seed == -1:
 		text = """
@@ -148,7 +143,7 @@ But all of them are the same story, more or less. Don’t worry about what’s i
 This is the one you have.
 
 subcutanean.textories.com
-""" % seed
+""" % seedPrinted
 	return text
 
 

@@ -126,6 +126,21 @@ def suggestEndMatterWhenNoPageLimits():
 		suggestions.append("end-abouttheauthor.txt")
 	return suggestions
 
+
+def frontMatterSeedMessage(seed):
+	seedPrinted = ""
+	if seed == -1:
+		seedPrinted = "01893-b"
+	elif seed < 9999:
+		seedPrinted = "0%d" % seed
+	else:
+		seedPrinted = "%s" % seed
+	msg = "This copy was generated from seed #%s and is the only copy generated from that seed." % seedPrinted
+	if seed == -1:
+		msg = "This run of Advance Reader Copies have all been generated from seed #%s." % seedPrinted
+	return [seedPrinted, msg]
+
+
 # Special code for the "Alternate Scene" End Matter.
 
 def renderAlternateSequence(parseParams):

@@ -20,6 +20,7 @@ class RendererText(renderer.Renderer):
 		self.collapsedText = prepForTextOutput(self.collapsedText)
 		workFile = self.renderFormattingSequences()
 		workFile = specialTextFixes(workFile)
+		workFile = addTextFrontMatter(workFile, self.params.seed)
 		postTextificationSanityCheck(workFile)
 		outputFileName = "%s%s.txt" % (self.params.outputDir, self.params.fileId)
 		fileio.writeOutputFile(outputFileName, workFile)
@@ -120,6 +121,11 @@ def specialTextFixes(text):
 	text = re.sub(r"[ ]{2,}", " ", text)
 
 	return text
+
+def addTextFrontMatter(text, seed):
+	seedPrinted, msg = renderer.frontMatterSeedMessage(seed)
+	front = "*** SUBCUTANEAN ***\n\nby Aaron A. Reed\n\n\n========================\nEach rendering of Subcutanean is different. " + msg + "\n========================\n\n"
+	return front + text
 
 def postTextificationSanityCheck(text):
 	# Look for unexpected characters etc. here
