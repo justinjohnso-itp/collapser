@@ -184,9 +184,14 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 		makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
 	else:
 		copies = renderParams.copies
+		origEndMatter = [] + parseParams.endMatter
 		while copies >= 1:
 			makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 			copies -= 1
+			renderParams.seed = -1
+			renderParams.fileId = ""
+			parseParams.endMatter = [] + origEndMatter
+			renderParams.finalOutput = False
 			if copies > 0:
 				print "%d cop%s left to generate." % (copies, "y" if copies is 1 else "ies")
 
@@ -255,6 +260,7 @@ def getSignature(txt):
 def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
 	setFinalSeed(renderParams, parseParams)
 	setOutputFile(renderParams, parseParams)
+	chooser.resetAllIters()
 	print "\n\n*** makeBook %s %s****************************\n" % (renderParams.fileId, "(prelim) " if not renderParams.finalOutput else "")
 	collapsedText = collapseInputText(inputFiles, inputFileDir, parseParams)
 	render(collapsedText, renderParams)
