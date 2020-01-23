@@ -71,8 +71,8 @@ def randomSeed():
 	random.seed(rSeed)
 	return rSeed
 
-def nextSeed():
-	seed = fileio.getNextSeedFromFile()
+def nextSeed(generation):
+	seed = fileio.getNextSeedFromFile(generation)
 	setSeed(seed)
 	return seed
 

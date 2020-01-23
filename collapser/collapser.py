@@ -50,6 +50,8 @@ Arguments:
   --seed=             What seed to use in book generation (default: next)
              N          Use the given integer
              random     Use a purely random seed
+  --gen=x             What generation of seeds to use (default 9)
+                        (0=ARC, 1=backers, 2=USB, 3=public, 9=test)
   --strategy=x        Selection strategy.
              "random"   default
              N          Make N copies with "random" strategy
@@ -78,6 +80,7 @@ def main():
 	inputText = ""
 	outputText = ""
 	seed = -1
+	generation = 9
 	strategy = "random"
 	outputFormat = ""
 	doFront = True
@@ -93,7 +96,7 @@ def main():
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "skipConfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "file="])
+	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "skipConfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "file=", "gen="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -118,6 +121,12 @@ def main():
 				except:
 					print "Invalid --seed parameter '%s': not an integer." % arg
 					sys.exit()
+		elif opt == "--gen":
+			try:
+				generation = int(arg)
+			except:
+				print "Invalid --gen parameter '%s': not an integer." % arg
+				sys.exit()
 		elif opt == "--strategy":
 			try:
 				copies = int(arg)
@@ -172,7 +181,7 @@ def main():
 		print "Setting output file to strategy name '%s' (b/c we don't have a seed for strategies other than random and pair)" % outputFile
 
 	parseParams = quantparse.ParseParams(chooseStrategy = strategy, setDefines = setDefines, doConfirm = doConfirm, discourseVarChance = discourseVarChance, onlyShow = onlyShow, endMatter = endMatter)
-	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, workDir = workDir, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams, finalOutput = True, pairInfo = [])
+	renderParams = renderer.RenderParams(outputFormat = outputFormat, fileId = outputFile, seed = seed, randSeed = randSeed, doFront = doFront, skipPadding = skipPadding, workDir = workDir, outputDir = outputDir, isDigital = isDigital, copies = copies, parseParams = parseParams, finalOutput = True, pairInfo = [], generation = generation)
 
 	makeBooks(inputFiles, inputFileDir, parseParams, renderParams)
 
@@ -274,10 +283,12 @@ def setFinalSeed(renderParams, parseParams):
 	if parseParams.chooseStrategy != "random":
 		print "Ignoring seed (b/c chooseStrategy = %s)" % parseParams.chooseStrategy
 	elif renderParams.randSeed:
+		print "(Ignoring --gen=%d because --seed=random)" % renderParams.generation
+		renderParams.generation = -1
 		thisSeed = chooser.randomSeed()
 		print "Seed (purely random): %d" % thisSeed
 	elif thisSeed is -1:
-		thisSeed = chooser.nextSeed()
+		thisSeed = chooser.nextSeed(renderParams.generation)
 		print "Seed (next): %d" % thisSeed
 	else:
 		chooser.setSeed(thisSeed)

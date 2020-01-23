@@ -13,7 +13,7 @@ import re
 
 class RenderParams:
 
-	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, workDir = "", outputDir = "", isDigital = False, copies = 1, finalOutput = True, parseParams = None, pairInfo = []):
+	def __init__(self, outputFormat = "", fileId = "", seed = -1, randSeed = False, doFront = False, skipPadding = False, workDir = "", outputDir = "", isDigital = False, copies = 1, finalOutput = True, parseParams = None, pairInfo = [], generation = 9):
 		self.outputFormat = outputFormat
 		self.fileId = fileId
 		self.seed = seed
@@ -29,6 +29,7 @@ class RenderParams:
 		self.pdfPages = -1
 		self.parseParams = parseParams
 		self.pairInfo = pairInfo
+		self.generation = generation
 
 
 

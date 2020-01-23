@@ -40,28 +40,25 @@ def loadManifestFromFileList(path, fileList):
 def getFileId(fn):
 	return "\n\n%% file %s\n\n" % fn
 
-__seedfilename = "seednum.dat"
-__generation = 0
-
-def getNextSeedFromFile():
-	global __seedfilename
-	global __generation
-	seedRaw = readInputFile(__seedfilename)
+def getNextSeedFromFile(generation):
+	assert generation >= 0
+	seedFile = "seeds/gen-%s.dat" % generation
+	seedRaw = readInputFile(seedFile)
 	# We expect this to be a 4-digit integer.
 	try:
 		seed = int(seedRaw)
 	except:
-		print "Couldn't read '%s' contents as int: found '%s'." % (__seedfilename, seedRaw)
+		print "Couldn't read '%s' contents as int: found '%s'." % (seedFile, seedRaw)
 		sys.exit()
 
 	seed += 1
 	if seed > 9999:
-		print "Exceeded available seed range for generation '%d'; halting." % __generation
+		print "Exceeded available seed range for generation %d; halting." % generation
 		sys.exit()
 
-	writeOutputFile(__seedfilename, "%d" % seed)
-	print "(Iterated from file, generation %d, seed %d)" % (__generation, seed)
-	return (__generation * 10000) + seed
+	writeOutputFile(seedFile, "%d" % seed)
+	print "Incremented seed counter for generation %d." % generation
+	return (generation * 10000) + seed
 
 
 
