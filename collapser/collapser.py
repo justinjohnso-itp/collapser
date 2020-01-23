@@ -255,6 +255,7 @@ def getSignature(txt):
 def makeBook(inputFiles, inputFileDir, parseParams, renderParams):
 	setFinalSeed(renderParams, parseParams)
 	setOutputFile(renderParams, parseParams)
+	print "\n\n*** makeBook %s %s****************************\n" % (renderParams.fileId, "(prelim) " if not renderParams.finalOutput else "")
 	collapsedText = collapseInputText(inputFiles, inputFileDir, parseParams)
 	render(collapsedText, renderParams)
 
