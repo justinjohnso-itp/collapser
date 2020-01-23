@@ -169,6 +169,13 @@ def setAllTo(val):
 	for key in __v.variables:
 		__v.variables[key] = val
 
+def isSingularCopy():
+	global __v
+	for key in __v.variables:
+		if __v.variables[key] == True and key[:8] == "singular":
+			return True
+	return False 
+
 def render(tokens, params):
 	global __v
 	return __v.render(tokens, params)
