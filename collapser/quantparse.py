@@ -40,7 +40,6 @@ class ParseParams:
 
 # Call with an object of type ParseParams.
 def parse(preppedTokens, sourceText, parseParams):
-	print "** PARSING **"
 	parseParams.originalText = sourceText
 
 	# Handle the rendering.

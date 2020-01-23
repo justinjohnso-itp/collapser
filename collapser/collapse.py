@@ -42,7 +42,7 @@ def go(fullText, selectedText, params, returnTokensOnly = False):
 
     # And finally, parse and render the selection.
     rendered = quantparse.parse(preppedTokens, selectedText, params)
-    print "** vars: %s" % sorted(variables.showVars())
+    print "\nvars: %s\n" % sorted(variables.showVars())
     return rendered
 
 # TODO: Exclude "singular" variables. 

@@ -14,7 +14,7 @@ def readInputFile(inputFile):
 def writeOutputFile(outputFile, outputText):
 	with open(outputFile, "w") as fileObject:
 		fileObject.write(outputText)
-		print "\nWrote to '%s'.\n" % outputFile
+		print "Wrote to '%s'." % outputFile
 
 def getFilesFromManifest(manifest):
 	# We expect this to be a list of filenames, one per line.
@@ -83,7 +83,6 @@ def startConfirmKeys(fileSetKey):
 		file = readInputFile(kfname)
 		try:
 			__confirms = pickle.loads(file)
-			print "Loaded confirms from %s" % kfname
 		except IOError as e:
 			print "Couldn't load confirms from %s: %s" % (kfname, e)
 			sys.exit()

@@ -42,7 +42,6 @@ class RendererLatex(renderer.Renderer):
 	def suggestEndMatters(self):
 		global PADDED_PAGES
 		suggestions = []
-		print "In renderer_latex.suggestEndMatters, numPDFPages: %d" % self.params.pdfPages
 		extraPages = PADDED_PAGES - self.params.pdfPages
 		if self.params.isDigital:
 			extraPages = 99
@@ -56,14 +55,12 @@ class RendererLatex(renderer.Renderer):
 		]
 		MAX_END_MATTERS = len(endMatters)
 
+		print "Extra pages for End Matter: %d" % extraPages
 		while len(suggestions) < MAX_END_MATTERS:
-			print "extraPages: %d" % extraPages
 			endMatters = filter(lambda x: x[1] < extraPages, endMatters)
-			print "%d endMatters left." % len(endMatters)
 			if len(endMatters) == 0:
 				break
 			choicePos = chooser.number(len(endMatters)) - 1
-			print "choicePos %d (%s)" % (choicePos, endMatters[choicePos][0])
 			choice = endMatters[choicePos]
 			suggestions.append(choice[0])
 			extraPages -= choice[1]
@@ -252,7 +249,7 @@ def outputPDF(params, inputFile, outputFile):
 
 	stats = getStats(result["output"])
 	numPages = stats["numPages"]
-	print "Generated %d page PDF to %s." % (numPages, outputFile)
+	print "> Generated %d page PDF to %s." % (numPages, outputFile)
 	params.pdfPages = numPages
 
 	if not params.skipPadding:
@@ -262,7 +259,7 @@ def outputPDF(params, inputFile, outputFile):
 		addCover(outputFile, "fragments/cover.pdf")
 	if params.finalOutput:
 		moveFinalToOutput(params.workDir, params.outputDir, outputFile)
-		print "--> Outputed final PDF to %s%s." % (params.outputDir, outputFile)
+		print "> Outputed final PDF to %s%s." % (params.outputDir, outputFile)
 
 
 def postLatexSanityCheck(latexLog):
@@ -321,7 +318,7 @@ def addPadding(workDir, outputFile, reportedPages, desiredPageCount):
 		terminal.rename(tmpFn, outputFn)
 		numCombinedPages = countPages(outputFn)
 		if numCombinedPages == desiredPageCount:
-			print "Successfully padded '%s' to %d pages." % (outputFn, desiredPageCount)
+			print "> Successfully padded '%s' to %d pages." % (outputFn, desiredPageCount)
 		else:
 			print "*** Tried to pad output PDF to %d pages but result was %d pages instead." % (desiredPageCount, numPDFPages)
 			sys.exit()
@@ -334,7 +331,7 @@ def addCover(inputPDF, coverfile):
 	if not result["success"]:
 		print "*** Couldn't generate PDF with cover. %s" % result["output"]
 		sys.exit()
-	print "Successfully added cover to %s." % outputFn
+	print "> Successfully added cover to %s." % outputFn
 
 def moveFinalToOutput(workDir, outputDir, outputFile):
 	terminal.move(workDir + outputFile, outputDir + outputFile)

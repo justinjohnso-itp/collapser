@@ -72,7 +72,6 @@ class Variables:
 				self.set(groupKey, v, True)
 			else:
 				self.set(groupKey, v, False)
-		print "From key '%s' got group '%s' of which '%s' was set, chose '%s' instead." % (key, groupKey, theSetOne, choice)
 
 
 	def getVarsInGroup(self, key):

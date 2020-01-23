@@ -193,7 +193,7 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 			parseParams.endMatter = [] + origEndMatter
 			renderParams.finalOutput = False
 			if copies > 0:
-				print "%d cop%s left to generate." % (copies, "y" if copies is 1 else "ies")
+				print "\n\n%d cop%s left to generate.\n" % (copies, "y" if copies is 1 else "ies")
 
 def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 	doingEndMatter = len(parseParams.endMatter) == 1 and parseParams.endMatter[0] == "auto"
