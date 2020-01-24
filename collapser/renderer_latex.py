@@ -247,9 +247,9 @@ def outputPDF(params, inputFile, outputFile):
 
 	if not params.skipPadding and not params.isDigital:
 		addPadding(params.workDir, outputFile, stats["numPages"], PADDED_PAGES)
-	if params.isDigital:
+	if params.isDigital and params.finalOutput:
 		print "isDigital, so adding cover"
-		addCover(params.workDir, outputFile, "fragments/cover.pdf")
+		addCover(params.workDir, outputFile, "fragments/cover-plus-blank.pdf")
 	if params.finalOutput:
 		moveFinalToOutput(params.workDir, params.outputDir, outputFile)
 		print "> Outputed final PDF to %s%s." % (params.outputDir, outputFile)
