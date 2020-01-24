@@ -234,7 +234,7 @@ def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	seeds = []
 	signatures = []
 	origEndMatter = parseParams.endMatter
-	seed = chooser.nextSeed()
+	seed = chooser.nextSeed(renderParams.generation)
 	firstSeed = seed
 	lastSeed = -1
 	for x in range(tries):
@@ -246,7 +246,7 @@ def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
 		signatures.append(signature)
 		# fileio.writeOutputFile("work/signature-%s.txt" % seed, signature)
 		lastSeed = seed
-		seed = chooser.nextSeed()
+		seed = chooser.nextSeed(renderParams.generation)
 	leastSimilarPair = differ.getTwoLeastSimilar(signatures)
 	text0 = texts[leastSimilarPair[0]]
 	seed0 = seeds[leastSimilarPair[0]]
