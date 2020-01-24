@@ -21,6 +21,8 @@ def getTwoLeastSimilar(texts):
 		text2 = texts[pair[1]]
 		sm = difflib.SequenceMatcher(None, text1, text2, autojunk = False)
 		similarity = sm.ratio()
+		similarity += penaltyIfHaveTheSame(text1, text2, 0.05, ["dadphone", "bradphone"])
+		similarity += penaltyIfHaveTheSame(text1, text2, 0.10, ["gayniko", "firmniko", "originalniko"])
 		print "%s: Similarity is %f" % (pair, round(similarity, 3))
 		if similarity < lowestSimilarityScore:
 			print " --> lowest so far."
@@ -34,4 +36,12 @@ def getTwoLeastSimilar(texts):
 	print "Best match was pair %s with similarity %f" % (leastSimilarPair, round(lowestSimilarityScore, 3))
 
 	return leastSimilarPair
+
+
+def penaltyIfHaveTheSame(text1, text2, penalty, wordArr):
+	for word in wordArr:
+		if text1.find(word) >= 0 and text2.find(word) >= 0:
+			# print "(Both have %s, so penalizing by 0.10)" % word
+			return penalty
+	return 0.0
 
