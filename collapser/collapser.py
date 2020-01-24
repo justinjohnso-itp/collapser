@@ -192,12 +192,25 @@ def main():
 
 def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	if parseParams.chooseStrategy == "pair":
-		makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
+		try:
+			makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
+		except renderer.TooLongError as e:
+			print "\n*** ERROR : %s\n" % e.strerror
+			print "*** We could not generate both books, so halting."
+			sys.exit()
+
 	else:
+		skippedSeeds = []
 		copies = renderParams.copies
 		origEndMatter = [] + parseParams.endMatter
 		while copies >= 1:
-			makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
+			try:
+				makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
+			except renderer.TooLongError as e:
+				print "\n*** ERROR : %s\n" % e.strerror
+				if copies > 1:
+					print "*** Trying again with next seed."
+				skippedSeeds.append(renderParams.seed)
 			copies -= 1
 			renderParams.seed = -1
 			renderParams.fileId = ""
@@ -205,6 +218,9 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 			renderParams.finalOutput = False
 			if copies > 0:
 				print "\n\n%d cop%s left to generate.\n" % (copies, "y" if copies is 1 else "ies")
+
+		if len(skippedSeeds) > 0:
+			print "\n\n*** ERRORS (%d) prevented some copies being generated. Bad seeds were: %s\n" % (len(skippedSeeds), skippedSeeds)
 
 def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 	doingEndMatter = len(parseParams.endMatter) == 1 and parseParams.endMatter[0] == "auto"

@@ -16,7 +16,6 @@ latexPostFrontMatter = "fragments/postfrontmatter.tex"
 
 PADDED_PAGES = 232
 
-
 # TODO Add cleanup step to get rid of temp files
 
 class RendererLatex(renderer.Renderer):
@@ -240,6 +239,9 @@ def outputPDF(params, inputFile, outputFile):
 
 	stats = getStats(result["output"])
 	numPages = stats["numPages"]
+	if numPages > PADDED_PAGES and params.isDigital is False:
+		raise renderer.TooLongError("Generation exceeded maximum length of %d pages: was %d pages." % (PADDED_PAGES, numPages))
+
 	print "> Generated %d page PDF to %s." % (numPages, outputFile)
 	params.pdfPages = numPages
 
@@ -298,8 +300,7 @@ def addPadding(workDir, outputFile, reportedPages, desiredPageCount):
 		sys.exit()
 
 	if numPDFPages > desiredPageCount:
-		print "*** Generation exceeded maximum length of %d page: was %d pages." % (desiredPageCount, numPDFPages)
-		sys.exit()
+		raise renderer.TooLongError("Padding exceeded maximum length of %d pages. Original length was %d; reported length after padding was %d." % (desiredPageCount, reportedPages, numPages))
 
 	# If equal, no action needed. Otherwise, add padding to the desired number of pages, which must remain constant in print on demand so the cover art doesn't need to be resized.
 

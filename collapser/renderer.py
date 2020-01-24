@@ -32,6 +32,11 @@ class RenderParams:
 		self.generation = generation
 
 
+class TooLongError(RuntimeError):
+	def __init__(self, arg):
+		self.strerror = arg
+		self.args = {arg}
+
 
 class Renderer(object):
 	__metaclass__ = abc.ABCMeta
