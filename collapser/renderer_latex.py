@@ -218,9 +218,9 @@ For now, each Advance Reader Copy in this printing shares the seed %s, and the s
 
 Each printing of \\textsc{Subcutanean} is different. This is the one and only version generated from seed %s. Words, sentences, or whole scenes may appear in some printings that do not appear in others. No two copies are alike.
 
-But all of them are the same story, more or less. Don't worry about what's in the other versions. It doesn't matter. This is the one that's happening to you.
+But all of them are the same story, more or less. Don't worry about what's in the other versions. They don't matter. This is the one you have.
 
-This is the one you have.""" % seedPrinted
+This is the one that's happening to you.""" % seedPrinted
 	output = output.replace("FRONT_MATTER_MSG", "%s" % frontMatterMsg)
 
 	# Special fix for half-space.
