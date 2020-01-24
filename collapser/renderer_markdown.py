@@ -122,7 +122,8 @@ def postMarkdownificationSanityCheck(text):
 def generateFrontMatter(seed):
 	text = ""
 	
-	seedPrinted, msg = renderer.frontMatterSeedMessage(seed)
+	seedPrinted, msg = renderer.frontMatterSeedMessage(seed, [])
+	msg = msg.replace("NUM_SIGN", "#")
 
 	if seed == -1:
 		text = """
@@ -136,11 +137,11 @@ subcutanean.textories.com
 		text = """
 The book you’re holding is unique. There is no other exactly like it.
 
-Each printing of *Subcutanean* is different. This is the one and only version generated from seed %s. Words, sentences, or whole scenes may appear in this printing but not in others, or vice versa. No two copies are alike.
+Each printing of *Subcutanean* is different. This is the one and only version generated from seed #%s. Words, sentences, or whole scenes may appear in this printing but not in others, or vice versa. No two copies are alike.
 
-But all of them are the same story, more or less. Don’t worry about what’s in the other versions. It doesn’t matter. This is the one that’s happening to you.
+But all of them are the same story, more or less. Don't worry about what's in the other versions. They don't matter. This is the one you have.
 
-This is the one you have.
+This is the one that's happening to you.
 
 subcutanean.textories.com
 """ % seedPrinted

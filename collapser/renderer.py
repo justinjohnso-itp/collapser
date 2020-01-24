@@ -138,9 +138,9 @@ def frontMatterSeedMessage(seed, pairInfo):
 	else:
 		seedPrinted = "%s" % seed
 	if seed == -1:
-		msg = "This run of Advance Reader Copies have all been generated from seed #%s." % seedPrinted
+		msg = "This run of Advance Reader Copies have all been generated from seed NUM_SIGN%s." % seedPrinted
 	else:
-		msg = "This copy was generated from seed #%s and is the only copy generated from that seed." % seedPrinted
+		msg = "This copy was generated from seed NUM_SIGN%s and is the only copy generated from that seed." % seedPrinted
 		if variables.isSingularCopy():
 			msg += " Additionally, this rendering contains a piece of custom text written specifically for a Singular Subcutanean crowdfunding backer. (Thank you!)"
 		elif len(pairInfo) > 0:
@@ -149,7 +149,7 @@ def frontMatterSeedMessage(seed, pairInfo):
 			seed0 = pairInfo[2]
 			seed1 = pairInfo[3]
 			otherSeed = seed0 if seed == seed1 else seed1
-			msg += " Additionally, this copy was co-generated with seed #%d. These two were the least similar pair of seeds in the range %d to %d." % (otherSeed, firstSeed, lastSeed)
+			msg += " Additionally, this copy was co-generated with seed NUM_SIGN%d. These two were the least similar pair of seeds in the range %d to %d." % (otherSeed, firstSeed, lastSeed)
 	return [seedPrinted, msg]
 
 

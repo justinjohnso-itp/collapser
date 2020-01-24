@@ -124,6 +124,7 @@ def specialTextFixes(text):
 
 def addTextFrontMatter(text, seed, pairInfo):
 	seedPrinted, msg = renderer.frontMatterSeedMessage(seed, pairInfo)
+	msg = msg.replace("NUM_SIGN", "#")
 	front = "*** SUBCUTANEAN ***\n\nby Aaron A. Reed\n\n\n========================\nEach rendering of Subcutanean is different. " + msg + "\n========================\n\n"
 	return front + text
 
