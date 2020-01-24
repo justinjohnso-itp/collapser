@@ -245,11 +245,11 @@ def outputPDF(params, inputFile, outputFile):
 	print "> Generated %d page PDF to %s." % (numPages, outputFile)
 	params.pdfPages = numPages
 
-	if not params.skipPadding:
+	if not params.skipPadding and not params.isDigital:
 		addPadding(params.workDir, outputFile, stats["numPages"], PADDED_PAGES)
 	if params.isDigital:
 		print "isDigital, so adding cover"
-		addCover(outputFile, "fragments/cover.pdf")
+		addCover(params.workDir, outputFile, "fragments/cover.pdf")
 	if params.finalOutput:
 		moveFinalToOutput(params.workDir, params.outputDir, outputFile)
 		print "> Outputed final PDF to %s%s." % (params.outputDir, outputFile)
@@ -300,7 +300,7 @@ def addPadding(workDir, outputFile, reportedPages, desiredPageCount):
 		sys.exit()
 
 	if numPDFPages > desiredPageCount:
-		raise renderer.TooLongError("Padding exceeded maximum length of %d pages. Original length was %d; reported length after padding was %d." % (desiredPageCount, reportedPages, numPages))
+		raise renderer.TooLongError("Padding exceeded maximum length of %d pages. Original length was %d; reported length after padding was %d." % (desiredPageCount, reportedPages, numPDFPages))
 
 	# If equal, no action needed. Otherwise, add padding to the desired number of pages, which must remain constant in print on demand so the cover art doesn't need to be resized.
 
@@ -316,13 +316,16 @@ def addPadding(workDir, outputFile, reportedPages, desiredPageCount):
 			sys.exit()
 
 
-def addCover(inputPDF, coverfile):
-	outputFn = "subcutanean-with-cover.pdf"
-	arguments = "A=%s B=output/%s cat A B output output/%s" % (coverfile, inputPDF, outputFn)
+def addCover(workDir, outputFile, coverfile):
+	outputFn = workDir + outputFile
+	tmpFn = "%scover-%s" % (workDir, outputFile)
+	arguments = "A=%s B=%s cat A B output %s" % (coverfile, outputFn, tmpFn)
 	result = terminal.runCommand("pdftk", arguments)
 	if not result["success"]:
 		print "*** Couldn't generate PDF with cover. %s" % result["output"]
 		sys.exit()
+	terminal.delete(outputFn)
+	terminal.rename(tmpFn, outputFn)
 	print "> Successfully added cover to %s." % outputFn
 
 def moveFinalToOutput(workDir, outputDir, outputFile):
