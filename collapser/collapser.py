@@ -65,8 +65,8 @@ Arguments:
   --skipConfirm	      Skip variant confirmation
   --skipPadding       Skip padding to 232 pages
   --skipFront         Skip frontmatter
-  --endMatter=auto    Automatically add appropriate end matter
-  --endMatter=x,y     Add specific end matter files
+  --endMatter=x,y     Add specific end matter files (default auto)
+  --skipEndMatter	  Don't add end matter
 """
 
 
@@ -88,7 +88,7 @@ def main():
 	setDefines = []
 	discourseVarChance = 80
 	skipPadding = False
-	endMatter = []
+	endMatter = ["auto"]
 	randSeed = False
 	isDigital = False
 	copies = 1
@@ -96,7 +96,7 @@ def main():
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "skipConfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "file=", "gen="])
+	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "skipConfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "skipEndMatter", "file=", "gen="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -162,11 +162,13 @@ def main():
 		elif opt == "--skipPadding":
 			skipPadding = True
 		elif opt == "--endMatter":
-			if arg == "auto":
-				endMatter = ["auto"]
-			else:
-				endMatter = arg.split(',')
+			endMatter = arg.split(',')
 			print "Setting endMatter: %s" % endMatter
+		elif opt == "--skipEndMatter":
+			if endMatter[0] != "auto":
+				print "Can't set --endMatter and also --skipEndMatter."
+				sys.exit()
+			endMatter = []
 
 	if seed is not -1 and strategy != "random":
 		print "*** You set seed to %d but strategy to '%s'; a seed can only be used when strategy is 'random' ***\n" % (seed, strategy)
