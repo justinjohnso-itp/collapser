@@ -60,7 +60,16 @@ def getNextSeedFromFile(generation):
 	print "Incremented seed counter for generation %d." % generation
 	return (generation * 10000) + seed
 
+def serialize(obj):
+	return pickle.dumps(obj)
 
+def deserialize(string):
+	try:
+		obj = pickle.loads(string)
+	except:
+		print "Couldn't deserialize string beginning '%s...'; halting." % string[:200]
+		sys.exit()
+	return obj
 
 
 __keyfile = None

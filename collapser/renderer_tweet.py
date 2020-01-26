@@ -24,10 +24,14 @@ class RendererTweet(renderer.Renderer):
 		inputText = fileio.readInputFile(inputFile)
 		cleanedText = prepInputForTweets(inputText)
 		tweets = splitIntoTweets(cleanedText)
-		output = "\n==============\n".join(tweets)
 
+		humanOutput = "\n==============\n".join(tweets)
 		outputFileName = "%s%s.tweets.txt" % (self.params.outputDir, self.params.fileId)
-		fileio.writeOutputFile(outputFileName, output)
+		fileio.writeOutputFile(outputFileName, humanOutput)
+
+		dataFileName = "%s%s.tweets.dat" % (self.params.outputDir, self.params.fileId)
+		fileio.writeOutputFile(dataFileName, fileio.serialize(tweets))
+
 		terminal.move(inputFile, "%s%s.txt" % (self.params.workDir, self.params.fileId))
 
 	def suggestEndMatters(self):
