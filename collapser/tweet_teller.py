@@ -2,6 +2,7 @@
 
 import sys
 import getopt
+import fileio
 
 def showUsage():
 	print """Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes"""
@@ -13,9 +14,10 @@ def main():
 	accounts = []
 	duration = -1
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:", "a:", "d:")
+	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help"])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
+		showUsage()
 		sys.exit()
 	for opt, arg in opts:
 		if opt == "-i":
@@ -28,6 +30,9 @@ def main():
 			except:
 				print "Invalid -d(uration) parameter '%s': not an integer (should be a number of minutes)." % arg
 				sys.exit()			
+		elif opt == "--help":
+			showUsage()
+			sys.exit()
 
 	if len(inputFiles) == 0:
 		print "*** No input files specified. ***\n"
@@ -42,24 +47,32 @@ def main():
 		print "*** Duration %d must be > 0 minutes. ***" % duration
 		sys.exit()
 
-	for filename, pos in inputFiles:
-		inputTweetStorms[pos] = readInputFile(filename)
+	for filename in inputFiles:
+		data = fileio.readInputFile(filename)
+		arr = fileio.deserialize(data)
+		inputTweetStorms.append(arr)
 
 	# TODO: Validate that each inputTweetStorm is in the expected format.
 
 	launch(inputTweetStorms, accounts, duration)
 
 
-def launch(inputTweetStorms, accounts, duration)
-	longestTweetStorm = getLongestArray(inputTweetStorms)
-	longestLen = len(longestTweetStorm)
-	for x in enumerate(len(accounts)):
-		print "For account @%s, will tweet data: '%s'" % (accounts[x], inputTweetStorms[x])
+def launch(inputTweetStorms, accounts, duration):
+	# inputTweetStorm is an array of tweetstorms, each of which is an array of tweets.
+	longestLen = len(getLongestArray(inputTweetStorms))
+	for pos in range(0,len(accounts)):
+		print "For account @%s, will do %d tweets." % (accounts[pos], len(inputTweetStorms[pos]))
 	print "********"
 	print "Will tweet spaced out over %d minutes. There are %d tweets in longest array, so time between tweets will be %d seconds." % (duration, longestLen, (duration * 60) / longestLen)
 
 def getLongestArray(arrOfArrs):
-	# STUB
-	return arrOfArrs[0]
+	longestArr = []
+	longestLen = -1
+	for arr in arrOfArrs:
+		if len(arr) > longestLen:
+			longestLen = len(arr)
+			longestArr = arr
+	return longestArr
 
 
+main()
