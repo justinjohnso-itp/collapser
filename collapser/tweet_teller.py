@@ -3,10 +3,13 @@
 import sys
 import getopt
 import fileio
+import threading
+import time
 
 def showUsage():
 	print """Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes"""
 
+MAX_TWEET_CHARS = 280
 
 def main():
 	inputFiles = []
@@ -50,6 +53,10 @@ def main():
 	for filename in inputFiles:
 		data = fileio.readInputFile(filename)
 		arr = fileio.deserialize(data)
+		for item in arr:
+			if len(item) > MAX_TWEET_CHARS:
+				print "*** Error: a tweet in this tweetstorm exceeded %d characters, was %d instead: '%s'" % (MAX_TWEET_CHARS, len(item), item)
+				sys.exit()
 		inputTweetStorms.append(arr)
 
 	# TODO: Validate that each inputTweetStorm is in the expected format.
@@ -59,20 +66,32 @@ def main():
 
 def launch(inputTweetStorms, accounts, duration):
 	# inputTweetStorm is an array of tweetstorms, each of which is an array of tweets.
-	longestLen = len(getLongestArray(inputTweetStorms))
-	for pos in range(0,len(accounts)):
-		print "For account @%s, will do %d tweets." % (accounts[pos], len(inputTweetStorms[pos]))
-	print "********"
-	print "Will tweet spaced out over %d minutes. There are %d tweets in longest array, so time between tweets will be %d seconds." % (duration, longestLen, (duration * 60) / longestLen)
 
-def getLongestArray(arrOfArrs):
-	longestArr = []
-	longestLen = -1
-	for arr in arrOfArrs:
-		if len(arr) > longestLen:
-			longestLen = len(arr)
-			longestArr = arr
-	return longestArr
+	for pos in range(0, len(accounts)):
+		setupTweetStorm(accounts[pos], inputTweetStorms[pos], duration)
+
+
+def setupTweetStorm(account, tweetStorm, duration):
+	timeInSecondsBetweenTweets = (duration * 60) / len(tweetStorm)
+	print "For account @%s, will do %d tweets over %d minutes, with %d seconds between tweets." % (account, len(tweetStorm), duration, timeInSecondsBetweenTweets)
+	threading.Thread(target=tweetTick, args=(account, tweetStorm, 0, timeInSecondsBetweenTweets)).start()
+
+
+def tweetTick(account, tweetStorm, pos, delayInSeconds):
+	tweet(account, tweetStorm[pos])
+	time.sleep(delayInSeconds)
+	pos += 1
+	if pos < len(tweetStorm):
+		tweetTick(account, tweetStorm, pos, delayInSeconds)
+
+def tweet(account, tweet):
+	tweetToConsole(account, tweet)
+
+
+
+def tweetToConsole(account, tweet)
+	print "** @%s: '%s'" % (account, tweet)
+
 
 
 main()
