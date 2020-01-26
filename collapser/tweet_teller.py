@@ -86,12 +86,15 @@ def tweetTick(account, tweetStorm, pos, delayInSeconds):
 
 def tweet(account, tweet):
 	tweetToConsole(account, tweet)
+	tweetToFiles(account, tweet)
 
 
 
-def tweetToConsole(account, tweet)
+def tweetToConsole(account, tweet):
 	print "** @%s: '%s'" % (account, tweet)
 
+def tweetToFiles(account, tweet):
+	fileio.append("work/at-%s.dat" % account, "\n\n@%s: '%s'" % (account, tweet))
 
 
 main()

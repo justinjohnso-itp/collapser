@@ -16,6 +16,10 @@ def writeOutputFile(outputFile, outputText):
 		fileObject.write(outputText)
 		print "Wrote to '%s'." % outputFile
 
+def append(outputFile, outputText):
+	with open(outputFile, "a") as fileObject:
+		fileObject.write(outputText)
+
 def getFilesFromManifest(manifest):
 	# We expect this to be a list of filenames, one per line.
 	# Ignore any line that begins with "#"
