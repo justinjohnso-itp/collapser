@@ -165,20 +165,40 @@ def frontMatterSeedMessage(seed, pairInfo):
 def isAmazonCopy(seed):
 	return seed == 30287 or seed == 33234 or seed == 36619
 
+def getISBNFromSeed(seed):
+	if seed == 30287:
+		return "9798605947820"
+	elif seed == 33234:
+		return "9798605963943"
+	elif seed == 36619:
+		return "9798605965329"
+	else:
+		print "*** ERROR: Couldn't find ISBN for seed %s" % seed
+		sys.exit()
+
 def frontMatterEditionMessage(seedPrinted):
 	gen = seedPrinted[0]
 	today = datetime.datetime.today()
+	msg = ""
 	if gen == "0":
-		return "ARC Edition, 2019"
+		msg = "ARC Edition, 2019"
 	if gen == "1":
-		return "Limited Crowdfunder Edition(s), %s" % today.year
+		msg = "Limited Crowdfunder Edition(s), %s" % today.year
 	if gen == "2":
-		return "USB Key Edition(s), 2020"
+		msg = "USB Key Edition(s), 2020"
 	if gen == "3":
-		return "First Edition(s), %s" % today.year
+		msg = "First Edition(s), %s" % today.year
 	elif gen == "9":
-		return "Test Edition, %s" % today.strftime("%d-%B-%Y %H:%M:%S")
-	return "Generation %s, %s" % (gen, today.year)
+		msg = "Test Edition, %s" % today.strftime("%d-%B-%Y %H:%M:%S")
+	else:
+		msg = "Generation %s, %s" % (gen, today.year)
+	try:
+		seed = int(seedPrinted)
+		if isAmazonCopy(seed):
+			msg += " \\\\ Seed %s, ISBN: %s \\\\ Independently Published" % (seedPrinted, getISBNFromSeed(seed))
+	except:
+		pass
+	return msg
 
 
 # Special code for the "Alternate Scene" End Matter.
