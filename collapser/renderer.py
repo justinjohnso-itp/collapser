@@ -121,7 +121,7 @@ class Renderer(object):
 
 
 
-def suggestEndMatterWhenNoPageLimits():
+def suggestEndMatterWhenNoPageLimits(seed):
 	suggestions = []
 	# Should be listed in order you'd want them to appear.
 	if isAmazonCopy(seed):
@@ -179,7 +179,7 @@ def frontMatterEditionMessage(seedPrinted):
 	elif gen == "9":
 		return "Test Edition, %s" % today.strftime("%d-%B-%Y %H:%M:%S")
 	return "Generation %s, %s" % (gen, today.year)
-	
+
 
 # Special code for the "Alternate Scene" End Matter.
 

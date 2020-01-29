@@ -389,6 +389,7 @@ def collapseInputText(inputFiles, inputFileDir, parseParams):
 		print res
 		sys.exit()
 	collapsedText = res.package
+	collapsedText = postCollapseCleanup(collapsedText)
 
 	if len(variables.showVars()) < 4:
 		print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
@@ -397,6 +398,10 @@ def collapseInputText(inputFiles, inputFileDir, parseParams):
 	fileio.writeOutputFile(workDir + "collapsed.txt", collapsedText)
 
 	return collapsedText
+
+def postCollapseCleanup(txt):
+	txt = txt.replace("AUTHOREMAIL", "aareed + subq @ gmail.com")
+	return txt
 
 def readManifestOrFile(inputFile, inputFileDir, params):
 	filePath = inputFileDir + inputFile

@@ -133,6 +133,14 @@ For now, each Advance Reader Copy in this printing shares the same seed, and the
 
 subcutanean.textories.com
 """
+	elif renderer.isAmazonCopy(seed):
+		text = """The book you're holding is just one version of this story. *Subcutanean* is a permutational novel: there are millions of ways it can be told. This is the version generated from seed %s.
+
+If you're curious, you can find out in the back of the book how to get your own unique copy which might include words, sentences, even entire scenes that don't appear in this version, or play out in different ways.
+
+But there's no need to worry about all that right now. All the books contain the same story, more or less. For now, this is the one you have.
+
+This is the one that's happening to you.""" % seedPrinted
 	else:
 		text = """
 The book you’re holding is unique. There is no other exactly like it.

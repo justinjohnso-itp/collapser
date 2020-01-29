@@ -46,6 +46,7 @@ class RendererLatex(renderer.Renderer):
 			extraPages = 99
 
 		authorFile = "end-abouttheauthor.txt"
+		getUnique = "end-getunique.txt"
 		endMatters = [
 			["end-getunique.txt", 2],
 			["end-backers.txt", 3],
@@ -71,6 +72,11 @@ class RendererLatex(renderer.Renderer):
 			authorPos = suggestions.index(authorFile)
 			del suggestions[authorPos]
 			suggestions.append(authorFile)
+		# Ensure Get Unique is always first.
+		if getUnique in suggestions:
+			uniquePos = suggestions.index(getUnique)
+			del suggestions[uniquePos]
+			suggestions.insert(0, getUnique)
 
 		return ["../fragments/backmatter.tex"] + suggestions
 
@@ -217,11 +223,13 @@ def latexWrapper(text, seed, includeFrontMatter, pairInfo):
 
 For now, each Advance Reader Copy in this printing shares the seed %s, and the same text.""" % seedPrinted
 	elif renderer.isAmazonCopy(seed):
-		frontMatterMsg = """The book you're holding is just one version of this novel. \\textsc{Subcutanean} is a permutational novel: there are millions of ways the story can be told. This is the version generated from seed %s.
+		frontMatterMsg = """The book you're holding is just one version of this story. \\textsc{Subcutanean} is a permutational novel: there are millions of ways it can be told. This is the version generated from seed %s.
 
-If you're curious, you can find out in the back of the book how to get your own unique digital copy, that might include words, sentences, even entire scenes that don't appear in this version, or play out in different ways.
+If you're curious, you can find out in the back of the book how to get your own unique copy which might include words, sentences, even entire scenes that don't appear in this version, or play out in different ways.
 
-But there's no need to worry about all that right now. The story told in this version is just as valid as any other version. This is the one you've got. Enjoy it.""" % seedPrinted
+But there's no need to worry about all that right now. All the books contain the same story, more or less. For now, this is the one you have.
+
+This is the one that's happening to you.""" % seedPrinted
 	else:
 		frontMatterMsg = """The book you're holding is unique. There is no other exactly like it.
 
