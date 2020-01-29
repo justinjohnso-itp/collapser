@@ -27,7 +27,7 @@ class RendererMarkdown(renderer.Renderer):
 		fileio.writeOutputFile(outputFileName, workFile)
 
 	def suggestEndMatters(self):
-		return renderer.suggestEndMatterWhenNoPageLimits()
+		return renderer.suggestEndMatterWhenNoPageLimits(self.params.seed)
 
 	def renderFormattingSequence(self, contents):
 		code = contents[0]

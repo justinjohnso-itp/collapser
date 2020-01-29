@@ -6,6 +6,7 @@ import ctrlseq
 import macros
 import variables
 import chooser
+import datetime
 
 import abc
 import re
@@ -123,6 +124,8 @@ class Renderer(object):
 def suggestEndMatterWhenNoPageLimits():
 	suggestions = []
 	# Should be listed in order you'd want them to appear.
+	if isAmazonCopy(seed):
+		suggestions.append("end-getunique.txt")
 	if chooser.percent(100): # 75
 		suggestions.append("end-altscene.txt")
 	if chooser.percent(100): # 75
@@ -146,6 +149,8 @@ def frontMatterSeedMessage(seed, pairInfo):
 		msg = "This run of Advance Reader Copies have all been generated from seed NUM_SIGN%s." % seedPrinted
 	else:
 		msg = "This copy was generated from seed NUM_SIGN%s and is the only copy generated from that seed." % seedPrinted
+		if isAmazonCopy(seed):
+			msg = "Subcutanean is a permutational novel: the text can be rendered in millions of different ways. This is the version generated from seed NUM_SIGN%s. Look in the back of the book for instructions to unlock a second wholly unique version, which might have different words, sentences, or even entire sequences." % seedPrinted
 		if variables.isSingularCopy():
 			msg += " Additionally, this rendering contains a piece of custom text written specifically for a Singular Subcutanean crowdfunding backer. (Thank you!)"
 		elif len(pairInfo) > 0:
@@ -157,9 +162,24 @@ def frontMatterSeedMessage(seed, pairInfo):
 			msg += " Additionally, this copy was co-generated with seed NUM_SIGN%d. These two were the least similar pair of seeds in the range %d to %d." % (otherSeed, firstSeed, lastSeed)
 	return [seedPrinted, msg]
 
-
 def isAmazonCopy(seed):
 	return seed == 30287 or seed == 33234 or seed == 36619
+
+def frontMatterEditionMessage(seedPrinted):
+	gen = seedPrinted[0]
+	today = datetime.datetime.today()
+	if gen == "0":
+		return "ARC Edition, 2019"
+	if gen == "1":
+		return "Limited Crowdfunder Edition(s), %s" % today.year
+	if gen == "2":
+		return "USB Key Edition(s), 2020"
+	if gen == "3":
+		return "First Edition(s), %s" % today.year
+	elif gen == "9":
+		return "Test Edition, %s" % today.strftime("%d-%B-%Y %H:%M:%S")
+	return "Generation %s, %s" % (gen, today.year)
+	
 
 # Special code for the "Alternate Scene" End Matter.
 

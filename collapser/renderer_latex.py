@@ -47,6 +47,7 @@ class RendererLatex(renderer.Renderer):
 
 		authorFile = "end-abouttheauthor.txt"
 		endMatters = [
+			["end-getunique.txt", 2],
 			["end-backers.txt", 3],
 			["end-altscene.txt", 5],
 			["end-stats.txt", 3],
@@ -204,7 +205,9 @@ def latexWrapper(text, seed, includeFrontMatter, pairInfo):
 
 	# Insert the seed number where it appeared in front matter.
 	seedPrinted, msg = renderer.frontMatterSeedMessage(seed, pairInfo)
+	edition_msg = renderer.frontMatterEditionMessage(seedPrinted)
 	output = output.replace("SEED_TEXT", msg)
+	output = output.replace("EDITION_TEXT", edition_msg)
 	output = output.replace("SEED_NUMBER", "%s" % seedPrinted)
 	output = output.replace("NUM_SIGN", "\#")
 
@@ -213,6 +216,12 @@ def latexWrapper(text, seed, includeFrontMatter, pairInfo):
 		frontMatterMsg = """This is a special Advance Reader Copy of \\textsc{Subcutanean}. In the final version, each printing of the book will be unique, generated from a specific seed. Words, sentences, or whole scenes may appear in this printing that do not appear in another. No two copies will be alike.
 
 For now, each Advance Reader Copy in this printing shares the seed %s, and the same text.""" % seedPrinted
+	elif renderer.isAmazonCopy(seed):
+		frontMatterMsg = """The book you're holding is just one version of this novel. \\textsc{Subcutanean} is a permutational novel: there are millions of ways the story can be told. This is the version generated from seed %s.
+
+If you're curious, you can find out in the back of the book how to get your own unique digital copy, that might include words, sentences, even entire scenes that don't appear in this version, or play out in different ways.
+
+But there's no need to worry about all that right now. The story told in this version is just as valid as any other version. This is the one you've got. Enjoy it.""" % seedPrinted
 	else:
 		frontMatterMsg = """The book you're holding is unique. There is no other exactly like it.
 
