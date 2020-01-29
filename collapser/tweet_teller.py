@@ -5,9 +5,14 @@ import getopt
 import fileio
 import threading
 import time
+import twitter
 
 def showUsage():
-	print """Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes"""
+	print """
+Tweet Teller
+Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
+                    --test     Pull the latest tweet from @subcutanean
+"""
 
 MAX_TWEET_CHARS = 280
 
@@ -17,7 +22,7 @@ def main():
 	accounts = []
 	duration = -1
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help"])
+	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test"])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		showUsage()
@@ -35,6 +40,9 @@ def main():
 				sys.exit()			
 		elif opt == "--help":
 			showUsage()
+			sys.exit()
+		elif opt == "--test":
+			testIt()
 			sys.exit()
 
 	if len(inputFiles) == 0:
@@ -95,6 +103,12 @@ def tweetToConsole(account, tweet):
 
 def tweetToFiles(account, tweet):
 	fileio.append("work/at-%s.dat" % account, "\n\n@%s: '%s'" % (account, tweet))
+
+
+def testIt():
+	output = twitter.getLastTweet("subcutanean")
+	print output
+
 
 
 main()
