@@ -251,6 +251,11 @@ def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	signatures = []
 	origEndMatter = parseParams.endMatter
 	seed = chooser.nextSeed(renderParams.generation)
+	
+	# Manually skip the ones we pulled out for Amazon.
+	if seed == 30287 or seed == 33234 or seed == 36619:
+		seed = chooser.nextSeed(renderParams.generation)
+
 	firstSeed = seed
 	lastSeed = -1
 	for x in range(tries):
