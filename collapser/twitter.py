@@ -1,9 +1,7 @@
-# Abstraction of Twitter interface.
+# Abstraction of Twitter interface via Twython.
 
 from twython import Twython
 import fileio
-
-creds = {}
 
 def getLastTweet(account):
 	twitter = getTwitter(account)
@@ -19,19 +17,16 @@ def verifyCredentials(account):
 def tweet(account, msg):
 	twitter = getTwitter(account)
 	response = twitter.update_status(status=msg)
-	print response
-	# id = response["id"]
+	# If we didn't crash:
+	print "Successfully tweeted."
 
 
 
 def getTwitter(account):
-	global creds
-	setCredentials(account)
+	creds = setCredentials(account)
 	return Twython(creds["APP_KEY"], creds["APP_SECRET"], creds["OAUTH_ACCESS_TOKEN"], creds["OAUTH_ACCESS_TOKEN_SECRET"])
 
 def setCredentials(account):
-	global creds
-	# if "APP_KEY" not in creds:
 	credsRaw = fileio.readInputFile("collapser/keys/tw.%s.keys" % account)
 	credsLines = credsRaw.split("\n")
 	creds = {
@@ -40,3 +35,4 @@ def setCredentials(account):
 		"OAUTH_ACCESS_TOKEN": credsLines[2],
 		"OAUTH_ACCESS_TOKEN_SECRET": credsLines[3]
 	}
+	return creds
