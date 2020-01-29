@@ -253,7 +253,7 @@ def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
 	seed = chooser.nextSeed(renderParams.generation)
 	
 	# Manually skip the ones we pulled out for Amazon.
-	if seed == 30287 or seed == 33234 or seed == 36619:
+	if renderer.isAmazonCopy(seed):
 		seed = chooser.nextSeed(renderParams.generation)
 
 	firstSeed = seed

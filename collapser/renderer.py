@@ -158,6 +158,9 @@ def frontMatterSeedMessage(seed, pairInfo):
 	return [seedPrinted, msg]
 
 
+def isAmazonCopy(seed):
+	return seed == 30287 or seed == 33234 or seed == 36619
+
 # Special code for the "Alternate Scene" End Matter.
 
 def renderAlternateSequence(parseParams):
