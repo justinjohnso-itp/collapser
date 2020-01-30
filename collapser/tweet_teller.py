@@ -76,7 +76,8 @@ def main():
 
 def launch(inputTweetStorms, accounts, duration):
 	# inputTweetStorm is an array of tweetstorms, each of which is an array of tweets.
-
+	print "TweetTeller"
+	print "Ctrl-Z to halt all threads."
 	for pos in range(0, len(accounts)):
 		setupTweetStorm(accounts[pos], inputTweetStorms[pos], duration)
 
@@ -119,14 +120,15 @@ def tweetTick(account, tweetStorm, pos, delayInSeconds):
 
 def tweet(account, tweet):
 
-	# tweeter = tweetToTwitter
-	# tweeter = tweetToConsole
-	tweeter = tweetToConsoleWithOccasionalErrors
-	# tweeter = tweetToFiles
+	try:
+		# Turn on any or all of these.
+		# tweetToTwitter(account, tweet)
+		tweetToConsole(account, tweet)
+		# tweetToConsoleWithOccasionalErrors(account, tweet)
+		tweetToFiles(account, tweet)
 
 	# https://twython.readthedocs.io/en/latest/api.html#exceptions
-	try:
-		tweeter(account, tweet)
+
 	# except twython.TwythonAuthError as e:
 	# 	print e
 	# 	stopTweetThreads()
