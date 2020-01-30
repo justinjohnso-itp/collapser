@@ -86,7 +86,6 @@ tweetThreads = []
 def setupTweetStorm(account, tweetStorm, duration):
 	global tweet_threads
 	timeInSecondsBetweenTweets = float(duration * 60) / float(len(tweetStorm))
-	print "raw timeInSecondsBetweenTweets: %s" % timeInSecondsBetweenTweets
 	if timeInSecondsBetweenTweets < 10:
 		print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is below our minimum value of 10, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
 		sys.exit()
@@ -95,34 +94,34 @@ def setupTweetStorm(account, tweetStorm, duration):
 		sys.exit()
 	timeInSecondsBetweenTweets = int(timeInSecondsBetweenTweets)
 
-	print "timeInSecondsBetweenTweets: %s" % timeInSecondsBetweenTweets
 	print "For account @%s, will do %d tweets over %d minutes, with %d seconds between tweets." % (account, len(tweetStorm), duration, timeInSecondsBetweenTweets)
-	t = threading.Thread(target=tweetTick, args=(account, tweetStorm, 0, timeInSecondsBetweenTweets))
-	t.start()
-	tweetThreads.append(t)
+	thread = threading.Thread(target=tweetTickQueue, args=(account, tweetStorm, 0, timeInSecondsBetweenTweets))
+	thread.do_run = True
+	thread.start()
+	tweetThreads.append(thread)
 
 
+def tweetTickQueue(account, tweetStorm, pos, delayInSeconds):
+	# Just a bit of a wait so all the startup messages clump together on the console.
+	time.sleep(0.1)
+	tweetTick(account, tweetStorm, pos, delayInSeconds)
 
 def tweetTick(account, tweetStorm, pos, delayInSeconds):
 	thread = threading.current_thread()
-	if getattr(thread, "do_run", False):
-		print "Halting thread for @%s." % account
+	if not thread.do_run:
+		print "*** Halting thread for @%s." % account
 		return
-	success = tweet(account, tweetStorm[pos])
-	if success:
-		print "delay: %s" % delayInSeconds
-		time.sleep(delayInSeconds)
-		pos += 1
-		if pos < len(tweetStorm):
-			tweetTick(account, tweetStorm, pos, delayInSeconds)
-	else:
-		print "Failed."
+	tweet(account, tweetStorm[pos])
+	time.sleep(delayInSeconds)
+	pos += 1
+	if pos < len(tweetStorm):
+		tweetTick(account, tweetStorm, pos, delayInSeconds)
 
 def tweet(account, tweet):
 
 	# tweeter = tweetToTwitter
-	tweeter = tweetToConsole
-	# tweeter = tweetToConsoleWithOccasionalErrors
+	# tweeter = tweetToConsole
+	tweeter = tweetToConsoleWithOccasionalErrors
 	# tweeter = tweetToFiles
 
 	# https://twython.readthedocs.io/en/latest/api.html#exceptions
@@ -138,21 +137,21 @@ def tweet(account, tweet):
 	# 	print e
 	# 	stopTweetThreads()
 	except Exception as e:
-		print e
+		print "\n*** EXCEPTION: %s" % e
 		stopTweetThreads()
-		return False
-	return True
 
 
 def stopTweetThreads():
 	global tweetThreads
+	print "*** Stopping all tweet threads."
 	for thread in tweetThreads:
+		print "***   Setting %s do_run to False." % thread
 		thread.do_run = False
 
 
 
 def tweetToConsole(account, tweet):
-	print "** @%s: '%s'" % (account, tweet)
+	print "> @%s: '%s'" % (account, tweet)
 
 def tweetToConsoleWithOccasionalErrors(account, tweet):
 	if chooser.percent(85):
@@ -166,6 +165,9 @@ def tweetToFiles(account, tweet):
 def tweetToTwitter(account, tweet):
 	tweetToConsole(account, tweet)
 	twitter.tweet(account, tweet)
+
+
+
 
 def testIt():
 	# print twitter.verifyCredentials("subcutanean2160")
