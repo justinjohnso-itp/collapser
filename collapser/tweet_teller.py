@@ -1,5 +1,10 @@
 # Standalone program that will read in an input file(s) of prepared Tweet-length contents, and output them spaced out over a given amount of time. 
 
+# TODO:
+# - Add intro/outtro tweets? [Take into account rate limit] What about to master subcutanean account?
+# - Request a certain chapter, and/or restarting a specific account from a specific point
+
+
 import fileio
 import chooser
 import twitter
@@ -8,12 +13,14 @@ import sys
 import getopt
 import threading
 import time
+import re
 
 def showUsage():
 	print """
 Tweet Teller
 Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
-                    --test     Pull the latest tweet from @subcutanean
+          --range w-x,y-z  Start and stop tweets (optional)
+          --test     Pull the latest tweet from @subcutanean
 """
 
 MAX_TWEET_CHARS = 280
@@ -23,9 +30,11 @@ def main():
 	inputFiles = []
 	inputTweetStorms = []
 	accounts = []
+	ranges = []       # "25-115"
+	parsedRanges = [] # [25, 115] 
 	duration = -1
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test"])
+	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		showUsage()
@@ -40,7 +49,9 @@ def main():
 				duration = int(arg)
 			except:
 				print "Invalid -d(uration) parameter '%s': not an integer (should be a number of minutes)." % arg
-				sys.exit()			
+				sys.exit()
+		elif opt == "--range":
+			ranges = arg.split(',')
 		elif opt == "--help":
 			showUsage()
 			sys.exit()
@@ -57,41 +68,73 @@ def main():
 		print "*** Found %d input files but %d accounts; these must correspond 1-to-1. ***" % (len(inputFiles), len(accounts))
 		sys.exit()
 
+	if len(ranges) != 0 and len(ranges) != len(inputFiles):
+		print "*** Found %d input files but %d ranges; if ranges are specified, they must correspond 1-to-1. ***" % (len(inputFiles), len(ranges))
+		sys.exit()
+	for theRange in ranges:
+		matchObj = re.match(r'([0-9]{1,})-([0-9]{1,})', theRange)
+		if matchObj	is None:
+			print "*** Found range '%s' but could not read that as a range of tweet positions in the format '25-153'." % theRange
+			sys.exit()
+		try:
+			lower = int(matchObj.groups()[0])
+			upper = int(matchObj.groups()[1])
+		except:
+			print "*** Found range '%s' but could not parse one or both parts between the dash as integers." % theRange
+			sys.exit()
+		if lower > upper or lower < 0 or upper < 0:
+			print "*** Found range of '%d-%d' but the lower value must be lower and both must be positions >= 0." % (lower, upper)
+			sys.exit()
+		parsedRanges.append([lower, upper])
+
 	if duration <= 0:
 		print "*** Duration %d must be > 0 minutes. ***" % duration
 		sys.exit()
 
-	for filename in inputFiles:
+	for fPos, filename in enumerate(inputFiles):
 		data = fileio.readInputFile(filename)
-		arr = fileio.deserialize(data)
-		for item in arr:
-			if len(item) > MAX_TWEET_CHARS:
-				print "*** Error: a tweet in this tweetstorm exceeded %d characters, was %d instead: '%s'" % (MAX_TWEET_CHARS, len(item), item)
+		tweetStorm = fileio.deserialize(data)
+		for pos, tweet in enumerate(tweetStorm):
+			if len(tweet) > MAX_TWEET_CHARS:
+				print "*** Error: a tweet in this tweetstorm exceeded %d characters, was %d instead: '%s'" % (MAX_TWEET_CHARS, len(tweet), tweet)
 				sys.exit()
-		inputTweetStorms.append(arr)
+		if len(ranges) > 0 and parsedRanges[fPos][1] >= len(tweetStorm):
+			print "*** Error: this tweetstorm has %d tweets but the corresponding range was '%d-%d', which is outside its bounds." % (len(tweetStorm), parsedRanges[fPos][0], parsedRanges[fPos][1])
+			sys.exit()
+		inputTweetStorms.append(tweetStorm)
 
 	# TODO: Validate that each inputTweetStorm is in the expected format.
 
-	launch(inputTweetStorms, accounts, duration)
+	launch(inputTweetStorms, accounts, duration, parsedRanges)
 
 
-def launch(inputTweetStorms, accounts, duration):
+def launch(inputTweetStorms, accounts, duration, parsedRanges):
 	# inputTweetStorm is an array of tweetstorms, each of which is an array of tweets.
 	print "TweetTeller"
 	print "Ctrl-Z to halt all threads."
 
+	# Truncate
+	tweetStorms = []
+	for pos, tweetStorm in enumerate(inputTweetStorms):
+		if len(parsedRanges) > 0:
+			lower = parsedRanges[pos][0]
+			upper = parsedRanges[pos][1]
+			tweetStorms.append(tweetStorm[lower:upper+1]) # inclusive
+		else:
+			tweetStorms.append(tweetStorms)
+
 	# Validate
 	totals = []
 	for pos in range(0, len(accounts)):
-		totals.append(len(inputTweetStorms[pos]))
+		totals.append(len(tweetStorms[pos]))
 	if sum(totals) > TWITTER_RATE_LIMIT:
 		print "*** Error: input tweetstorms have lengths %s but that is a total of %d tweets, and the rate limit is %d, so this is too many to do in one performance." % (totals, sum(totals), TWITTER_RATE_LIMIT)
 		sys.exit()
-	print "Preparing %d tweets across %d files..." % (sum(totals), len(inputTweetStorms))
+	print "Preparing %d tweets across %d files..." % (sum(totals), len(tweetStorms))
 
 	# Go
 	for pos in range(0, len(accounts)):
-		setupTweetStorm(accounts[pos], inputTweetStorms[pos], duration)
+		setupTweetStorm(accounts[pos], tweetStorms[pos], duration)
 
 
 tweetThreads = []
@@ -165,7 +208,7 @@ def stopTweetThreads():
 
 
 def tweetToConsole(account, tweet):
-	print "> @%s: '%s'" % (account, tweet)
+	print "> @%s: '%s'\n" % (account, tweet)
 
 def tweetToConsoleWithOccasionalErrors(account, tweet):
 	if chooser.percent(85):

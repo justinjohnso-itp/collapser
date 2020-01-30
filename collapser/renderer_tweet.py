@@ -25,13 +25,19 @@ class RendererTweet(renderer.Renderer):
 		cleanedText = prepInputForTweets(inputText)
 		tweets = splitIntoTweets(cleanedText)
 
-		humanOutput = "\n==============\n".join(tweets)
+		# Human readable version.
+		humanOutput = []
+		for pos, tweet in enumerate(tweets):
+			humanOutput.append("[%d] %s" % (pos, tweet))
+		humanOutputStr = "\n==============\n".join(humanOutput)
 		outputFileName = "%s%s.tweets.txt" % (self.params.outputDir, self.params.fileId)
-		fileio.writeOutputFile(outputFileName, humanOutput)
+		fileio.writeOutputFile(outputFileName, humanOutputStr)
 
+		# Serialized version.
 		dataFileName = "%s%s.tweets.dat" % (self.params.outputDir, self.params.fileId)
 		fileio.writeOutputFile(dataFileName, fileio.serialize(tweets))
 
+		# Cleanup
 		terminal.move(inputFile, "%s%s.txt" % (self.params.workDir, self.params.fileId))
 
 	def suggestEndMatters(self):
