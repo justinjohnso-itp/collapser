@@ -19,6 +19,7 @@ Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
           --range w-x,y-z  Start and stop tweets (optional)
           --test     Pull the latest tweet from @subcutanean
           --skipIntro, --skipOuttro
+          --mainAnnounce    announce on @subcutanean that a reading is starting
 """
 
 MAX_TWEET_CHARS = 280
@@ -37,8 +38,9 @@ def main():
 	duration = -1
 	skipIntro = False
 	skipOuttro = False
+	mainAnnounce = False
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range=", "skipIntro", "skipOuttro"])
+	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range=", "skipIntro", "skipOuttro", "mainAnnounce"])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		showUsage()
@@ -60,6 +62,8 @@ def main():
 			skipIntro = True
 		elif opt == "--skipOuttro":
 			skipOuttro = True
+		elif opt == "--mainAnnounce":
+			mainAnnounce = True
 		elif opt == "--help":
 			showUsage()
 			sys.exit()
@@ -111,6 +115,10 @@ def main():
 			sys.exit()
 		inputTweetStorms.append(tweetStorm)
 
+	if mainAnnounce and "TWITTER" not in tweeters:
+		print "You set --mainAnnounce but not outputting to Twitter."
+		sys.exit()
+
 	global CONFIRMED_LIVE_TWEETS
 	if "TWITTER" in tweeters and not CONFIRMED_LIVE_TWEETS:
 		sys.stdout.write("\n\nYou are about to tweet live to Twitter.\nPlease confirm you wish to do this> ")
@@ -119,7 +127,12 @@ def main():
 			sys.exit()
 		CONFIRMED_LIVE_TWEETS = True
 
-	# TODO: Validate that each inputTweetStorm is in the expected format.
+	if mainAnnounce:
+		tweetToTwitter("subcutanean", "About to start a live Twitter reading from two different versions of Subcutanean! Check out @subcutanean2160 and @subcutanean6621 to follow along.")
+		bufferSeconds = 60
+		print "Waiting %d seconds for pre-buffer..." % bufferSeconds
+		time.sleep(bufferSeconds)
+		print "Done waiting, beginning.\n"
 
 	launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOuttro)
 
