@@ -14,6 +14,7 @@ import getopt
 import threading
 import time
 import re
+import getch
 
 def showUsage():
 	print """
@@ -25,6 +26,10 @@ Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
 
 MAX_TWEET_CHARS = 280
 TWITTER_RATE_LIMIT = 300
+CONFIRMED_LIVE_TWEETS = False
+
+# tweeters = ["TWITTER", "CONSOLE", "CONSOLE_WITH_ERRORS", "FILES"]
+tweeters = ["CONSOLE", "TWITTER"]
 
 def main():
 	inputFiles = []
@@ -103,6 +108,14 @@ def main():
 			sys.exit()
 		inputTweetStorms.append(tweetStorm)
 
+	global CONFIRMED_LIVE_TWEETS
+	if "TWITTER" in tweeters and not CONFIRMED_LIVE_TWEETS:
+		sys.stdout.write("\n\nYou are about to tweet live to Twitter.\nPlease confirm you wish to do this> ")
+		choice = getch.getch()
+		if choice != "y":
+			sys.exit()
+		CONFIRMED_LIVE_TWEETS = True
+
 	# TODO: Validate that each inputTweetStorm is in the expected format.
 
 	launch(inputTweetStorms, accounts, duration, parsedRanges)
@@ -125,7 +138,6 @@ def launch(inputTweetStorms, accounts, duration, parsedRanges):
 
 	# Intro/Outtro
 	for pos, tweetStorm in enumerate(tweetStorms):
-		print "x: %s" % accounts[pos]
 		seedNum = int(accounts[pos][11:])
 		intro = "*****\nNow beginning a reading from seed #%d of Subcutanean, a novel by @aaronareed. Follow @subcutanean for general project news.\n*****" % seedNum
 		outtro = "*****\nThat's the end of today's reading from this version of Subcutanean! Follow @subcutanean to find out how you can get your own unique copy.\n*****"
@@ -182,13 +194,17 @@ def tweetTick(account, tweetStorm, pos, delayInSeconds):
 		tweetTick(account, tweetStorm, pos, delayInSeconds)
 
 def tweet(account, tweet):
+	global tweeters
 
 	try:
-		# Turn on any or all of these.
-		# tweetToTwitter(account, tweet)
-		tweetToConsole(account, tweet)
-		# tweetToConsoleWithOccasionalErrors(account, tweet)
-		tweetToFiles(account, tweet)
+		if "CONSOLE" in tweeters:
+			tweetToConsole(account, tweet)
+		if "CONSOLE_WITH_ERRORS" in tweeters:
+			tweetToConsoleWithOccasionalErrors(account, tweet)
+		if "TWITTER" in tweeters:
+			tweetToTwitter(account, tweet)
+		if "FILES" in tweeters:	
+			tweetToFiles(account, tweet)
 
 	# https://twython.readthedocs.io/en/latest/api.html#exceptions
 
@@ -223,14 +239,11 @@ def tweetToConsoleWithOccasionalErrors(account, tweet):
 		tweetToConsole(account, tweet)
 	else:
 		raise Exception("Test of an Exception for account @%s." % account) 
-
 def tweetToFiles(account, tweet):
 	fileio.append("work/at-%s.dat" % account, "\n\n@%s: '%s'" % (account, tweet))
 
 def tweetToTwitter(account, tweet):
-	tweetToConsole(account, tweet)
 	twitter.tweet(account, tweet)
-
 
 
 
