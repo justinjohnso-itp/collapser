@@ -1,11 +1,13 @@
 # Standalone program that will read in an input file(s) of prepared Tweet-length contents, and output them spaced out over a given amount of time. 
 
+import fileio
+import chooser
+import twitter
+
 import sys
 import getopt
-import fileio
 import threading
 import time
-import twitter
 
 def showUsage():
 	print """
@@ -79,35 +81,96 @@ def launch(inputTweetStorms, accounts, duration):
 		setupTweetStorm(accounts[pos], inputTweetStorms[pos], duration)
 
 
+tweetThreads = []
+
 def setupTweetStorm(account, tweetStorm, duration):
-	timeInSecondsBetweenTweets = (duration * 60) / len(tweetStorm)
+	global tweet_threads
+	timeInSecondsBetweenTweets = float(duration * 60) / float(len(tweetStorm))
+	print "raw timeInSecondsBetweenTweets: %s" % timeInSecondsBetweenTweets
+	if timeInSecondsBetweenTweets < 10:
+		print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is below our minimum value of 10, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
+		sys.exit()
+	if timeInSecondsBetweenTweets > 120:
+		print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is higher than our predetermined threshold, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
+		sys.exit()
+	timeInSecondsBetweenTweets = int(timeInSecondsBetweenTweets)
+
+	print "timeInSecondsBetweenTweets: %s" % timeInSecondsBetweenTweets
 	print "For account @%s, will do %d tweets over %d minutes, with %d seconds between tweets." % (account, len(tweetStorm), duration, timeInSecondsBetweenTweets)
-	threading.Thread(target=tweetTick, args=(account, tweetStorm, 0, timeInSecondsBetweenTweets)).start()
+	t = threading.Thread(target=tweetTick, args=(account, tweetStorm, 0, timeInSecondsBetweenTweets))
+	t.start()
+	tweetThreads.append(t)
+
 
 
 def tweetTick(account, tweetStorm, pos, delayInSeconds):
-	tweet(account, tweetStorm[pos])
-	time.sleep(delayInSeconds)
-	pos += 1
-	if pos < len(tweetStorm):
-		tweetTick(account, tweetStorm, pos, delayInSeconds)
+	thread = threading.current_thread()
+	if getattr(thread, "do_run", False):
+		print "Halting thread for @%s." % account
+		return
+	success = tweet(account, tweetStorm[pos])
+	if success:
+		print "delay: %s" % delayInSeconds
+		time.sleep(delayInSeconds)
+		pos += 1
+		if pos < len(tweetStorm):
+			tweetTick(account, tweetStorm, pos, delayInSeconds)
+	else:
+		print "Failed."
 
 def tweet(account, tweet):
-	tweetToConsole(account, tweet)
-	tweetToFiles(account, tweet)
+
+	# tweeter = tweetToTwitter
+	tweeter = tweetToConsole
+	# tweeter = tweetToConsoleWithOccasionalErrors
+	# tweeter = tweetToFiles
+
+	# https://twython.readthedocs.io/en/latest/api.html#exceptions
+	try:
+		tweeter(account, tweet)
+	# except twython.TwythonAuthError as e:
+	# 	print e
+	# 	stopTweetThreads()
+	# except twython.TwythonRateLimitError as e:
+	# 	print e
+	# 	stopTweetThreads()
+	# except twython.TwythonError as e:
+	# 	print e
+	# 	stopTweetThreads()
+	except Exception as e:
+		print e
+		stopTweetThreads()
+		return False
+	return True
+
+
+def stopTweetThreads():
+	global tweetThreads
+	for thread in tweetThreads:
+		thread.do_run = False
 
 
 
 def tweetToConsole(account, tweet):
 	print "** @%s: '%s'" % (account, tweet)
 
+def tweetToConsoleWithOccasionalErrors(account, tweet):
+	if chooser.percent(85):
+		tweetToConsole(account, tweet)
+	else:
+		raise Exception("Test of an Exception for account @%s." % account) 
+
 def tweetToFiles(account, tweet):
 	fileio.append("work/at-%s.dat" % account, "\n\n@%s: '%s'" % (account, tweet))
 
+def tweetToTwitter(account, tweet):
+	tweetToConsole(account, tweet)
+	twitter.tweet(account, tweet)
 
 def testIt():
-	output = twitter.getLastTweet("subcutanean")
-	print output
+	# print twitter.verifyCredentials("subcutanean2160")
+	print twitter.getLastTweet("subcutanean9999")
+	# print twitter.tweet("subcutanean9999", "its another test message")
 
 
 
