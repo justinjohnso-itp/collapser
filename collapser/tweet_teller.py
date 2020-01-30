@@ -123,6 +123,14 @@ def launch(inputTweetStorms, accounts, duration, parsedRanges):
 		else:
 			tweetStorms.append(tweetStorms)
 
+	# Intro/Outtro
+	for pos, tweetStorm in enumerate(tweetStorms):
+		print "x: %s" % accounts[pos]
+		seedNum = int(accounts[pos][11:])
+		intro = "*****\nNow beginning a reading from seed #%d of Subcutanean, a novel by @aaronareed. Follow @subcutanean for general project news.\n*****" % seedNum
+		outtro = "*****\nThat's the end of today's reading from this version of Subcutanean! Follow @subcutanean to find out how you can get your own unique copy.\n*****"
+		tweetStorms[pos] = [intro] + tweetStorm + [outtro]
+
 	# Validate
 	totals = []
 	for pos in range(0, len(accounts)):
