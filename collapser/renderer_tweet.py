@@ -93,6 +93,8 @@ def splitIntoTweets(text, max_size = MAX_TWEET_SIZE):
 					if len(tweet) + len(sentences[sPos].sentence) + 2 <= max_size:
 						tweet += "||" + sentences[sPos].sentence
 						sPos += 1
+						if nextJoin != "SPACE":
+							break
 				elif nextJoin != "SPACE":
 					break
 				tweet += " "
