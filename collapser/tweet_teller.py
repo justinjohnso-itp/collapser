@@ -17,6 +17,7 @@ Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
 """
 
 MAX_TWEET_CHARS = 280
+TWITTER_RATE_LIMIT = 300
 
 def main():
 	inputFiles = []
@@ -78,6 +79,17 @@ def launch(inputTweetStorms, accounts, duration):
 	# inputTweetStorm is an array of tweetstorms, each of which is an array of tweets.
 	print "TweetTeller"
 	print "Ctrl-Z to halt all threads."
+
+	# Validate
+	totals = []
+	for pos in range(0, len(accounts)):
+		totals.append(len(inputTweetStorms[pos]))
+	if sum(totals) > TWITTER_RATE_LIMIT:
+		print "*** Error: input tweetstorms have lengths %s but that is a total of %d tweets, and the rate limit is %d, so this is too many to do in one performance." % (totals, sum(totals), TWITTER_RATE_LIMIT)
+		sys.exit()
+	print "Preparing %d tweets across %d files..." % (sum(totals), len(inputTweetStorms))
+
+	# Go
 	for pos in range(0, len(accounts)):
 		setupTweetStorm(accounts[pos], inputTweetStorms[pos], duration)
 
