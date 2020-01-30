@@ -27,7 +27,7 @@ class RendererLatex(renderer.Renderer):
 
 	def makeStagedFile(self):
 		self.collapsedText = specialLatexAndPDFFixes(self.collapsedText)
-		workFile = self.renderFormattingSequences()
+		workFile = self.renderFormattingSequences(self.params)
 		postLatexificationSanityCheck(workFile)
 		stagedFileText = latexWrapper(workFile, self.params.seed, self.params.doFront, self.params.pairInfo)
 		latexFileName = "%s.tex" % self.params.fileId
@@ -80,7 +80,7 @@ class RendererLatex(renderer.Renderer):
 
 		return ["../fragments/backmatter.tex"] + suggestions
 
-	def renderFormattingSequence(self, contents):
+	def renderFormattingSequence(self, contents, renderParams):
 		code = contents[0]
 		if code == "part":
 			partNum = contents[1]

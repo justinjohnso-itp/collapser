@@ -15,6 +15,8 @@ class RendererTweet(renderer.Renderer):
 		self.makeOutputFile()
 
 	def makeStagedFile(self):
+		self.params.doFront = False
+		self.params.twitterEpigraph = True
 		renderer = renderer_text.RendererText(self.collapsedText, self.params)
 		renderer.render()
 

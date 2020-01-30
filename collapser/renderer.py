@@ -31,6 +31,7 @@ class RenderParams:
 		self.parseParams = parseParams
 		self.pairInfo = pairInfo
 		self.generation = generation
+		self.twitterEpigraph = False
 
 
 class TooLongError(RuntimeError):
@@ -65,7 +66,7 @@ class Renderer(object):
 
 	# Convert a formatting sequence like {i/italics} into the proper coding for this output format.
 	@abc.abstractmethod
-	def renderFormattingSequence(self, text):
+	def renderFormattingSequence(self, text, renderParams):
 		return text
 
 	# Suggest an array of endMatters to append that won't exceed the page budget (if this format has one) based on stats stored from the last time we rendered; return an empty array if no suggestions.
@@ -82,7 +83,7 @@ class Renderer(object):
 		self.collapsedText = text
 
 
-	def renderFormattingSequences(self):
+	def renderFormattingSequences(self, renderParams):
 		# First swap in a render of an alternate scene if we need it, so the rest of the code will handle its formatting as per usual.
 		if self.collapsedText.find("{alternate_scene}") >= 0:
 			self.collapsedText = self.collapsedText.replace("{alternate_scene}", renderAlternateSequence(self.params.parseParams))
@@ -93,7 +94,7 @@ class Renderer(object):
 		while fSeq is not None:
 			leadingText = fSeq[0]
 			seqParams = fSeq[1:]
-			rendered = self.renderFormattingSequence(seqParams)
+			rendered = self.renderFormattingSequence(seqParams, renderParams)
 			output.append(leadingText)
 			output.append(rendered)
 			fSeq = self.getNextFormatSeq()

@@ -18,7 +18,7 @@ class RendererMarkdown(renderer.Renderer):
 	def makeOutputFile(self):
 		print "Rendering to Markdown."
 		self.collapsedText = prepForMarkdownOutput(self.collapsedText)
-		workFile = self.renderFormattingSequences()
+		workFile = self.renderFormattingSequences(self.params)
 		workFile = specialMarkdownFixes(workFile)
 		if self.params.doFront:
 			workFile = generateFrontMatter(self.params.seed) + workFile
@@ -29,7 +29,7 @@ class RendererMarkdown(renderer.Renderer):
 	def suggestEndMatters(self):
 		return renderer.suggestEndMatterWhenNoPageLimits(self.params.seed)
 
-	def renderFormattingSequence(self, contents):
+	def renderFormattingSequence(self, contents, renderParams):
 		code = contents[0]
 		if code == "part":
 			partNum = contents[1]

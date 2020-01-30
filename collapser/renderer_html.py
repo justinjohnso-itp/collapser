@@ -18,7 +18,7 @@ class RendererHTML(renderer.Renderer):
 
 	def makeOutputFile(self):
 		self.collapsedText = prepForHTMLOutput(self.collapsedText)
-		workFile = self.renderFormattingSequences()
+		workFile = self.renderFormattingSequences(self.params)
 		workFile = specialHTMLFixes(workFile)
 		postHTMLificationSanityCheck(workFile)
 		outputFileName = "%s%s.html" % (self.params.outputDir, self.params.fileId)
@@ -27,7 +27,7 @@ class RendererHTML(renderer.Renderer):
 	def suggestEndMatters(self):
 		return renderer.suggestEndMatterWhenNoPageLimits(self.params.seed)
 
-	def renderFormattingSequence(self, contents):
+	def renderFormattingSequence(self, contents, renderParams):
 		code = contents[0]
 		if code == "part":
 			partNum = contents[1]

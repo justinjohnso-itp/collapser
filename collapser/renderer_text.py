@@ -18,9 +18,10 @@ class RendererText(renderer.Renderer):
 
 	def makeOutputFile(self):
 		self.collapsedText = prepForTextOutput(self.collapsedText)
-		workFile = self.renderFormattingSequences()
+		workFile = self.renderFormattingSequences(self.params)
 		workFile = specialTextFixes(workFile)
-		workFile = addTextFrontMatter(workFile, self.params.seed, self.params.pairInfo)
+		if self.params.doFront:
+			workFile = addTextFrontMatter(workFile, self.params.seed, self.params.pairInfo)
 		postTextificationSanityCheck(workFile)
 		outputFileName = "%s%s.txt" % (self.params.outputDir, self.params.fileId)
 		fileio.writeOutputFile(outputFileName, workFile)
@@ -28,7 +29,7 @@ class RendererText(renderer.Renderer):
 	def suggestEndMatters(self):
 		return renderer.suggestEndMatterWhenNoPageLimits(self.params.seed)
 
-	def renderFormattingSequence(self, contents):
+	def renderFormattingSequence(self, contents, renderParams):
 		code = contents[0]
 		if code == "part":
 			partNum = contents[1]
@@ -40,7 +41,11 @@ class RendererText(renderer.Renderer):
 		if code == "epigraph":
 			epigraph = contents[1]
 			source = contents[2]
-			return "\n\n" + epigraph + "\n\n" + source + "\n\n"
+			if renderParams.twitterEpigraph:
+				# Wrap in quotes and cite up front, to avoid confusion.
+				return "\n\nFrom " + source + ":\n\n\"" + epigraph + "\"\n\n"
+			else:
+				return "\n\n" + epigraph + "\n\n" + source + "\n\n"
 		if code == "end_part_page":
 			return "\n\n"
 		if code == "chapter":
