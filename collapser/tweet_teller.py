@@ -1,9 +1,5 @@
 # Standalone program that will read in an input file(s) of prepared Tweet-length contents, and output them spaced out over a given amount of time. 
 
-# TODO:
-# - Add intro/outtro tweets? [Take into account rate limit] What about to master subcutanean account?
-# - Request a certain chapter, and/or restarting a specific account from a specific point
-
 
 import fileio
 import chooser
@@ -22,6 +18,7 @@ Tweet Teller
 Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
           --range w-x,y-z  Start and stop tweets (optional)
           --test     Pull the latest tweet from @subcutanean
+          --skipIntro, --skipOuttro
 """
 
 MAX_TWEET_CHARS = 280
@@ -29,7 +26,7 @@ TWITTER_RATE_LIMIT = 300
 CONFIRMED_LIVE_TWEETS = False
 
 # tweeters = ["TWITTER", "CONSOLE", "CONSOLE_WITH_ERRORS", "FILES"]
-tweeters = ["CONSOLE", "TWITTER"]
+tweeters = ["CONSOLE"]
 
 def main():
 	inputFiles = []
@@ -38,8 +35,10 @@ def main():
 	ranges = []       # "25-115"
 	parsedRanges = [] # [25, 115] 
 	duration = -1
+	skipIntro = False
+	skipOuttro = False
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range="])
+	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range=", "skipIntro", "skipOuttro"])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		showUsage()
@@ -57,6 +56,10 @@ def main():
 				sys.exit()
 		elif opt == "--range":
 			ranges = arg.split(',')
+		elif opt == "--skipIntro":
+			skipIntro = True
+		elif opt == "--skipOuttro":
+			skipOuttro = True
 		elif opt == "--help":
 			showUsage()
 			sys.exit()
@@ -118,13 +121,16 @@ def main():
 
 	# TODO: Validate that each inputTweetStorm is in the expected format.
 
-	launch(inputTweetStorms, accounts, duration, parsedRanges)
+	launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOuttro)
 
 
-def launch(inputTweetStorms, accounts, duration, parsedRanges):
-	# inputTweetStorm is an array of tweetstorms, each of which is an array of tweets.
+def launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOuttro):
+	global tweeters
+
 	print "TweetTeller"
-	print "Ctrl-Z to halt all threads."
+	print "Ctrl-Z to halt all threads.\n"
+
+	# inputTweetStorm is an array of tweetstorms, each of which is an array of tweets.
 
 	# Truncate
 	tweetStorms = []
@@ -141,7 +147,10 @@ def launch(inputTweetStorms, accounts, duration, parsedRanges):
 		seedNum = int(accounts[pos][11:])
 		intro = "*****\nNow beginning a reading from seed #%d of Subcutanean, a novel by @aaronareed. Follow @subcutanean for general project news.\n*****" % seedNum
 		outtro = "*****\nThat's the end of today's reading from this version of Subcutanean! Follow @subcutanean to find out how you can get your own unique copy.\n*****"
-		tweetStorms[pos] = [intro] + tweetStorm + [outtro]
+		if not skipIntro:
+			tweetStorms[pos] = [intro] + tweetStorms[pos]
+		if not skipOuttro:
+			tweetStorms[pos] = tweetStorms[pos] + [outtro]
 
 	# Validate
 	totals = []
@@ -150,6 +159,7 @@ def launch(inputTweetStorms, accounts, duration, parsedRanges):
 	if sum(totals) > TWITTER_RATE_LIMIT:
 		print "*** Error: input tweetstorms have lengths %s but that is a total of %d tweets, and the rate limit is %d, so this is too many to do in one performance." % (totals, sum(totals), TWITTER_RATE_LIMIT)
 		sys.exit()
+	print "Targets: %s" % tweeters
 	print "Preparing %d tweets across %d files..." % (sum(totals), len(tweetStorms))
 
 	# Go
