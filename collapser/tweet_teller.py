@@ -119,6 +119,19 @@ def main():
 		print "You set --mainAnnounce but not outputting to Twitter."
 		sys.exit()
 
+	for pos, tweetStorm in enumerate(inputTweetStorms):
+		lower = 0 if len(parsedRanges) == 0 else parsedRanges[pos][0]
+		upper = len(tweetStorm)-1 if len(parsedRanges) == 0 else parsedRanges[pos][1]
+		print "*********************\nFor @%s, will tweet from %d to %d." % (accounts[pos], lower, upper)
+		print "-> %d: '%s'" % (lower, tweetStorm[lower])
+		print "##"
+		print "-> %d: '%s" % (upper, tweetStorm[upper])
+		print "\n"
+	sys.stdout.write("*********************\n\nDoes this look right?> ")
+	choice = getch.getch()
+	if choice != "y":
+		sys.exit()
+
 	global CONFIRMED_LIVE_TWEETS
 	if "TWITTER" in tweeters and not CONFIRMED_LIVE_TWEETS:
 		sys.stdout.write("\n\nYou are about to tweet live to Twitter.\nPlease confirm you wish to do this> ")
@@ -273,6 +286,7 @@ def tweetToTwitter(account, tweet):
 def testIt():
 	# print twitter.verifyCredentials("subcutanean2160")
 	print twitter.getLastTweet("subcutanean9999")
+	# print twitter.tweet("subcutanean6621", "Test message for 6621")
 	# print twitter.tweet("subcutanean9999", "its another test message")
 
 
