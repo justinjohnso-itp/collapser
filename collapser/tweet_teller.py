@@ -21,11 +21,12 @@ Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
           --skipIntro, --skipOuttro
           --mainAnnounce    announce on @subcutanean that a reading is starting
           --next="Sunday Feb 2nd at 3pm PST"
+          --skipLimits    Don't restrict by min/max times.
+          --delay=n       Minutes to wait before beginning.
 """
 
 MAX_TWEET_CHARS = 280
 TWITTER_RATE_LIMIT = 300
-CONFIRMED_LIVE_TWEETS = False
 
 # tweeters = ["TWITTER", "CONSOLE", "CONSOLE_WITH_ERRORS", "FILES"]
 tweeters = ["CONSOLE"]
@@ -41,8 +42,12 @@ def main():
 	skipOuttro = False
 	mainAnnounce = False
 	nextPerformance = ""
+	skipLimits = False
+	preshowDelay = 0
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range=", "skipIntro", "skipOuttro", "mainAnnounce", "next="])
+	global tweeters
+
+	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range=", "skipIntro", "skipOuttro", "mainAnnounce", "next=", "skipLimits", "delay="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		showUsage()
@@ -68,6 +73,14 @@ def main():
 			mainAnnounce = True
 		elif opt == "--next":
 			nextPerformance = arg
+		elif opt == "--skipLimits":
+			skipLimits = True
+		elif opt == "--delay":
+			try:
+				preshowDelay = int(arg)
+			except:
+				print "Invalid --delay parameter '%s': not an integer (should be a number of minutes)." % arg
+				sys.exit()
 		elif opt == "--help":
 			showUsage()
 			sys.exit()
@@ -131,31 +144,6 @@ def main():
 		print "##"
 		print "-> %d: '%s" % (upper, tweetStorm[upper])
 		print "\n"
-	sys.stdout.write("*********************\n\nDoes this look right?> ")
-	choice = getch.getch()
-	if choice != "y":
-		sys.exit()
-
-	global CONFIRMED_LIVE_TWEETS
-	if "TWITTER" in tweeters and not CONFIRMED_LIVE_TWEETS:
-		sys.stdout.write("\n\nYou are about to tweet live to Twitter.\nPlease confirm you wish to do this> ")
-		choice = getch.getch()
-		if choice != "y":
-			sys.exit()
-		CONFIRMED_LIVE_TWEETS = True
-
-	if mainAnnounce:
-		tweetToTwitter("subcutanean", "About to start a live Twitter reading from two different versions of Subcutanean! Check out @subcutanean2160 and @subcutanean6621 to follow along.")
-		bufferSeconds = 60
-		print "Waiting %d seconds for pre-buffer..." % bufferSeconds
-		time.sleep(bufferSeconds)
-		print "Done waiting, beginning.\n"
-
-	launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOuttro, nextPerformance)
-
-
-def launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOuttro, nextPerformance):
-	global tweeters
 
 	print "TweetTeller"
 	print "Ctrl-Z to halt all threads.\n"
@@ -176,7 +164,7 @@ def launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOu
 	for pos, tweetStorm in enumerate(tweetStorms):
 		seedNum = int(accounts[pos][11:])
 		intro = "*****\nNow beginning a reading from seed #%d of Subcutanean, a novel by @aaronareed. Follow @subcutanean for general project news.\n*****" % seedNum
-		nextMsg = "The next performance will be %s. " if nextPerformance != "" else ""
+		nextMsg = ("The next performance will be %s. " % nextPerformance) if nextPerformance != "" else ""
 		outtro = "*****\nThat's the end of today's reading! %sFollow @subcutanean to find out how you can get your own unique copy.\n*****" % nextMsg
 		if not skipIntro:
 			tweetStorms[pos] = [intro] + tweetStorms[pos]
@@ -195,23 +183,54 @@ def launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOu
 
 	# Go
 	for pos in range(0, len(accounts)):
-		setupTweetStorm(accounts[pos], tweetStorms[pos], duration)
+		account = accounts[pos]
+		tweetStorm = tweetStorms[pos]
+		timeInSecondsBetweenTweets = float(duration * 60) / float(len(tweetStorm))
+		if timeInSecondsBetweenTweets < 10 and not skipLimits:
+			print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is below our minimum value of 10, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
+			sys.exit()
+		if timeInSecondsBetweenTweets > 120:
+			print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is higher than our predetermined threshold of 120, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
+			sys.exit()
+		timeInSecondsBetweenTweets = int(timeInSecondsBetweenTweets)
+		print "For account @%s, will do %d tweets over %d minutes, with %d seconds between tweets." % (account, len(tweetStorm), duration, timeInSecondsBetweenTweets)
+
+	sys.stdout.write("*********************\n\nDoes this look right?> ")
+	choice = getch.getch()
+	if choice != "y":
+		sys.exit()
+
+	if "TWITTER" in tweeters:
+		sys.stdout.write("\n\nYou are about to tweet live to Twitter.\nPlease confirm you wish to do this> ")
+		choice = getch.getch()
+		if choice != "y":
+			sys.exit()
+
+	if preshowDelay > 0:
+		sys.stdout.write("\n\nWaiting %d minutes for pre-show delay..." % preshowDelay)
+		sys.stdout.flush()
+		while preshowDelay > 0:
+			time.sleep(60)
+			preshowDelay -= 1
+			sys.stdout.write("%d..." % preshowDelay)
+			sys.stdout.flush()
+		print "\nDone with pre-show delay.\n"
+
+	if mainAnnounce:
+		tweetToTwitter("subcutanean", "About to start a live Twitter reading from two different versions of Subcutanean! Check out @subcutanean2160 and @subcutanean6621 to follow along.")
+		bufferSeconds = 120
+		print "Waiting %d seconds for pre-buffer..." % bufferSeconds
+		time.sleep(bufferSeconds)
+		print "Done waiting, beginning.\n"
+
+	for pos in range(0, len(accounts)):
+		setupTweetStorm(account, tweetStorm, timeInSecondsBetweenTweets)
 
 
 tweetThreads = []
 
-def setupTweetStorm(account, tweetStorm, duration):
+def setupTweetStorm(account, tweetStorm, timeInSecondsBetweenTweets):
 	global tweet_threads
-	timeInSecondsBetweenTweets = float(duration * 60) / float(len(tweetStorm))
-	if timeInSecondsBetweenTweets < 10:
-		print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is below our minimum value of 10, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
-		sys.exit()
-	if timeInSecondsBetweenTweets > 120:
-		print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is higher than our predetermined threshold of 120, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
-		sys.exit()
-	timeInSecondsBetweenTweets = int(timeInSecondsBetweenTweets)
-
-	print "For account @%s, will do %d tweets over %d minutes, with %d seconds between tweets." % (account, len(tweetStorm), duration, timeInSecondsBetweenTweets)
 	thread = threading.Thread(target=tweetTickQueue, args=(account, tweetStorm, 0, timeInSecondsBetweenTweets))
 	thread.do_run = True
 	thread.start()
