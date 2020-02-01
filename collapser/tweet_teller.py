@@ -221,6 +221,8 @@ def main():
 		print "Done waiting, beginning.\n"
 
 	for pos in range(0, len(accounts)):
+		account = accounts[pos]
+		tweetStorm = tweetStorms[pos]
 		setupTweetStorm(account, tweetStorm, timeInSecondsBetweenTweets)
 
 
