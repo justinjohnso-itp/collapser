@@ -132,10 +132,6 @@ def main():
 			sys.exit()
 		inputTweetStorms.append(tweetStorm)
 
-	if mainAnnounce and "TWITTER" not in tweeters:
-		print "You set --mainAnnounce but not outputting to Twitter."
-		sys.exit()
-
 	for pos, tweetStorm in enumerate(inputTweetStorms):
 		lower = 0 if len(parsedRanges) == 0 else parsedRanges[pos][0]
 		upper = len(tweetStorm)-1 if len(parsedRanges) == 0 else parsedRanges[pos][1]
@@ -217,7 +213,7 @@ def main():
 		print "\nDone with pre-show delay.\n"
 
 	if mainAnnounce:
-		tweetToTwitter("subcutanean", "About to start a live Twitter reading from two different versions of Subcutanean! Check out @subcutanean2160 and @subcutanean6621 to follow along.")
+		tweet("subcutanean", "About to start a live Twitter reading from two different versions of Subcutanean! Check out @subcutanean2160 and @subcutanean6621 to follow along.")
 		bufferSeconds = 120
 		print "Waiting %d seconds for pre-buffer..." % bufferSeconds
 		time.sleep(bufferSeconds)
