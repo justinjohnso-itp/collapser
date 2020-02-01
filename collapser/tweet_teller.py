@@ -20,6 +20,7 @@ Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
           --test     Pull the latest tweet from @subcutanean
           --skipIntro, --skipOuttro
           --mainAnnounce    announce on @subcutanean that a reading is starting
+          --next="Sunday Feb 2nd at 3pm PST"
 """
 
 MAX_TWEET_CHARS = 280
@@ -39,8 +40,9 @@ def main():
 	skipIntro = False
 	skipOuttro = False
 	mainAnnounce = False
+	nextPerformance = ""
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range=", "skipIntro", "skipOuttro", "mainAnnounce"])
+	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range=", "skipIntro", "skipOuttro", "mainAnnounce", "next="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		showUsage()
@@ -64,6 +66,8 @@ def main():
 			skipOuttro = True
 		elif opt == "--mainAnnounce":
 			mainAnnounce = True
+		elif opt == "--next":
+			nextPerformance = arg
 		elif opt == "--help":
 			showUsage()
 			sys.exit()
@@ -147,10 +151,10 @@ def main():
 		time.sleep(bufferSeconds)
 		print "Done waiting, beginning.\n"
 
-	launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOuttro)
+	launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOuttro, nextPerformance)
 
 
-def launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOuttro):
+def launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOuttro, nextPerformance):
 	global tweeters
 
 	print "TweetTeller"
@@ -172,7 +176,8 @@ def launch(inputTweetStorms, accounts, duration, parsedRanges, skipIntro, skipOu
 	for pos, tweetStorm in enumerate(tweetStorms):
 		seedNum = int(accounts[pos][11:])
 		intro = "*****\nNow beginning a reading from seed #%d of Subcutanean, a novel by @aaronareed. Follow @subcutanean for general project news.\n*****" % seedNum
-		outtro = "*****\nThat's the end of today's reading from this version of Subcutanean! Follow @subcutanean to find out how you can get your own unique copy.\n*****"
+		nextMsg = "The next performance will be %s. " if nextPerformance != "" else ""
+		outtro = "*****\nThat's the end of today's reading! %sFollow @subcutanean to find out how you can get your own unique copy.\n*****" % nextMsg
 		if not skipIntro:
 			tweetStorms[pos] = [intro] + tweetStorms[pos]
 		if not skipOuttro:
@@ -202,7 +207,7 @@ def setupTweetStorm(account, tweetStorm, duration):
 		print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is below our minimum value of 10, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
 		sys.exit()
 	if timeInSecondsBetweenTweets > 120:
-		print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is higher than our predetermined threshold, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
+		print "To space %s tweets out over %s minutes would require %s seconds between tweets; this is higher than our predetermined threshold of 120, so halting." % (len(tweetStorm), duration, timeInSecondsBetweenTweets)
 		sys.exit()
 	timeInSecondsBetweenTweets = int(timeInSecondsBetweenTweets)
 
