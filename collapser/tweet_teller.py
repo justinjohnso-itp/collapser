@@ -123,9 +123,9 @@ def main():
 	for fPos, filename in enumerate(inputFiles):
 		data = fileio.readInputFile(filename)
 		tweetStorm = fileio.deserialize(data)
-		for pos, tweet in enumerate(tweetStorm):
-			if len(tweet) > MAX_TWEET_CHARS:
-				print "*** Error: a tweet in this tweetstorm exceeded %d characters, was %d instead: '%s'" % (MAX_TWEET_CHARS, len(tweet), tweet)
+		for pos, thisTweet in enumerate(tweetStorm):
+			if len(thisTweet) > MAX_TWEET_CHARS:
+				print "*** Error: a tweet in this tweetstorm exceeded %d characters, was %d instead: '%s'" % (MAX_TWEET_CHARS, len(thisTweet), thisTweet)
 				sys.exit()
 		if len(ranges) > 0 and parsedRanges[fPos][1] >= len(tweetStorm):
 			print "*** Error: this tweetstorm has %d tweets but the corresponding range was '%d-%d', which is outside its bounds." % (len(tweetStorm), parsedRanges[fPos][0], parsedRanges[fPos][1])
@@ -195,6 +195,7 @@ def main():
 	choice = getch.getch()
 	if choice != "y":
 		sys.exit()
+	print "\n"
 
 	if "TWITTER" in tweeters:
 		sys.stdout.write("\n\nYou are about to tweet live to Twitter.\nPlease confirm you wish to do this> ")
