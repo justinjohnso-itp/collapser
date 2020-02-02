@@ -14,11 +14,22 @@ def verifyCredentials(account):
 	twitter = getTwitter(account)
 	return twitter.verify_credentials()
 
-def tweet(account, msg):
+def tweet(account, msg, doThreading, lastTweetId):
+	# https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-update
 	twitter = getTwitter(account)
-	response = twitter.update_status(status=msg)
+	if doThreading and lastTweetId == -1:
+		# First post
+		doThreading = False
+	if not doThreading:
+		response = twitter.update_status(status=msg)
+		tweetid = response["id"]
+		print "Successfully tweeted." 
+	else:
+		response = twitter.update_status(status=msg, in_reply_to_status_id=lastTweetId)
+		tweetid = response["id"]
+		print "Successfully tweeted thread, ID #%s." % tweetid
 	# If we didn't crash:
-	print "Successfully tweeted."
+	return tweetid
 
 
 

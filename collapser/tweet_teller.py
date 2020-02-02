@@ -27,6 +27,7 @@ Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
 
 MAX_TWEET_CHARS = 280
 TWITTER_RATE_LIMIT = 300
+DO_TWITTER_THREADING = True
 
 # tweeters = ["TWITTER", "CONSOLE", "CONSOLE_WITH_ERRORS", "FILES"]
 tweeters = ["CONSOLE"]
@@ -223,6 +224,7 @@ def main():
 	for pos in range(0, len(accounts)):
 		account = accounts[pos]
 		tweetStorm = tweetStorms[pos]
+		timeInSecondsBetweenTweets = float(duration * 60) / float(len(tweetStorm))
 		setupTweetStorm(account, tweetStorm, timeInSecondsBetweenTweets)
 
 
@@ -239,21 +241,22 @@ def setupTweetStorm(account, tweetStorm, timeInSecondsBetweenTweets):
 def tweetTickQueue(account, tweetStorm, pos, delayInSeconds):
 	# Just a bit of a wait so all the startup messages clump together on the console.
 	time.sleep(0.1)
-	tweetTick(account, tweetStorm, pos, delayInSeconds)
+	tweetTick(account, tweetStorm, pos, delayInSeconds, -1)
 
-def tweetTick(account, tweetStorm, pos, delayInSeconds):
+def tweetTick(account, tweetStorm, pos, delayInSeconds, lastTweetId):
 	thread = threading.current_thread()
 	if not thread.do_run:
 		print "*** Halting thread for @%s." % account
 		return
-	tweet(account, tweetStorm[pos])
+	tweetId = tweet(account, tweetStorm[pos], lastTweetId)
 	time.sleep(delayInSeconds)
 	pos += 1
 	if pos < len(tweetStorm):
-		tweetTick(account, tweetStorm, pos, delayInSeconds)
+		tweetTick(account, tweetStorm, pos, delayInSeconds, tweetId)
 
-def tweet(account, tweet):
+def tweet(account, tweet, lastTweetId):
 	global tweeters
+	tweetId = -1
 
 	try:
 		if "CONSOLE" in tweeters:
@@ -261,7 +264,7 @@ def tweet(account, tweet):
 		if "CONSOLE_WITH_ERRORS" in tweeters:
 			tweetToConsoleWithOccasionalErrors(account, tweet)
 		if "TWITTER" in tweeters:
-			tweetToTwitter(account, tweet)
+			tweetId = tweetToTwitter(account, tweet, lastTweetId)
 		if "FILES" in tweeters:	
 			tweetToFiles(account, tweet)
 
@@ -279,6 +282,8 @@ def tweet(account, tweet):
 	except Exception as e:
 		print "\n*** EXCEPTION: %s" % e
 		stopTweetThreads()
+
+	return tweetId
 
 
 def stopTweetThreads():
@@ -301,8 +306,11 @@ def tweetToConsoleWithOccasionalErrors(account, tweet):
 def tweetToFiles(account, tweet):
 	fileio.append("work/at-%s.dat" % account, "\n\n@%s: '%s'" % (account, tweet))
 
-def tweetToTwitter(account, tweet):
-	twitter.tweet(account, tweet)
+def tweetToTwitter(account, tweet, lastTweetId):
+	global DO_TWITTER_THREADING
+	tweetId = twitter.tweet(account, tweet, DO_TWITTER_THREADING, lastTweetId)
+	return tweetId
+
 
 
 
