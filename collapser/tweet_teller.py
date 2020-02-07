@@ -160,9 +160,16 @@ def main():
 	# Intro/Outtro
 	for pos, tweetStorm in enumerate(tweetStorms):
 		seedNum = int(accounts[pos][11:])
-		intro = "*****\nNow beginning a reading from seed #%d of Subcutanean, a novel by @aaronareed. Follow @subcutanean for general project news.\n*****" % seedNum
+		starting = chooser.oneOf(["Now beginning", "Starting", "About to begin", "About to start"])
+		reading = chooser.oneOf(["reading from", "performance from"])
+		follow = chooser.oneOf(["Follow @subcutanean for general project news.", "You can follow @subcutanean for project news.", "Follow @subcutanean for more details on the project.", "Find more details on the project by following @subcutanean."])
+
+		intro = "*****\n%s a %s seed #%d of Subcutanean, a novel by @aaronareed. %s\n*****" % (starting, reading, seedNum, follow)
 		nextMsg = ("The next performance will be %s. " % nextPerformance) if nextPerformance != "" else ""
-		outtro = "*****\nThat's the end of today's reading! %sFollow @subcutanean to find out how you can get your own unique copy.\n*****" % nextMsg
+		reading2 = chooser.oneOf(["reading", "performance", "excerpt"])
+		todays = chooser.oneOf(["today's", "this"])
+		learn = chooser.oneOf(["find out how you can get", "learn how to get", "discover how to snag"])
+		outtro = "*****\nThat's the end of %s %s! %sFollow @subcutanean to %s your own unique copy.\n*****" % (todays, reading2, nextMsg, learn)
 		if not skipIntro:
 			tweetStorms[pos] = [intro] + tweetStorms[pos]
 		if not skipOuttro:
@@ -215,7 +222,13 @@ def main():
 		print "\nDone with pre-show delay.\n"
 
 	if mainAnnounce:
-		tweet("subcutanean", "About to start a live Twitter reading from two different versions of Subcutanean! Check out @subcutanean2160 and @subcutanean6621 to follow along.")
+		global DO_TWITTER_THREADING
+		old = DO_TWITTER_THREADING
+		DO_TWITTER_THREADING = False
+		start = chooser.oneOf(["start", "begin", "embark on"])
+		reading = chooser.oneOf(["live Twitter reading", "reading", "live reading"])
+		tweet("subcutanean", "About to %s a %s from two different versions of Subcutanean! Check out @subcutanean2160 and @subcutanean6621 to follow along." % (start, reading), -1, -1, -1)
+		DO_TWITTER_THREADING = old
 		bufferSeconds = 120
 		print "Waiting %d seconds for pre-buffer..." % bufferSeconds
 		time.sleep(bufferSeconds)
