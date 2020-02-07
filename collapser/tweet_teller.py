@@ -261,19 +261,19 @@ def tweetTick(account, tweetStorm, pos, delayInSeconds, lastTweetId):
 	if not thread.do_run:
 		print "*** Halting thread for @%s." % account
 		return
-	tweetId = tweet(account, tweetStorm[pos], lastTweetId)
+	tweetId = tweet(account, tweetStorm[pos], pos, len(tweetStorm), lastTweetId)
 	time.sleep(delayInSeconds)
 	pos += 1
 	if pos < len(tweetStorm):
 		tweetTick(account, tweetStorm, pos, delayInSeconds, tweetId)
 
-def tweet(account, tweet, lastTweetId):
+def tweet(account, tweet, pos, total, lastTweetId):
 	global tweeters
 	tweetId = -1
 
 	try:
 		if "CONSOLE" in tweeters:
-			tweetToConsole(account, tweet)
+			tweetToConsole(account, tweet, pos, total)
 		if "CONSOLE_WITH_ERRORS" in tweeters:
 			tweetToConsoleWithOccasionalErrors(account, tweet)
 		if "TWITTER" in tweeters:
@@ -308,8 +308,8 @@ def stopTweetThreads():
 
 
 
-def tweetToConsole(account, tweet):
-	print "> @%s: '%s'\n" % (account, tweet)
+def tweetToConsole(account, tweet, pos, total):
+	print "> [%d/%d] @%s: '%s'\n" % (pos, total, account, tweet)
 
 def tweetToConsoleWithOccasionalErrors(account, tweet):
 	if chooser.percent(85):
