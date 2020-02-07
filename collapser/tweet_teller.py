@@ -23,6 +23,8 @@ Usage: tweet_teller -i <inputs> -a <accounts> -d duration_in_minutes
           --next="Sunday Feb 2nd at 3pm PST"
           --skipLimits    Don't restrict by min/max times.
           --delay=n       Minutes to wait before beginning.
+          --restartFrom=x,y   Go again, offsetting by given amount.
+                              Skip announcements, intro, and delay
 """
 
 MAX_TWEET_CHARS = 280
@@ -45,10 +47,11 @@ def main():
 	nextPerformance = ""
 	skipLimits = False
 	preshowDelay = 0
+	restartOffsets = []
 
 	global tweeters
 
-	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range=", "skipIntro", "skipOuttro", "mainAnnounce", "next=", "skipLimits", "delay="])
+	opts, args = getopt.getopt(sys.argv[1:], "i:a:d:", ["help", "test", "range=", "skipIntro", "skipOuttro", "mainAnnounce", "next=", "skipLimits", "delay=", "restartFrom="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		showUsage()
@@ -82,6 +85,8 @@ def main():
 			except:
 				print "Invalid --delay parameter '%s': not an integer (should be a number of minutes)." % arg
 				sys.exit()
+		elif opt == "--restartFrom":
+			restartOffsets = arg.split(',')
 		elif opt == "--help":
 			showUsage()
 			sys.exit()
@@ -116,6 +121,26 @@ def main():
 			print "*** Found range of '%d-%d' but the lower value must be lower and both must be positions >= 0." % (lower, upper)
 			sys.exit()
 		parsedRanges.append([lower, upper])
+
+	if len(restartOffsets) != 0:
+		if len(restartOffsets) != len(ranges):
+			print "*** Found %d restart offsets but %d ranges; if ranges are specified, they must correspond 1-to-1. ***" % (len(restartOffsets), len(ranges))
+			sys.exit()
+		for roPos, num in enumerate(restartOffsets):
+			try:
+				intVersion = int(num)
+			except:
+				print "*** Found restart offset '%s' but could not parse that as an int." % num
+				sys.exit()
+			if intVersion <= 0:
+				print "*** Found restart offset %d but must be > 0." % intVersion
+			parsedRanges[roPos][0] += intVersion
+		mainAnnounce = False
+		skipIntro = True
+		preshowDelay = 0
+		# Get new duration with 30 seconds per.
+		print "%s" % (parsedRanges)
+		duration = (parsedRanges[0][1] - parsedRanges[0][0]) / 2
 
 	if duration <= 0:
 		print "*** Duration %d must be > 0 minutes. ***" % duration
