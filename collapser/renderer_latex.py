@@ -48,12 +48,13 @@ class RendererLatex(renderer.Renderer):
 		authorFile = "end-abouttheauthor.txt"
 		getUnique = "end-getunique.txt"
 		endMatters = [
-			["end-getunique.txt", 2],
 			["end-backers.txt", 3],
 			["end-altscene.txt", 5],
 			["end-stats.txt", 3],
 			[authorFile, 3]
 		]
+		if renderer.isAmazonCopy(self.params.seed):
+			endMatters.insert(0, [getUnique, 2])
 		MAX_END_MATTERS = len(endMatters)
 
 		print "Extra pages for End Matter: %d" % extraPages
