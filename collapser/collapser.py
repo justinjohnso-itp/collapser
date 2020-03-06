@@ -54,11 +54,11 @@ Arguments:
                         (0=ARC, 1=backers, 2=USB, 3=public, 9=test)
   --strategy=x        Selection strategy.
              "random"   default
-             N          Make N copies with "random" strategy
              "author"   Author's preferred
              "pair"     Two versions optimizing for difference
              "longest"
              "shortest"
+  --times=N           How many times to run this command.
   --set=x,y,z	      A list of variables to set true for this run.
                       Preface with ^ to negate
   --discourseVarChance=x Likelihood to defer to a discourse var (default 80)
@@ -96,7 +96,7 @@ def main():
 
 	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
 
-	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "skipConfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "skipEndMatter", "file=", "gen="])
+	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "skipConfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "skipEndMatter", "file=", "gen=", "times="])
 	if len(args) > 0:
 		print "Unrecognized arguments: %s" % args
 		sys.exit()
@@ -128,13 +128,17 @@ def main():
 				print "Invalid --gen parameter '%s': not an integer." % arg
 				sys.exit()
 		elif opt == "--strategy":
+			if arg not in quantparse.ParseParams.VALID_STRATEGIES:
+				print "Invalid --strategy parameter '%s': must be one of %s" % (arg, quantparse.ParseParams.VALID_STRATEGIES)
+				sys.exit()
+			strategy = arg
+		elif opt == "--times":
 			try:
 				copies = int(arg)
-				strategy = "random"
+				assert copies > 0
 			except:
-				if arg not in quantparse.ParseParams.VALID_STRATEGIES:
-					print "Invalid --strategy parameter '%s': must be one of %s" % (arg, quantparse.ParseParams.VALID_STRATEGIES)
-				strategy = arg
+				print "Invalid --times parameter '%s': must be an integer > 0" % arg
+				sys.exit()
 		elif opt == "--output":
 			if arg != "" and arg not in VALID_OUTPUTS:
 				print "Invalid --output parameter '%s': must be one of %s" % (arg, VALID_OUTPUTS)
@@ -191,19 +195,23 @@ def main():
 
 
 def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
-	if parseParams.chooseStrategy == "pair":
-		try:
-			makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
-		except renderer.TooLongError as e:
-			print "\n*** ERROR : %s\n" % e.strerror
-			print "*** We could not generate both books, so halting."
-			sys.exit()
 
-	else:
-		skippedSeeds = []
-		copies = renderParams.copies
-		origEndMatter = [] + parseParams.endMatter
-		while copies >= 1:
+	copies = renderParams.copies
+	skippedSeeds = []
+	origEndMatter = [] + parseParams.endMatter
+
+	while copies >= 1:
+
+		if parseParams.chooseStrategy == "pair":
+			try:
+				makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
+			except renderer.TooLongError as e:
+				print "\n*** ERROR : %s\n" % e.strerror
+				print "*** We could not generate both books, so halting."
+				sys.exit()
+			parseParams.chooseStrategy = "pair"
+
+		else:
 			try:
 				makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 			except renderer.TooLongError as e:
@@ -211,16 +219,20 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 				if copies > 1:
 					print "*** Trying again with next seed."
 				skippedSeeds.append(renderParams.seed)
-			copies -= 1
-			renderParams.seed = -1
-			renderParams.fileId = ""
-			parseParams.endMatter = [] + origEndMatter
-			renderParams.finalOutput = False
-			if copies > 0:
-				print "\n\n%d cop%s left to generate.\n" % (copies, "y" if copies is 1 else "ies")
 
-		if len(skippedSeeds) > 0:
-			print "\n\n*** ERRORS (%d) prevented some copies being generated. Bad seeds were: %s\n" % (len(skippedSeeds), skippedSeeds)
+		renderParams.seed = -1
+		renderParams.fileId = ""
+		parseParams.endMatter = [] + origEndMatter
+		renderParams.finalOutput = False
+		renderParams.pairInfo = []
+
+		copies -= 1
+		if copies > 0:
+			print "\n\n%d cop%s left to generate.\n" % (copies, "y" if copies is 1 else "ies")
+
+	if len(skippedSeeds) > 0:
+		print "\n\n*** ERRORS (%d) prevented some copies being generated. Bad seeds were: %s\n" % (len(skippedSeeds), skippedSeeds)
+
 
 def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 	doingEndMatter = len(parseParams.endMatter) == 1 and parseParams.endMatter[0] == "auto"
