@@ -208,23 +208,28 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 			renderParams.outputFormat = "pdf"
 			renderParams.isDigital = True
 			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
-			# renderParams.seed should now be set to what it was on the first run (either a requested or a random seed.)
+			# renderParams.seed (or .pairInfo) should now be set to what it was on the first run.
 			renderParams.outputFormat = "mobi"
 			renderParams.isDigital = False
 			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
 			renderParams.outputFormat = "epub"
 			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
+
 			outDir = renderParams.outputDir
-			seed = renderParams.seed
-			fn = "%s%s" % (outDir, seed)
-			files = ["%s.pdf" % fn, "%s.epub" % fn, "%s.mobi" % fn]
-			terminal.zip(files, "%ssubcutanean-%s.zip" % (outDir, seed), removeAfter = True)
+			if len(renderParams.pairInfo) == 0:
+				makeZipPackage(outDir, renderParams.seed)
+			else:
+				makeZipPackage(outDir, renderParams.pairInfo[2])
+				makeZipPackage(outDir, renderParams.pairInfo[3])
+
 			renderParams.outputFormat = "ebookorder"
 
 		else:
 			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
 
+		# Stuff that should be reset after a group of generations.
 		renderParams.seed = -1
+		renderParams.pairInfo = []
 
 		copies -= 1
 		if copies > 0:
@@ -232,6 +237,12 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 
 	if len(skippedSeeds) > 0:
 		print "\n\n*** ERRORS (%d) prevented some copies being generated. Bad seeds were: %s\n" % (len(skippedSeeds), skippedSeeds)
+
+
+def makeZipPackage(outDir, seed):
+	fn = "%s%s" % (outDir, seed)
+	files = ["%s.pdf" % fn, "%s.epub" % fn, "%s.mobi" % fn]
+	terminal.zip(files, "%ssubcutanean-%s.zip" % (outDir, seed), removeAfter = True)
 
 
 def renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter):
@@ -253,10 +264,10 @@ def renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParam
 				print "*** Trying again with next seed."
 			skippedSeeds.append(renderParams.seed)	
 
+	# Stuff that should be reset after each individual generation.
 	renderParams.fileId = ""
 	parseParams.endMatter = [] + origEndMatter
 	renderParams.finalOutput = False
-	renderParams.pairInfo = []
 
 
 
@@ -282,41 +293,46 @@ def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):
 			renderParams.finalOutput = True
 			makeBook(inputFiles, inputFileDir, parseParams, renderParams)	
 
-def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams):
+def makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams, manualSeeds=None):
 	tries = 20
 	texts = []
 	seeds = []
 	signatures = []
 	origEndMatter = parseParams.endMatter
-	seed = chooser.nextSeed(renderParams.generation)
-	
-	# Manually skip the ones we pulled out for Amazon.
-	if renderer.isAmazonCopy(seed):
-		seed = chooser.nextSeed(renderParams.generation)
 
-	firstSeed = seed
-	lastSeed = -1
-	for x in range(tries):
-		seeds.append(seed)
-		renderParams.seed = seed
-		collapsed = collapseInputText(inputFiles, inputFileDir, parseParams)
-		texts.append(collapsed)
-		signature = getSignature(collapsed)
-		signatures.append(signature)
-		# fileio.writeOutputFile("work/signature-%s.txt" % seed, signature)
-		lastSeed = seed
+	if len(renderParams.pairInfo) == 0:
 		seed = chooser.nextSeed(renderParams.generation)
-	leastSimilarPair = differ.getTwoLeastSimilar(signatures)
-	text0 = texts[leastSimilarPair[0]]
-	seed0 = seeds[leastSimilarPair[0]]
-	text1 = texts[leastSimilarPair[1]]
-	seed1 = seeds[leastSimilarPair[1]]
+		
+		# Manually skip the ones we pulled out for Amazon.
+		if renderer.isAmazonCopy(seed):
+			seed = chooser.nextSeed(renderParams.generation)
+
+		firstSeed = seed
+		lastSeed = -1
+		for x in range(tries):
+			seeds.append(seed)
+			renderParams.seed = seed
+			collapsed = collapseInputText(inputFiles, inputFileDir, parseParams)
+			texts.append(collapsed)
+			signature = getSignature(collapsed)
+			signatures.append(signature)
+			# fileio.writeOutputFile("work/signature-%s.txt" % seed, signature)
+			lastSeed = seed
+			seed = chooser.nextSeed(renderParams.generation)
+		leastSimilarPair = differ.getTwoLeastSimilar(signatures)
+		text0 = texts[leastSimilarPair[0]]
+		seed0 = seeds[leastSimilarPair[0]]
+		text1 = texts[leastSimilarPair[1]]
+		seed1 = seeds[leastSimilarPair[1]]
+		renderParams.pairInfo = [firstSeed, lastSeed, seed0, seed1]
+
+	seed0 = renderParams.pairInfo[2]
+	seed1 = renderParams.pairInfo[3]
 	print "Will now render %s and %s." % (seed0, seed1)
 
 	renderParams.seed = seed0
 	parseParams.chooseStrategy = "random"
 	renderParams.fileId = ""
-	renderParams.pairInfo = [firstSeed, lastSeed, seed0, seed1]
 	setOutputFile(renderParams, parseParams)
 	makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 
