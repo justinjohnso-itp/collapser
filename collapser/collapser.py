@@ -22,6 +22,7 @@ import hasher
 import variables
 import result
 import renderer
+import terminal
 import renderer_latex
 import renderer_text
 import renderer_html
@@ -45,7 +46,8 @@ Arguments:
   --only=x,y          A subset of loaded files to render. 
   --output=x	      Format to output (default none)
                       "pdf" (for POD), "pdfdigital" (for online use),
-                      "txt", "html", "md", "epub", "mobi", "tweet"
+                      "txt", "html", "md", "epub", "mobi", "tweet",
+                      "ebookorder"
   --file=x            Write output to this filename (default = seed/strategy)
   --seed=             What seed to use in book generation (default: next)
              N          Use the given integer
@@ -94,7 +96,7 @@ def main():
 	copies = 1
 	onlyShow = []
 
-	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "none"]
+	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "ebookorder", "none"]
 
 	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "skipConfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "skipEndMatter", "file=", "gen=", "times="])
 	if len(args) > 0:
@@ -202,29 +204,27 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 
 	while copies >= 1:
 
-		if parseParams.chooseStrategy == "pair":
-			try:
-				makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
-			except renderer.TooLongError as e:
-				print "\n*** ERROR : %s\n" % e.strerror
-				print "*** We could not generate both books, so halting."
-				sys.exit()
-			parseParams.chooseStrategy = "pair"
+		if renderParams.outputFormat == "ebookorder":
+			renderParams.outputFormat = "pdf"
+			renderParams.isDigital = True
+			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
+			# renderParams.seed should now be set to what it was on the first run (either a requested or a random seed.)
+			renderParams.outputFormat = "mobi"
+			renderParams.isDigital = False
+			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
+			renderParams.outputFormat = "epub"
+			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
+			outDir = renderParams.outputDir
+			seed = renderParams.seed
+			fn = "%s%s" % (outDir, seed)
+			files = ["%s.pdf" % fn, "%s.epub" % fn, "%s.mobi" % fn]
+			terminal.zip(files, "%ssubcutanean-%s.zip" % (outDir, seed), removeAfter = True)
+			renderParams.outputFormat = "ebookorder"
 
 		else:
-			try:
-				makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
-			except renderer.TooLongError as e:
-				print "\n*** ERROR : %s\n" % e.strerror
-				if copies > 1:
-					print "*** Trying again with next seed."
-				skippedSeeds.append(renderParams.seed)
+			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
 
 		renderParams.seed = -1
-		renderParams.fileId = ""
-		parseParams.endMatter = [] + origEndMatter
-		renderParams.finalOutput = False
-		renderParams.pairInfo = []
 
 		copies -= 1
 		if copies > 0:
@@ -232,6 +232,32 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 
 	if len(skippedSeeds) > 0:
 		print "\n\n*** ERRORS (%d) prevented some copies being generated. Bad seeds were: %s\n" % (len(skippedSeeds), skippedSeeds)
+
+
+def renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter):
+	if parseParams.chooseStrategy == "pair":
+		try:
+			makePairOfBooks(inputFiles, inputFileDir, parseParams, renderParams)
+		except renderer.TooLongError as e:
+			print "\n*** ERROR : %s\n" % e.strerror
+			print "*** We could not generate both books, so halting."
+			sys.exit()
+		parseParams.chooseStrategy = "pair"
+
+	else:
+		try:
+			makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
+		except renderer.TooLongError as e:
+			print "\n*** ERROR : %s\n" % e.strerror
+			if copies > 1:
+				print "*** Trying again with next seed."
+			skippedSeeds.append(renderParams.seed)	
+
+	renderParams.fileId = ""
+	parseParams.endMatter = [] + origEndMatter
+	renderParams.finalOutput = False
+	renderParams.pairInfo = []
+
 
 
 def makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams):

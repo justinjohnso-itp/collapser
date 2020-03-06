@@ -36,3 +36,13 @@ def delete(fn):
 def move(input, output):
 	print "Moving %s to %s." % (input, output)
 	runCommand("mv", input + " " + output)
+
+def zip(inputFiles, output, removeAfter = False):
+	fileList = " ".join(inputFiles)
+	# -j means don't include directories in the zip file
+	# -X means don't include Mac OS junk files
+	paramString = "-j -X %s %s" % (output, fileList)
+	runCommand("zip", paramString)
+	if removeAfter:
+		for file in inputFiles:
+			delete(file)
