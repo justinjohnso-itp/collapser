@@ -37,7 +37,7 @@ alternateOutputFile = "alternate"
 
 
 def showUsage():
-	print """Usage: collapser options
+	print """Usage: python2.7 collapser.py options
 Arguments:
   --help              Show this message
   --input=x,y,z       Alternate file(s) or manifest file(s) to load
