@@ -189,6 +189,8 @@ def frontMatterEditionMessage(seedPrinted):
 		msg = "USB Key Edition(s), 2020"
 	if gen == "3":
 		msg = "First Edition(s), %s" % today.year
+	if gen == "4":
+		msg = "Revised First Edition(s), %s" % today.year
 	elif gen == "9":
 		msg = "Test Edition, %s" % today.strftime("%d-%B-%Y %H:%M:%S")
 	else:
