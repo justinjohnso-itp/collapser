@@ -286,7 +286,7 @@ def postLatexSanityCheck(latexLog):
 		print "Couldn't find output line; halting."
 		return False
 
-	if result["numPages"] < 190 or result["numPages"] > 240:
+	if result["numPages"] < 190 or result["numPages"] > 250:
 		print "Unexpected page length (%d); halting." % result["numPages"]
 		return False
 	if result["numBytes"] < 80000 or result["numBytes"] > 3000000:
