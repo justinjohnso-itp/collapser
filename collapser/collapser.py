@@ -26,9 +26,10 @@ import terminal
 import renderer_latex
 import renderer_text
 import renderer_html
+import renderer_web
 import renderer_markdown
 import renderer_epub
-import renderer_mobi
+import renderer_kpf
 import renderer_tweet
 
 outputDir = "output/"
@@ -46,14 +47,14 @@ Arguments:
   --only=x,y          A subset of loaded files to render. 
   --output=x	      Format to output (default none)
                       "pdf" (for POD), "pdfdigital" (for online use),
-                      "txt", "html", "md", "epub", "mobi", "tweet",
+                      "txt", "html", "web", "md", "epub", "kpf", "tweet",
                       "ebookorder"
   --file=x            Write output to this filename (default = seed/strategy)
   --seed=             What seed to use in book generation (default: next)
              N          Use the given integer
              random     Use a purely random seed
   --gen=x             What generation of seeds to use (default 9)
-                        (0=ARC, 1=backers, 2=USB, 3=public, 9=test)
+                        (0=ARC, 1=backers, 2=USB, 4=current, 9=test)
   --strategy=x        Selection strategy.
              "random"   default
              "author"   Author's preferred
@@ -96,7 +97,7 @@ def main():
 	copies = 1
 	onlyShow = []
 
-	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "md", "epub", "mobi", "tweet", "ebookorder", "none"]
+	VALID_OUTPUTS = ["pdf", "pdfdigital", "txt", "html", "web", "md", "epub", "kpf", "tweet", "ebookorder", "none"]
 
 	opts, args = getopt.getopt(sys.argv[1:], "", ["help", "seed=", "strategy=", "output=", "skipConfirm", "skipFront", "set=", "discourseVarChance=", "skipPadding", "input=", "only=", "endMatter=", "skipEndMatter", "file=", "gen=", "times="])
 	if len(args) > 0:
@@ -209,9 +210,12 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 			renderParams.isDigital = True
 			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
 			# renderParams.seed (or .pairInfo) should now be set to what it was on the first run.
-			renderParams.outputFormat = "mobi"
-			renderParams.isDigital = False
-			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
+
+			# 231222 removing KPF because this format is now deprecated.
+			# renderParams.outputFormat = "kpf"
+			# renderParams.isDigital = False
+			# renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
+			
 			renderParams.outputFormat = "epub"
 			renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter)
 
@@ -241,8 +245,9 @@ def makeBooks(inputFiles, inputFileDir, parseParams, renderParams):
 
 def makeZipPackage(outDir, seed):
 	fn = "%s%s" % (outDir, seed)
-	files = ["%s.pdf" % fn, "%s.epub" % fn, "%s.mobi" % fn]
-	terminal.zip(files, "%ssubcutanean-%s.zip" % (outDir, seed), removeAfter = True)
+	# files = ["%s.pdf" % fn, "%s.epub" % fn, "%s.kpf" % fn]
+	files = ["%s.pdf" % fn, "%s.epub" % fn]
+	terminal.zip(files, "%ssubcutanean-%s.zip" % (outDir, seed), removeAfter = False)
 
 
 def renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParams, skippedSeeds, origEndMatter):
@@ -260,8 +265,6 @@ def renderAccordingToStrategy(inputFiles, inputFileDir, parseParams, renderParam
 			makeBookWithEndMatter(inputFiles, inputFileDir, parseParams, renderParams)
 		except renderer.TooLongError as e:
 			print "\n*** ERROR : %s\n" % e.strerror
-			if copies > 1:
-				print "*** Trying again with next seed."
 			skippedSeeds.append(renderParams.seed)	
 
 	# Stuff that should be reset after each individual generation.
@@ -386,12 +389,18 @@ def render(collapsedText, renderParams):
 			renderParams.renderer = renderer_text.RendererText(collapsedText, renderParams)
 		elif outputFormat == "html":
 			renderParams.renderer = renderer_html.RendererHTML(collapsedText, renderParams)
+		elif outputFormat == "web":
+			renderParams.renderer = renderer_web.RendererWeb(collapsedText, renderParams)
 		elif outputFormat == "md":
 			renderParams.renderer = renderer_markdown.RendererMarkdown(collapsedText, renderParams)
 		elif outputFormat == "epub":
 			renderParams.renderer = renderer_epub.RendererEPub(collapsedText, renderParams)
 		elif outputFormat == "mobi":
-			renderParams.renderer = renderer_mobi.RendererMobi(collapsedText, renderParams)
+			print ".mobi is not currently supported."
+			# renderParams.renderer = renderer_mobi.RendererMobi(collapsedText, renderParams)
+		elif outputFormat == "kpf":
+			print ".kpf is not currently supported."
+			# renderParams.renderer = renderer_kpf.RendererKPF(collapsedText, renderParams)
 		elif outputFormat == "tweet":
 			renderParams.renderer = renderer_tweet.RendererTweet(collapsedText, renderParams)
 
