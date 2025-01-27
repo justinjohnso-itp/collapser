@@ -17,6 +17,7 @@ def runCommand(command, paramString, shell=False):
 	}
 
 	try:
+		print "About to run '%s'" % cmdArray
 		output = subprocess.check_output(cmdArray, stderr=subprocess.STDOUT, shell=shell)
 		result["success"] = True
 		result["output"] = output
@@ -30,8 +31,11 @@ def runCommand(command, paramString, shell=False):
 def rename(input, output):
 	runCommand("mv", input + " " + output)
 
-def delete(fn):
-	runCommand("rm", fn)
+def delete(fn, isDir = False):
+	if isDir:
+		runCommand("rm", "-r %s" % fn)
+	else:
+		runCommand("rm", fn)
 
 def move(input, output):
 	print "Moving %s to %s." % (input, output)
