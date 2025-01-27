@@ -1,3 +1,4 @@
+# Abstraction over various terminal file i/o operations used during generation of books: moving, renaming, deleting files etc. Designed to run on the author's Mac OS install circa 2020; likely to need adjustments to work in other environments.
 
 import shlex
 import subprocess

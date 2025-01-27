@@ -1,4 +1,4 @@
-# This handles taking converting a quant document into a single possibility.
+# This handles collapsing a .quant source text into a single possible rendering of the text.
 # coding=utf-8
 
 

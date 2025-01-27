@@ -1,3 +1,4 @@
+# Code to compare two generated versions and determine how different they are from each other (used for purposes of generating pairs of distinct seeds).
 
 import difflib
 import itertools

@@ -1,3 +1,4 @@
+# Code to represent variables in .quant source text and render text appropriately based on what the variable is set to.
 
 import ctrlseq
 import chooser

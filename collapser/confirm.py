@@ -1,5 +1,5 @@
 # coding=utf-8
-# Manually confirm each use of variants.
+# Manually confirm each use of variants. This was designed to run on the command line during authoring to show the author different ways text could be rendered, and track which ones had been "approved" in this way; as the text changed, segments would become unapproved and re-queued for sanity checking. Blog post about this here: https://medium.com/@aareed/when-to-not-trust-dynamic-text-81aec56093c4
 
 import ctrlseq
 import result

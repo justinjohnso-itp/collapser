@@ -1,3 +1,5 @@
+# Some utility functions for random selections and iterators
+
 
 import random
 import fileio

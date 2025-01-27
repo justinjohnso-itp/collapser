@@ -1,4 +1,5 @@
 # coding=utf-8
+# Code to weight random choices towards consistent narratorial styles based on quick classifications of variants; variables set randomly in globals.txt affect which of these are turned on for any given generation. Blog post about this here: https://medium.com/@aareed/intentional-collapse-plausibly-human-randomized-text-e901220cbc3d
 
 import re
 import chooser

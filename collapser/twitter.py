@@ -1,4 +1,4 @@
-# Abstraction of Twitter interface via Twython.
+# Abstraction of Twitter interface via Twython. Likely to no longer function in the X era.
 
 from twython import Twython
 import fileio

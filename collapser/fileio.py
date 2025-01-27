@@ -1,3 +1,4 @@
+# Utility functions for reading and writing files from disk (including tracking which seeds have already been used).
 
 import sys
 import pickle

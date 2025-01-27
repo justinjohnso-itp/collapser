@@ -1,3 +1,4 @@
+# Some classes used for dealing with the raw source text that has been read in, post-lexing and parsing.
 
 import result
 

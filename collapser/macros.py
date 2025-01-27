@@ -1,3 +1,4 @@
+# Code for dealing with macros in source text, which define a block of text with a label that can then be inserted elsewhere when the label is invoked.
 
 import ctrlseq
 import result

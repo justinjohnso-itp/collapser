@@ -1,3 +1,5 @@
+# Utility functions to get a character from the keyboard, used for interactive command line operations during generation.
+
 class _Getch:
     """Gets a single character from standard input.  Does not echo to the
 screen."""

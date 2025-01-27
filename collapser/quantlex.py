@@ -1,3 +1,5 @@
+# Definition in Ply format for lexing the .quant DSL (domain-specific language) used to author the Subcutanean master text in. Lexing is the first step in processing a language file to convert it into a unique set of tokens for that language; the next step, parsing, takes that token stream and does things with it.
+
 # file:///Users/aaron/projects/stories/subcutanean/Collapser/collapser/origply/doc/ply.html#ply_nn2
 
 import ply.lex as lex

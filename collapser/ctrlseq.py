@@ -1,3 +1,4 @@
+# Some classes to define how sequences defining variant text work.
 
 import chooser
 import variables

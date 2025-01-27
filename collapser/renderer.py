@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # coding=utf-8
 
+# Abstract Renderer class for converting a raw collapsed text into a particular output format. Various specific render classes (i.e. renderer_epub.py) inherit from this with format-specific code.
+
 import quantparse
 import ctrlseq
 import macros

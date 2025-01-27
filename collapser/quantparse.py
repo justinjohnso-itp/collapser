@@ -1,5 +1,4 @@
-
-# Array of chunks. Each chunk is either text or a control sequence. A control sequence might have metadata and also a payload, which is an array of textons that each can have their own metadata. 
+# Ply-compliant parser for the .quant DSL (domain-specific language) used to author the Subcutanean master text in; second step after lexing (see quantlex.py). The lexer is passing in an array of chunks, where each chunk is either plain text or a control sequence. A control sequence might have metadata and also a payload, which is an array of textons that each can have their own metadata. The bulk of the real work is done by ctrlseq.render() for each control sequence.
 
 
 

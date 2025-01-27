@@ -1,3 +1,5 @@
+# Code for authenticating the Twitter bot version circa 2020, likely now no longer functional with X-era changes.
+
 import urlparse
 import oauth2 as oauth
 

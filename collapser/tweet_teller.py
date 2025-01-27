@@ -1,4 +1,4 @@
-# Standalone program that will read in an input file(s) of prepared Tweet-length contents, and output them spaced out over a given amount of time. 
+# Standalone program that will read in an input file(s) of prepared Tweet-length contents, and post them on Twitter spaced out over a given amount of time. Likely to no longer function in the X era.
 
 
 import fileio

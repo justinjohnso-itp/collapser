@@ -1,4 +1,4 @@
-# Standalone program for generating promotional tweets. 
+# Standalone program for generating promotional tweets. Likely to no longer function in the X era.
 
 import chooser
 

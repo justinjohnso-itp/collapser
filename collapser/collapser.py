@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # coding=utf-8
 
+# Main entry point for the collapser code.
+
 # TODO: Proof 01915 has Part 3 starting on the wrong page. 
 
 # TODO: Need to address the problem of authoring [DEFINE @A|@B], writing [A>text1|text2] somewhere, and then adding a @C and not catching the new edge case. On the one hand we ideally want to support [A>|] as a generic "else" clause (see @ffset vs the two tube options), but I'm really worried this will lead to a mistake slipping through. (The other version is also a problem, if we have [A>text1|B>text2], still printing nothing in the case of C.)

@@ -1,3 +1,4 @@
+# Result class for interactive command line debugging of source text during author time. 
 
 LEX_RESULT = 10
 PARSE_RESULT = 11
