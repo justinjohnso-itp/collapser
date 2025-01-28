@@ -3,8 +3,8 @@
 import urlparse
 import oauth2 as oauth
 
-consumer_key = 'MxojmCvfSsgplre6tc2WROcWo'
-consumer_secret = 'aCc2UMFF9uea1X00i4KmBoj2iNWwFiBq8wOK4BsN2Uj3g2HyTR'
+consumer_key = ''       # REPLACE WITH ACTIVE KEY
+consumer_secret = ''    # REPLACE WITH ACTIVE SECRET
 
 request_token_url = 'https://api.twitter.com/oauth/request_token'
 access_token_url = 'https://api.twitter.com/oauth/access_token'
