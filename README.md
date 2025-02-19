@@ -12,7 +12,11 @@ You can, as before, continue to [buy your own unique and freshly generated copie
 
 The source code, source text and all prior, current, and future renderings of Subcutanean generated from it have now been released under a CC-BY-4.0 license, meaning you are free to share, archive, copy, and redistribute the material, even commercially, as long as credit is given to the original author (me, Aaron A. Reed). This means nothing is stopping anyone from selling their own versions or variants. My versions will always be the ones found at the book's official website, [subcutanean.textories.com](https://subcutanean.textories.com/).
 
-Please note that the generator code included in this repo has not been cleaned up, modernized, or especially retooled to support use for other projects (although I did try to write it at the time to be at least somewhat reusable). It's written in Python 2 and while I hoped to keep it abstracted from *Subcutanean* specifics at the time of writing, I think a few project-specific details did creep in as it neared completion. It's presented mainly for historical curiosity than with the idea of easily adapting it to a new project, but you're of course welcome to try. (However, I do not plan to maintain this archive, accept pull requests etc.-- you're welcome to fork the codebase if you want to try updating or repurposing it.)
+Please note that the generator code included in this repo has not been cleaned up, modernized, or especially retooled to support use for other projects (although I did try to write it at the time to be at least somewhat reusable). It's written in Python 2 and while I hoped to keep it abstracted from *Subcutanean* specifics at the time of writing, I think a few project-specific details did creep in as it neared completion. It's presented mainly for historical curiosity than with the idea of easily adapting it to a new project, but you're of course welcome to try. (However, I do not plan to maintain this archive, accept pull requests etc.-- you're welcome to fork the codebase if you want to try updating or repurposing it.) collapser/collapser.py is the main entry point to the code, and you would generate a copy with a command like:
+
+```python2.7 collapser/collapser.py --gen=9 --output=txt```
+
+A `--help` option will show all available command line options.
 
 I hope this archive proves interesting to peruse as a documentation of this curious little project.
 
