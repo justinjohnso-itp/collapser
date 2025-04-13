@@ -4,7 +4,7 @@
 # Define variables for protagonist traits
 [DEFINE 60>@male|40>@female]
 [DEFINE 30>@timid|70>@brave]
-[DEFINE @hasKey]  # Boolean variable with 50% chance of being true
+[DEFINE @hasKey]
 
 # Define macros for frequently used text
 [MACRO protagonistName][@male>James|@female>Emma]

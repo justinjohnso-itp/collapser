@@ -1,0 +1,153 @@
+{
+  "scopeName": "text.quant",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#control_sequences" },
+    { "include": "#curly_blocks" },
+    { "include": "#dollar_macro_invocation" },
+    { "include": "#line_breaks" },
+    { "include": "#em_dash" }
+  ],
+  "repository": {
+    "comments": {
+      "name": "comment.line.number-sign.quant",
+      "match": "^#.*$"
+    },
+    "line_breaks": {
+      "name": "constant.character.escape.line-break.quant",
+      "match": "\\\\$"
+    },
+    "em_dash": {
+      "name": "punctuation.definition.thematic-break.quant",
+      "match": "---"
+    },
+    "dollar_macro_invocation": {
+      "name": "entity.name.function.macro.dollar.quant",
+      "match": "\\$([A-Za-z_\\-][A-Za-z_\\-0-9]*)"
+    },
+    "variables_general": {
+       "name": "variable.parameter.quant",
+       "match": "@[A-Za-z_\\-][A-Za-z_\\-0-9]*"
+    },
+    "curly_blocks": {
+      "name": "meta.block.curly.quant",
+      "begin": "\\{",
+      "end": "\\}",
+      "beginCaptures": { "0": { "name": "punctuation.definition.block.begin.quant" } },
+      "endCaptures": { "0": { "name": "punctuation.definition.block.end.quant" } },
+      "patterns": [
+        { "include": "#formatting_code" },
+        { "include": "#jump_invocation" },
+        { "include": "#macro_invocation" }
+      ]
+    },
+    "formatting_code": {
+      "name": "meta.formatting.quant",
+      "begin": "(?=\\b(section_break|chapter|part|verse|verse_inline|pp|i|vspace)\\b)",
+      "end": "(?=\\})",
+      "patterns": [
+        {
+          "name": "keyword.control.format.quant",
+          "match": "\\b(section_break|chapter|part|verse|verse_inline|pp|i|vspace)\\b"
+        },
+        {
+          "name": "punctuation.separator.parameter.quant",
+          "match": "/"
+        },
+        { "include": "#dollar_macro_invocation" },
+        { "include": "#variables_general" },
+        {
+          "name": "string.unquoted.parameter.format.quant",
+          "match": "[^\\{\\}\\/\\$\\@]+"
+        }
+      ]
+    },
+    "jump_invocation": {
+      "name": "meta.jump.quant",
+      "begin": "\\b(JUMP)\\b\\s+",
+      "end": "(?=\\})",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.jump.quant" }
+      },
+      "patterns": [
+        {
+          "name": "entity.name.label.jump.quant",
+          "match": "\\S+"
+        }
+      ]
+    },
+    "macro_invocation": {
+      "name": "meta.macro.invocation.brace.quant",
+      "patterns": [
+         { "include": "#dollar_macro_invocation" },
+         { "include": "#variables_general" },
+        {
+          "name": "entity.name.function.macro.brace.quant",
+          "match": "[^\\{\\}\\$\\@]+"
+        }
+      ]
+    },
+    "control_sequences": {
+      "name": "meta.control-sequence.quant",
+      "begin": "\\[",
+      "end": "\\]",
+      "beginCaptures": { "0": { "name": "punctuation.definition.control.begin.quant" } },
+      "endCaptures": { "0": { "name": "punctuation.definition.control.end.quant" } },
+      "patterns": [
+        { "include": "#control_sequence_label" },
+        { "include": "#control_keywords" },
+        { "include": "#macro_definition_label" },
+        { "include": "#label_definition_label" },
+        { "include": "#variable_conditionals" },
+        { "include": "#weighted_choices" },
+        { "include": "#operators" },
+        { "include": "#variables_general" }, // Include general variable matching here
+        { "include": "#curly_blocks" },
+        { "include": "#dollar_macro_invocation" },
+        { "include": "#text_inside_control" }
+      ]
+    },
+    "control_sequence_label": {
+      "name": "entity.name.tag.control.quant",
+      // Use \G to ensure match starts right after the opening bracket '[' (or whitespace after it)
+      "match": "\\G\\s*\\*([^\\*]+)\\*"
+    },
+    "control_keywords": {
+      "name": "keyword.control.definition.quant",
+      "match": "\\b(DEFINE|MACRO|STICKY_MACRO|LABEL)\\b"
+    },
+    "macro_definition_label": {
+       "name": "entity.name.function.macro.definition.quant",
+       "match": "(?<=\\b(MACRO|STICKY_MACRO)\\s+)(\\S+)"
+    },
+    "label_definition_label": {
+       "name": "entity.name.label.definition.quant",
+       "match": "(?<=\\bLABEL\\s+)(\\S+)"
+    },
+    "operators": {
+      "patterns": [
+        { "name": "keyword.operator.preference.quant", "match": "\\^" },
+        { "name": "keyword.operator.always-print.quant", "match": "~" },
+        { "name": "keyword.operator.choice.quant", "match": "\\|" }
+      ]
+    },
+    "weighted_choices": {
+      "match": "\\b([0-9]{1,3})(\\>)",
+      "captures": {
+        "1": { "name": "constant.numeric.weight.quant" },
+        "2": { "name": "keyword.operator.weight.quant" }
+      }
+    },
+    "variable_conditionals": {
+      "match": "(@[A-Za-z_\\-][A-Za-z_\\-0-9]*)(\\>)",
+      "captures": {
+        "1": { "name": "variable.parameter.conditional.quant" },
+        "2": { "name": "keyword.operator.conditional.quant" }
+      }
+    },
+    "text_inside_control": {
+      "name": "string.unquoted.content.quant",
+      "match": "[^\\\\\\[\\\\]\\|\\>\\@\\^\\#\\~\\*\\{\\}\\$]+"
+    }
+  }
+}

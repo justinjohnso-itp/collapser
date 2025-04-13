@@ -1,0 +1,110 @@
+{
+  "files.associations": {
+    "*.quant": "quant"
+  },
+  "workbench.colorCustomizations": {
+    "editor.tokenColorCustomizations": {
+      "textMateRules": [
+        {
+          "scope": "comment.line.number-sign.quant",
+          "settings": {
+            "foreground": "#6A9955"
+          }
+        },
+        {
+          "scope": "meta.control-sequence.quant",
+          "settings": {
+            "foreground": "#C586C0" 
+          }
+        },
+        {
+          "scope": "punctuation.definition.control.begin.quant",
+          "settings": {
+            "foreground": "#569CD6"
+          }
+        },
+        {
+          "scope": "punctuation.definition.control.end.quant",
+          "settings": {
+            "foreground": "#569CD6"
+          }
+        },
+        {
+          "scope": "keyword.control.quant",
+          "settings": {
+            "foreground": "#DCDCAA",
+            "fontStyle": "bold"
+          }
+        },
+        {
+          "scope": "entity.name.tag.label.quant",
+          "settings": {
+            "foreground": "#4EC9B0"
+          }
+        },
+        {
+          "scope": "variable.parameter.quant",
+          "settings": {
+            "foreground": "#9CDCFE"
+          }
+        },
+        {
+          "scope": "keyword.operator.quant",
+          "settings": {
+            "foreground": "#D4D4D4",
+            "fontStyle": "bold"
+          }
+        },
+        {
+          "scope": "constant.numeric.quant",
+          "settings": {
+            "foreground": "#B5CEA8"
+          }
+        },
+        {
+          "scope": "string.unquoted.quant",
+          "settings": {
+            "foreground": "#CE9178"
+          }
+        },
+        {
+          "scope": "meta.macro.quant",
+          "settings": {
+            "foreground": "#4FC1FF"
+          }
+        },
+         {
+          "scope": "punctuation.definition.macro.begin.quant",
+          "settings": {
+            "foreground": "#777777"
+          }
+        },
+        {
+          "scope": "punctuation.definition.macro.end.quant",
+          "settings": {
+            "foreground": "#777777"
+          }
+        },
+        {
+          "scope": "variable.other.macro.quant",
+          "settings": {
+            "foreground": "#4FC1FF"
+          }
+        },
+        {
+          "scope": "meta.formatting.quant",
+          "settings": {
+            "foreground": "#4FC1FF" 
+          }
+        },
+        {
+          "scope": "keyword.control.format.quant",
+          "settings": {
+            "foreground": "#DCDCAA",
+            "fontStyle": "italic"
+          }
+        }
+      ]
+    }
+  }
+}
