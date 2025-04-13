@@ -1,0 +1,35 @@
+# Advanced .quant Example
+# This demonstrates variables, macros, and conditional text
+
+# Define variables for protagonist traits
+[DEFINE 60>@male|40>@female]
+[DEFINE 30>@timid|70>@brave]
+[DEFINE @hasKey]  # Boolean variable with 50% chance of being true
+
+# Define macros for frequently used text
+[MACRO protagonistName][@male>James|@female>Emma]
+[MACRO pronounSubject][@male>he|@female>she]
+[MACRO pronounObject][@male>him|@female>her]
+[MACRO pronounPossessive][@male>his|@female>her]
+[STICKY_MACRO location][the abandoned house|the haunted mansion|the old castle]
+
+# Start of the story
+{protagonistName} approached {location} with [^trepidation|excitement|caution].
+[@timid>With shaking hands, {pronounSubject} reached for the door.|
+@brave>Without hesitation, {pronounSubject} strode toward the entrance.]
+
+The door was locked. [@hasKey>{protagonistName} remembered the key in {pronounPossessive} pocket.
+"Good thing I brought this," {pronounSubject} muttered, inserting it into the lock.|
+{protagonistName} sighed. "Of course it's locked."]
+
+[@hasKey>The door swung open, revealing a [dusty|dark|dimly lit] hallway.
+{protagonistName} stepped inside, [^the floorboards creaking beneath {pronounPossessive} feet].|
+{protagonistName} tried the windows instead, looking for another way in.]
+
+# Using a labeled section
+[@brave>{JUMP confrontScene}]
+[@timid>{protagonistName} took a deep breath to steady {pronounPossessive} nerves.]
+
+[LABEL confrontScene]
+Suddenly, a noise caught {@male>his|@female>her} attention.
+"Who's there?" {protagonistName} [called out|whispered|demanded].

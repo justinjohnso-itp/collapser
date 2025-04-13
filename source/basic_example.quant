@@ -1,0 +1,15 @@
+# Basic Example
+# This demonstrates simple alternatives and weighted choices
+
+# Simple alternatives
+The [small|medium|large] dog [ran|walked|jumped] across the [green|lush|well-kept] lawn.
+
+# Weighted choices
+It was a [70>sunny|20>cloudy|10>rainy] day in [60>June|40>July].
+
+# Author preferences
+The owner, a [tall|^average-height|short] [man|^woman] with [glasses|^a hat|a scarf], 
+[smiled|^waved|called out] to the dog.
+
+# Optional text
+The dog [eventually] returned to its owner, [wagging its tail].
