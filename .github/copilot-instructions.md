@@ -109,6 +109,7 @@ Follow consistent structure across projects (backend, frontend, full-stack):
 - Use descriptive variable and function names
 - Group related logic together in modules
 - Use comments sparingly — only to explain non-obvious decisions
+- **Never add comments to JSON files**, as they are not supported by the standard.
 
 ---
 
