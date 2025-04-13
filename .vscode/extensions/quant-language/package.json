@@ -23,72 +23,33 @@
             {
               "scope": "comment.line.number-sign.quant",
               "settings": {
-                "foreground": "#6A9955",
+                "foreground": "#608B4E",
                 "fontStyle": "italic"
               }
             },
             {
               "scope": [
                 "punctuation.definition.control.begin.quant",
-                "punctuation.definition.control.end.quant"
+                "punctuation.definition.control.end.quant",
+                "punctuation.definition.block.begin.quant",
+                "punctuation.definition.block.end.quant",
+                "punctuation.separator.parameter.quant"
               ],
               "settings": {
                 "foreground": "#888888"
-              }
-            },
-            {
-              "scope": "keyword.control.quant",
-              "settings": {
-                "foreground": "#569CD6",
-                "fontStyle": ""
-              }
-            },
-            {
-              "scope": "entity.name.tag.label.quant",
-              "settings": {
-                "foreground": "#4EC9B0"
-              }
-            },
-            {
-              "scope": "variable.parameter.quant",
-              "settings": {
-                "foreground": "#9CDCFE"
-              }
-            },
-            {
-              "scope": "keyword.operator.quant",
-              "settings": {
-                "foreground": "#D4D4D4",
-                "fontStyle": ""
-              }
-            },
-            {
-              "scope": "constant.numeric.quant",
-              "settings": {
-                "foreground": "#B5CEA8"
-              }
-            },
-            {
-              "scope": "string.unquoted.quant",
-              "settings": {
-                "foreground": "#CE9178"
               }
             },
             {
               "scope": [
-                "punctuation.definition.macro.begin.quant",
-                "punctuation.definition.macro.end.quant",
-                "punctuation.definition.format.begin.quant",
-                "punctuation.definition.format.end.quant"
+                "keyword.control.define.quant",
+                "keyword.control.macro.quant",
+                "keyword.control.sticky-macro.quant",
+                "keyword.control.label.quant",
+                "keyword.control.jump.quant"
               ],
               "settings": {
-                "foreground": "#888888"
-              }
-            },
-            {
-              "scope": "variable.other.macro.quant",
-              "settings": {
-                "foreground": "#9CDCFE"
+                "foreground": "#569CD6",
+                "fontStyle": "bold"
               }
             },
             {
@@ -96,6 +57,81 @@
               "settings": {
                 "foreground": "#C586C0",
                 "fontStyle": ""
+              }
+            },
+            {
+              "scope": [
+                "entity.name.tag.control.quant",
+                "entity.name.label.definition.quant",
+                "entity.name.label.jump.quant"
+              ],
+              "settings": {
+                "foreground": "#4EC9B0"
+              }
+            },
+            {
+              "scope": [
+                "variable.parameter.quant",
+                "variable.parameter.conditional.quant",
+                "variable.parameter.standalone.quant"
+              ],
+              "settings": {
+                "foreground": "#9CDCFE"
+              }
+            },
+            {
+              "scope": [
+                "keyword.operator.preference.quant",
+                "keyword.operator.always-print.quant",
+                "keyword.operator.conditional.quant",
+                "keyword.operator.weight.quant"
+              ],
+              "settings": {
+                "foreground": "#D4D4D4"
+              }
+            },
+            {
+              "scope": "keyword.operator.pipe.quant",
+              "settings": {
+                "foreground": "#D4D4D4",
+                "fontStyle": "bold"
+              }
+            },
+            {
+              "scope": "constant.numeric.weight.quant",
+              "settings": {
+                "foreground": "#B5CEA8"
+              }
+            },
+            {
+              "scope": [
+                "string.unquoted.content.quant",
+                "string.unquoted.parameter.format.quant"
+              ],
+              "settings": {
+                "foreground": "#CE9178"
+              }
+            },
+            {
+              "scope": [
+                "entity.name.function.macro.definition.quant",
+                "entity.name.function.macro.brace.quant",
+                "entity.name.function.macro.dollar.quant"
+              ],
+              "settings": {
+                "foreground": "#DCDCAA"
+              }
+            },
+            {
+              "scope": "constant.character.escape.line-break.quant",
+              "settings": {
+                "foreground": "#C586C0"
+              }
+            },
+            {
+              "scope": "punctuation.definition.thematic-break.quant",
+              "settings": {
+                "foreground": "#808080"
               }
             }
           ]

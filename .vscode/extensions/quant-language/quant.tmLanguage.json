@@ -6,7 +6,8 @@
     { "include": "#curly_blocks" },
     { "include": "#dollar_macro_invocation" },
     { "include": "#line_breaks" },
-    { "include": "#em_dash" }
+    { "include": "#em_dash" },
+    { "include": "#variables_standalone" }
   ],
   "repository": {
     "comments": {
@@ -28,6 +29,10 @@
     "variables_general": {
        "name": "variable.parameter.quant",
        "match": "@[A-Za-z_\\-][A-Za-z_\\-0-9]*"
+    },
+    "variables_standalone": {
+      "name": "variable.parameter.standalone.quant",
+      "match": "(?<!\\[)(@[A-Za-z_\\-][A-Za-z_\\-0-9]*)(?!\\>)"
     },
     "curly_blocks": {
       "name": "meta.block.curly.quant",
@@ -95,13 +100,17 @@
       "endCaptures": { "0": { "name": "punctuation.definition.control.end.quant" } },
       "patterns": [
         { "include": "#control_sequence_label" },
-        { "include": "#control_keywords" },
+        { "include": "#define_keyword" },
+        { "include": "#macro_keyword" },
+        { "include": "#sticky_macro_keyword" },
+        { "include": "#label_keyword" },
         { "include": "#macro_definition_label" },
         { "include": "#label_definition_label" },
         { "include": "#variable_conditionals" },
         { "include": "#weighted_choices" },
+        { "include": "#pipe_operator" },
         { "include": "#operators" },
-        { "include": "#variables_general" }, // Include general variable matching here
+        { "include": "#variables_general" },
         { "include": "#curly_blocks" },
         { "include": "#dollar_macro_invocation" },
         { "include": "#text_inside_control" }
@@ -109,12 +118,23 @@
     },
     "control_sequence_label": {
       "name": "entity.name.tag.control.quant",
-      // Use \G to ensure match starts right after the opening bracket '[' (or whitespace after it)
       "match": "\\G\\s*\\*([^\\*]+)\\*"
     },
-    "control_keywords": {
-      "name": "keyword.control.definition.quant",
-      "match": "\\b(DEFINE|MACRO|STICKY_MACRO|LABEL)\\b"
+    "define_keyword": {
+      "name": "keyword.control.define.quant",
+      "match": "\\b(DEFINE)\\b"
+    },
+    "macro_keyword": {
+      "name": "keyword.control.macro.quant",
+      "match": "\\b(MACRO)\\b"
+    },
+    "sticky_macro_keyword": {
+      "name": "keyword.control.sticky-macro.quant",
+      "match": "\\b(STICKY_MACRO)\\b"
+    },
+    "label_keyword": {
+      "name": "keyword.control.label.quant",
+      "match": "\\b(LABEL)\\b"
     },
     "macro_definition_label": {
        "name": "entity.name.function.macro.definition.quant",
@@ -124,11 +144,14 @@
        "name": "entity.name.label.definition.quant",
        "match": "(?<=\\bLABEL\\s+)(\\S+)"
     },
+    "pipe_operator": {
+      "name": "keyword.operator.pipe.quant",
+      "match": "\\|"
+    },
     "operators": {
       "patterns": [
         { "name": "keyword.operator.preference.quant", "match": "\\^" },
-        { "name": "keyword.operator.always-print.quant", "match": "~" },
-        { "name": "keyword.operator.choice.quant", "match": "\\|" }
+        { "name": "keyword.operator.always-print.quant", "match": "~" }
       ]
     },
     "weighted_choices": {
