@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  collapser:
+    image: python:2.7-slim
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: >
+      bash -c "
+        # Install minimal dependencies detected in the codebase
+        pip install --upgrade pip==20.3.4 &&
+        pip install textblob==0.15.3 nltk==3.4.5 &&
+        
+        # Download only required NLTK data for TextBlob
+        python -c 'import nltk; nltk.download(\"punkt\"); nltk.download(\"averaged_perceptron_tagger\")' &&
+        
+        # Run the generator with specified parameters
+        python collapser/collapser.py
+      "
+    environment:
+      - PYTHONIOENCODING=utf-8
