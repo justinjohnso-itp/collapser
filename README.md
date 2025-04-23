@@ -21,38 +21,70 @@ This repository contains:
 
 ## Getting Started
 
-### Prerequisites
+**Note:** This code was originally written for Python 2.7 and has specific dependencies. Using the provided Docker environment is the recommended way to ensure compatibility and run the system.
 
-- Python (originally written for Python 2.7)
-- Supporting libraries as needed by individual components
+### Prerequisites (Recommended: Docker)
 
-### Usage Example
+The easiest way to run the Collapser and ensure all dependencies (including Python 2.7) are correctly configured is by using Docker and the provided `docker-compose.yml` file.
 
-Here's a basic workflow for using the Collapser system:
+1.  **Install Docker:** If you don't have it, install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/).
+2.  **Create Necessary Directories (on your computer):** The script expects certain directories to exist in the project root *before* running. Create them if they don't exist:
+    ```bash
+    mkdir -p output confirms seeds
+    ```
+    - `output/`: Where generated text files will be placed.
+    - `confirms/`: Stores user confirmations for specific text variations (optional feature).
+    - `seeds/`: Used for sequential seed generation if not using `--seed=random` or `--seed=N` (optional feature, see below).
+3.  **Build & Run Container:** Open a terminal in the project's root directory and run:
+    ```bash
+    docker-compose up -d
+    ```
+    This command builds the Docker image (if it doesn't exist), installs Python dependencies inside the container, downloads necessary NLTK data, and starts the container running in the background.
+4.  **Access the Container Shell:** To run commands inside the container's environment:
+    ```bash
+    docker-compose exec collapser bash
+    ```
+    This will give you a shell prompt (`root@<container_id>:/app#`) inside the container, ready to run the `collapser.py` script.
 
-1. **Create your `.quant` file** in the `source` directory or use one of the samples
-   - See `source/quantfile-syntax.md` for complete syntax documentation
-   - Study `source/basic_example.quant` and `source/advanced_example.quant` for examples
+### Prerequisites (Alternative: Manual Python 2.7)
 
-2. **Generate a version** using the collapser tool:
+If you prefer not to use Docker, you will need a working Python 2.7 environment and install dependencies manually. See previous revisions of this README for details, but this path may be complex due to Python 2.7's age. You will still need to create the `output/`, `confirms/`, and `seeds/` directories manually.
 
-```bash
-# Basic usage
-python collapser/collapser.py --input=source/your_file.quant --output=txt
+### Seed Management (Optional)
 
-# With a specific random seed
-python collapser/collapser.py --input=source/your_file.quant --gen=42 --output=txt
+If you want to generate seeds sequentially within a specific "generation" (instead of randomly), you need to set up the `seeds/` directory:
 
-# Using author-preferred choices
-python collapser/collapser.py --input=source/your_file.quant --strategy=author --output=txt
+1.  Inside the `seeds` directory (created above), create a file named `gen-X.dat`, where `X` is the generation number (default is 9 for testing).
+2.  Initialize this file with the *last used seed number* for that generation (e.g., `0` if you want the next seed to be `X0001`).
+    ```bash
+    # Example: Initialize generation 9, starting count at 0
+    echo "0" > seeds/gen-9.dat 
+    ```
+**Note:** If you don't provide a `--seed` argument and this file structure isn't present, the script now defaults to using a random seed.
 
-# See all available options
-python collapser/collapser.py --help
-```
+## Usage Example (Using Docker)
 
-3. **Find your output** in the directory indicated in the terminal output (typically `./output`)
+1.  **Start the Docker container and get a shell** (if you haven't already):
+    ```bash
+    # Start container in background
+    docker-compose up -d 
+    # Get shell inside the container
+    docker-compose exec collapser bash
+    ```
+2.  **Run the collapser (inside the container shell):**
+    ```bash
+    # Test command using the basic example, random seed, and skipping end matter:
+    python collapser/collapser.py --input=source/basic_example.quant --output=txt --seed=random --skipEndMatter
+    ```
+    Check the `output/` directory on your host machine (your computer) for the resulting `.txt` file. The filename will be the random seed number used (e.g., `1234567.txt`).
 
-### Available Output Formats
+3.  **Explore other options:**
+    ```bash
+    # See all available command-line options
+    python collapser/collapser.py --help
+    ```
+
+## Available Output Formats
 
 The collapser supports multiple output formats:
 - `txt` - Plain text

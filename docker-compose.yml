@@ -6,6 +6,8 @@ services:
     volumes:
       - .:/app
     working_dir: /app
+    stdin_open: true # Keep stdin open for interactive shell
+    tty: true        # Allocate a pseudo-TTY
     command: >
       bash -c "
         # Install minimal dependencies detected in the codebase
@@ -14,9 +16,10 @@ services:
         
         # Download only required NLTK data for TextBlob
         python -c 'import nltk; nltk.download(\"punkt\"); nltk.download(\"averaged_perceptron_tagger\")' &&
-        
-        # Run the generator with specified parameters
-        python collapser/collapser.py
+
+        # Keep container running after setup
+        echo 'Setup complete. Container running. Use docker-compose exec collapser bash to get a shell.' &&
+        tail -f /dev/null
       "
     environment:
       - PYTHONIOENCODING=utf-8

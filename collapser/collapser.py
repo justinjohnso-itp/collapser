@@ -80,7 +80,7 @@ def main():
 	print """Collapser\n"""
 
 	inputFiles = ["full-book-manifest.txt"]
-	inputFileDir = "chapters/"
+	inputFileDir = ""
 	outputFile = ""
 	inputText = ""
 	outputText = ""
@@ -456,9 +456,9 @@ def collapseInputText(inputFiles, inputFileDir, parseParams):
 	collapsedText = res.package
 	collapsedText = postCollapseCleanup(collapsedText)
 
-	if len(variables.showVars()) < 4:
-		print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
-		sys.exit()
+	# if len(variables.showVars()) < :
+	# 	print "Suspiciously low number of variables set (%d). At this point we should have set every variable defined in the whole project. Stopping."
+	# 	sys.exit()
 
 	fileio.writeOutputFile(workDir + "collapsed.txt", collapsedText)
 

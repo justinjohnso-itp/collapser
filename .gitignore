@@ -1,0 +1,40 @@
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor specific
+.vscode/
+*.swp
+*~
+
+# Project specific generated/stateful files
+output/*
+work/*
+confirms/*
+seeds/*
+
+# Environment variables
+.env
+.env.*
+
+# Docker (if storing local data volumes outside project, otherwise usually not needed)
+# docker-data/
+
+# Dependencies (if installed locally, though Docker handles this)
+# deps/
