@@ -83,6 +83,7 @@ If you want to generate seeds sequentially within a specific "generation" (inste
     # See all available command-line options
     python collapser/collapser.py --help
     ```
+    (See [collapser/collapser-commands.md](collapser/collapser-commands.md) for a reference list of all commands.)
 
 ## Available Output Formats
 
@@ -103,7 +104,7 @@ The `.quant` format allows you to create texts with controlled variations. Key f
 - **Macros**: `[MACRO name][content]` and `{name}` or `$name`
 - **Formatting Controls**: `{chapter/1}`, `{section_break}`, etc.
 
-For complete documentation, see `source/quantfile-syntax.md`.
+For complete documentation on the syntax and how to structure your files, see [source/quantfile-syntax.md](source/quantfile-syntax.md).
 
 ## Original Author's Notes
 
