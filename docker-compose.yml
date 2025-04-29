@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   collapser:
     image: python:2.7-slim
