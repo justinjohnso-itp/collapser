@@ -38,3 +38,7 @@ seeds/*
 
 # Dependencies (if installed locally, though Docker handles this)
 # deps/
+
+# Other
+Documeentation/
+source/passages/

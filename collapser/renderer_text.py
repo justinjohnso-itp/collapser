@@ -130,7 +130,7 @@ def specialTextFixes(text):
 def addTextFrontMatter(text, seed, pairInfo):
 	seedPrinted, msg = renderer.frontMatterSeedMessage(seed, pairInfo)
 	msg = msg.replace("NUM_SIGN", "#")
-	front = "*** The Oldest House ***\n\nby Justin Johnson\n\n\n========================\nEach rendering of The Oldest House is different. " + msg + "\n========================\n\n"
+	front = "*** Tobago House ***\n\nby Justin Johnson\n\n\n========================\nEach rendering of Tobago House is different. " + msg + "\n========================\n\n"
 	return front + text
 
 def postTextificationSanityCheck(text):
